@@ -524,7 +524,7 @@
         }
 
         // --- FETCH DE DATOS DESDE LA API O LOCAL ---
-        async function fetchChapterVerses(spanishBook, chapter, targetVerse = null) {
+        async function fetchChapterVerses(spanishBook, chapter, targetVerse = null, autoProject = true) {
             loadingIndicator.classList.remove('hidden');
             versesTitle.innerText = `Buscando ${spanishBook} ${chapter}...`;
             versesList.innerHTML = "";
@@ -539,7 +539,7 @@
                         text: versosObj[num]
                     })).sort((a, b) => a.verse - b.verse);
 
-                    renderVerses(spanishBook, chapter, verses, targetVerse);
+                    renderVerses(spanishBook, chapter, verses, targetVerse, autoProject);
                     loadingIndicator.classList.add('hidden');
                     versesTitle.innerText = `Versículos de ${spanishBook} ${chapter}:`;
                     return;
@@ -555,7 +555,7 @@
                 const response = await fetch(apiEndpoint);
                 if (!response.ok) throw new Error("Error en consulta de red");
                 const verses = await response.json();
-                renderVerses(spanishBook, chapter, verses, targetVerse);
+                renderVerses(spanishBook, chapter, verses, targetVerse, autoProject);
             } catch (error) {
                 console.error("Fallo de API", error);
                 showOfflineMessage();
@@ -565,7 +565,7 @@
             }
         }
 
-        function renderVerses(book, chapter, versesArray, targetVerse = null) {
+        function renderVerses(book, chapter, versesArray, targetVerse = null, autoProject = true) {
             versesList.innerHTML = "";
             versesArray.forEach(v => {
                 const cleanText = v.text.replace(/<[^>]*>/g, '').replace(/\n/g, ' ').trim();
@@ -604,7 +604,9 @@
                 if (isTarget) {
                     setTimeout(() => {
                         item.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        projectVerse(book, chapter, v.verse, cleanText);
+                        if (autoProject) {
+                            projectVerse(book, chapter, v.verse, cleanText);
+                        }
                     }, 200);
                 }
             });
@@ -702,7 +704,7 @@
                 playlistContainer.innerHTML = `
                     <div id="playlistEmpty" class="text-gray-500 text-center py-8 text-xs flex flex-col items-center gap-2">
                         <i data-lucide="plus-circle" class="w-8 h-8 opacity-40"></i>
-                        Añade versículos para el servicio de hoy.
+                        Añade versículos para el servicio.
                     </div>
                 `;
                 lucide.createIcons();
@@ -738,6 +740,7 @@
                     playlist = playlist.filter(p => p.id !== item.id);
                     if (activePlaylistId === item.id) activePlaylistId = null;
                     renderPlaylist();
+                    localStorage.setItem('bible_playlist', JSON.stringify(playlist));
                     showToast("Pasaje removido del orden del servicio");
                 });
 
@@ -749,7 +752,7 @@
         function addToPlaylist(book, chapter, verse, text) {
             const newItem = {
                 id: Date.now() + Math.random(),
-                reference: `${book} ${chapter}:${verse}`,
+                reference: verse ? `${book} ${chapter}:${verse}` : book,
                 text: text,
                 book: book,
                 chapter: chapter,
@@ -757,6 +760,7 @@
             };
             playlist.push(newItem);
             renderPlaylist();
+            localStorage.setItem('bible_playlist', JSON.stringify(playlist));
             showToast(`Añadido a lista: ${newItem.reference}`);
         }
 
@@ -974,6 +978,54 @@
         }
 
         // --- MANEJADORES DE ENLACE DE PROYECCIÓN AUTÓNOMA (PAGINA EN MODO PROYECTOR) ---
+        function loadSavedState() {
+            const saved = localStorage.getItem('bible_projector_state');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.slide) currentSlide = parsed.slide;
+                    if (parsed.style) projectionStyle = parsed.style;
+                } catch (e) {
+                    console.error("Error al cargar estado guardado:", e);
+                }
+            }
+            const savedPlaylist = localStorage.getItem('bible_playlist');
+            if (savedPlaylist) {
+                try {
+                    playlist = JSON.parse(savedPlaylist);
+                } catch (e) {
+                    console.error("Error al cargar playlist guardada:", e);
+                }
+            }
+        }
+
+        function syncControlsWithState() {
+            fontFamilySelect.value = projectionStyle.fontFamily;
+            alignmentSelect.value = projectionStyle.alignment;
+            refDisplaySelect.value = projectionStyle.refDisplay;
+
+            const reverseSizeMap = {
+                '2xl': '2', '3xl': '2.5', '4xl': '3', '5xl': '3.5',
+                '6xl': '4', '7xl': '4.5', '8xl': '5', '9xl': '5.5',
+                '10xl': '6', '11xl': '6.5', '12xl': '7', '13xl': '7.5', '14xl': '8'
+            };
+            fontSizeRange.value = reverseSizeMap[projectionStyle.fontSize] || '4';
+            lblFontSize.innerText = `Tamaño de Letra (Proyector): ${projectionStyle.fontSize}`;
+
+            opacityRange.value = projectionStyle.opacity;
+            lblOverlayOpacity.innerText = `Filtro Oscuro de Imagen: ${projectionStyle.opacity}%`;
+
+            document.querySelectorAll('.bg-option').forEach(btn => {
+                const type = btn.getAttribute('data-type');
+                const val = btn.getAttribute('data-value');
+                if (type === projectionStyle.bgType && val === projectionStyle.bgValue) {
+                    btn.classList.add('ring-4', 'ring-amber-500');
+                } else {
+                    btn.classList.remove('ring-4', 'ring-amber-500');
+                }
+            });
+        }
+
         function initProjectorView() {
             document.getElementById('operator-view-wrapper').classList.add('hidden');
             document.getElementById('projector-view-wrapper').classList.remove('hidden');
@@ -1005,11 +1057,22 @@
         }
 
         function initConsoleView() {
-            // Inicialización de menús y selectores de la biblia
+            loadSavedState();
             initSelectors();
             loadBibleData();
             renderPlaylist();
             setupConsoleEventListeners();
+
+            // Sincronizar selectores de UI con el estado guardado
+            const matchedBook = BIBLE_BOOKS.find(b => b.name === currentSlide.book);
+            if (matchedBook) {
+                bookSelect.value = currentSlide.book;
+                loadChapters(currentSlide.book, parseInt(currentSlide.chapter) || 1, parseInt(currentSlide.verse) || null, false);
+            } else {
+                loadChapters("Salmos", 23, 1, false);
+            }
+
+            syncControlsWithState();
             updateAllOutputs();
 
             // Escuchar peticiones de estado inicial de proyectores abiertos más tarde
@@ -1044,7 +1107,7 @@
             });
         }
 
-        function loadChapters(bookName, defaultChapter = 1, targetVerse = null) {
+        function loadChapters(bookName, defaultChapter = 1, targetVerse = null, autoProject = true) {
             const book = BIBLE_BOOKS.find(b => b.name === bookName);
             if (!book) return;
 
@@ -1056,7 +1119,7 @@
                 chapterSelect.appendChild(option);
             }
             chapterSelect.value = defaultChapter;
-            fetchChapterVerses(bookName, defaultChapter, targetVerse);
+            fetchChapterVerses(bookName, defaultChapter, targetVerse, autoProject);
         }
 
         function setupConsoleEventListeners() {
@@ -1073,6 +1136,7 @@
                 playlist = [];
                 activePlaylistId = null;
                 renderPlaylist();
+                localStorage.setItem('bible_playlist', JSON.stringify(playlist));
                 showToast("Programa de culto limpiado");
             });
 
