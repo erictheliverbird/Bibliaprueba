@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyector de la Biblia RVR1960 Profesional</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .fade-transition {
+            transition: all 0.5s ease-in-out;
+        }
+        /* OPTIMIZACIÓN DE SCROLL PARA MÓVILES */
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            /* Evita que el navegador rebote el scroll completo de la página */
+            overscroll-behavior-y: none;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-100 font-['Inter'] h-screen">
+
+    <!-- ================= VISTA DE CONSOLA (OPERADOR) ================= -->
+    <div id="operator-view-wrapper" class="h-full flex flex-col">
+        <!-- HEADER -->
+        <header class="bg-gray-900 border-b border-gray-800 px-6 py-4 flex flex-wrap justify-between items-center gap-4 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-amber-600 rounded-lg text-white">
+                    <i data-lucide="book-open" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-xl tracking-wide text-amber-500">PROYECTA BÍBLICA RVR1960</h1>
+                    <p class="text-xs text-gray-400">Software Profesional de Proyección • Biblia Reina-Valera 1960</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="btnOpenProjector" class="bg-amber-600 hover:bg-amber-500 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg transition-all text-sm animate-pulse">
+                    <i data-lucide="monitor" class="w-4 h-4"></i>
+                    Abrir Ventana de Proyector (Nueva Pestaña)
+                </button>
+                <button id="btnLocalFullscreen" class="bg-gray-800 hover:bg-gray-750 text-gray-200 border border-gray-700 font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition-all text-sm">
+                    <i data-lucide="maximize" class="w-4 h-4"></i>
+                    Pantalla Completa Aquí
+                </button>
+            </div>
+        </header>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="flex-1 flex flex-col lg:flex-row h-auto overflow-hidden">
+            
+            <!-- SELECTOR BÍBLICO (COLUMNA 1) -->
+            <section class="w-full lg:w-1/4 border-b lg:border-b-0 lg:border-r border-gray-800 p-4 flex flex-col gap-4 bg-gray-900/50 min-h-[400px]">
+                <h2 class="font-semibold text-gray-300 flex items-center gap-2 border-b border-gray-800 pb-2">
+                    <i data-lucide="library" class="w-4 h-4 text-amber-500"></i> Canon Bíblico (66 Libros)
+                </h2>
+
+                <!-- Buscador Rápido -->
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Buscar por Cita o Palabra (ej: Juan 3:16, amor)</label>
+                    <div class="relative flex gap-2">
+                        <input type="text" id="searchBar" placeholder="Libro Cap:Ver o palabra..." class="w-full bg-gray-850 border border-gray-700 rounded-lg py-2 pl-3 pr-10 text-sm focus:outline-none focus:border-amber-500 text-gray-100">
+                        <button id="btnSearch" class="bg-amber-600 hover:bg-amber-500 text-white px-3 rounded-lg text-sm">
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Selectores Desplegables -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Libro</label>
+                        <select id="bookSelect" class="w-full bg-gray-850 border border-gray-700 rounded-lg p-2 text-sm text-black focus:outline-none focus:border-amber-500"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Capítulo</label>
+                        <select id="chapterSelect" class="w-full bg-gray-850 border border-gray-700 rounded-lg p-2 text-sm text-black focus:outline-none focus:border-amber-500"></select>
+                    </div>
+                </div>
+
+                <!-- Listado de Versículos -->
+                <div class="flex-1 flex flex-col min-h-0">
+                    <div class="flex justify-between items-center mb-2">
+                        <span id="versesTitle" class="text-xs font-semibold text-gray-400">Versículos cargados:</span>
+                        <span id="loadingIndicator" class="text-xs text-amber-500 hidden flex items-center gap-1">
+                            <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span> Cargando...
+                        </span>
+                    </div>
+                    <div id="versesList" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg p-2 overflow-y-auto space-y-1 touch-auto no-scrollbar" style="-webkit-overflow-scrolling: touch; min-height: 0;">
+                        <!-- Cargado de forma dinámica -->
+                    </div>
+                </div>
+
+                <!-- Creador de Versículo Manual -->
+                <div class="border-t border-gray-800 pt-4 mt-auto">
+                    <h3 class="text-xs font-semibold text-amber-500 uppercase tracking-wider mb-2">Pasaje al Instante (Offline / Manual)</h3>
+                    <div class="space-y-2">
+                        <input type="text" id="customReference" placeholder="Ej: Romanos 8:28" class="w-full bg-gray-850 border border-gray-700 rounded-lg p-2 text-xs focus:outline-none focus:border-amber-500 text-gray-200">
+                        <textarea id="customText" rows="2" placeholder="Escribe o pega el versículo aquí..." class="w-full bg-gray-850 border border-gray-700 rounded-lg p-2 text-xs focus:outline-none focus:border-amber-500 resize-none text-gray-200"></textarea>
+                        <button id="btnSendCustom" class="w-full bg-gray-800 hover:bg-gray-700 text-white text-xs font-medium py-2 rounded-lg transition-all flex justify-center items-center gap-1">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Lanzar a Proyección
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- COLUMNA CENTRAL: MONITOR Y PROGRAMA (COLUMNA 2) -->
+            <section class="w-full lg:w-1/2 p-4 flex flex-col gap-4 border-b lg:border-b-0 lg:border-r border-gray-800 min-h-[400px]">
+                <!-- Monitor Operador -->
+                <div>
+                    <h2 class="font-semibold text-gray-300 flex items-center justify-between border-b border-gray-800 pb-2 mb-3">
+                        <span class="flex items-center gap-2"><i data-lucide="eye" class="w-4 h-4 text-amber-500"></i> Monitor de Control</span>
+                        <span id="operatorStatus" class="text-xs px-2 py-0.5 rounded-full bg-red-950 text-red-400 border border-red-900 flex items-center gap-1">
+                            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Offline
+                        </span>
+                    </h2>
+
+                    <!-- Preview de Salida -->
+                    <div class="bg-gray-950 rounded-xl border border-gray-800 overflow-hidden relative shadow-inner aspect-video flex flex-col justify-between p-6" id="previewContainer">
+                        <div id="previewBg" class="absolute inset-0 bg-gradient-to-br from-indigo-950 via-slate-900 to-black opacity-80 z-0"></div>
+                        <div id="previewBgImage" class="absolute inset-0 bg-cover bg-center z-0 filter brightness-50" style="background-image: url('https://images.unsplash.com/photo-1438032005730-c779502df39b?auto=format&fit=crop&w=1200&q=80');"></div>
+                        
+                        <div class="z-10 flex flex-col justify-between h-full relative text-center">
+                            <div id="previewRefHeader" class="text-amber-400 text-xs font-semibold uppercase tracking-widest">---</div>
+                            <div id="previewText" class="text-gray-100 text-base md:text-xl font-medium px-4 my-auto italic">"Selecciona un versículo para comenzar a proyectar."</div>
+                            <div id="previewRefFooter" class="text-amber-400 text-xs font-semibold tracking-wider">---</div>
+                        </div>
+                    </div>
+
+                    <!-- Botones Rápidos -->
+                    <div class="grid grid-cols-3 gap-2 mt-3">
+                        <button id="btnBlackout" class="bg-red-950/40 hover:bg-red-900/60 border border-red-900 text-red-300 font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all">
+                            <i data-lucide="eye-off" class="w-4 h-4"></i> PANTALLA NEGRA
+                        </button>
+                        <button id="btnClearText" class="bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all">
+                            <i data-lucide="delete" class="w-4 h-4"></i> QUITAR TEXTO
+                        </button>
+                        <button id="btnRestore" class="bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-900 text-emerald-300 font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> RESTAURAR
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lista de Proyección para el Servicio (Playlist) -->
+                <div class="flex-1 flex flex-col overflow-hidden">
+                    <div class="flex justify-between items-center border-b border-gray-800 pb-2 mb-2">
+                        <h2 class="font-semibold text-gray-300 flex items-center gap-2">
+                            <i data-lucide="list-video" class="w-4 h-4 text-amber-500"></i> Programa de Culto / Lista
+                        </h2>
+                        <button id="btnClearPlaylist" class="text-xs text-gray-400 hover:text-red-400 transition-all">Limpiar todo</button>
+                    </div>
+                    
+                    <div id="playlistContainer" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg p-3 overflow-y-auto space-y-2 no-scrollbar">
+                        <div id="playlistEmpty" class="text-gray-500 text-center py-8 text-xs flex flex-col items-center gap-2">
+                            <i data-lucide="plus-circle" class="w-8 h-8 opacity-40"></i>
+                            Añade versículos para el servicio.
+                        </div>
+                    </div>
+
+                    <!-- Teclas de Navegación Rápida -->
+                    <div class="mt-2 flex gap-2 justify-between items-center text-xs text-gray-400 bg-gray-900 p-2 rounded-lg border border-gray-800">
+                        <span>Navegar: <kbd class="px-1.5 py-0.5 bg-gray-800 rounded">←</kbd> Anterior / <kbd class="px-1.5 py-0.5 bg-gray-800 rounded">→</kbd> Siguiente o <kbd class="px-1.5 py-0.5 bg-gray-800 rounded">Espacio</kbd></span>
+                        <div class="flex gap-1">
+                            <button id="btnPrevPlaylist" class="bg-gray-800 hover:bg-gray-700 p-1.5 rounded"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                            <button id="btnNextPlaylist" class="bg-gray-800 hover:bg-gray-700 p-1.5 rounded"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN DE CONFIGURACIONES (COLUMNA 3) -->
+            <section class="w-full lg:w-1/4 p-4 flex flex-col gap-4 bg-gray-900/50 min-h-[400px] overflow-y-auto no-scrollbar">
+                <h2 class="font-semibold text-gray-300 flex items-center gap-2 border-b border-gray-800 pb-2">
+                    <i data-lucide="palette" class="w-4 h-4 text-amber-500"></i> Estilos del Proyector
+                </h2>
+
+                <!-- Tipografía -->
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Familia Tipográfica</label>
+                    <select id="fontFamilySelect" class="w-full bg-gray-850 border border-gray-700 rounded-lg p-2 text-sm text-black">
+                        <option value="'Lora', serif" selected>Lora (Elegante / Con Serif)</option>
+                        <option value="'Inter', sans-serif">Inter (Limpio / Moderno)</option>
+                        <option value="'Montserrat', sans-serif">Montserrat (Fuerte / Bold)</option>
+                        <option value="'Cinzel', serif">Cinzel (Clásico / Solemne)</option>
+                    </select>
+                </div>
+
+                <!-- Alineación y Referencia -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Alineación</label>
+                        <select id="alignmentSelect" class="w-full bg-gray-850 border border-gray-700 rounded-lg p-2 text-sm text-black">
+                            <option value="text-center" selected>Centrado</option>
+                            <option value="text-left">Izquierda</option>
+                            <option value="text-right">Derecha</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Mostrar Cita</label>
+                        <select id="refDisplaySelect" class="w-full bg-gray-850 border border-gray-700 rounded-lg p-2 text-sm text-black">
+                            <option value="header">Arriba</option>
+                            <option value="footer" selected>Abajo</option>
+                            <option value="both">Ambos</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Ajuste de Tamaños -->
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1" id="lblFontSize">Tamaño de Letra (Proyector): 6xl</label>
+                    <input type="range" id="fontSizeRange" min="2" max="8" step="0.5" value="4" class="w-full accent-amber-500 bg-gray-800 rounded-lg appearance-none h-2">
+                    <div class="flex justify-between text-[10px] text-gray-500 mt-1">
+                        <span>Pequeño</span>
+                        <span>Mediano</span>
+                        <span>Gigante</span>
+                    </div>
+                </div>
+
+                <!-- Fondos Prediseñados -->
+                <div>
+                    <label class="block text-xs text-gray-400 mb-2">Fondo del Proyector</label>
+                    
+                    <!-- Sólidos -->
+                    <span class="text-[10px] uppercase text-gray-500 block mb-1">Colores Sólidos</span>
+                    <div class="grid grid-cols-5 gap-1.5 mb-3">
+                        <button class="bg-black border border-gray-700 h-8 rounded-lg bg-option ring-4 ring-amber-500" data-type="solid" data-value="#000000" title="Negro"></button>
+                        <button class="bg-indigo-950 border border-gray-700 h-8 rounded-lg bg-option" data-type="solid" data-value="#0c0a09" title="Pizarra"></button>
+                        <button class="bg-red-950 border border-gray-700 h-8 rounded-lg bg-option" data-type="solid" data-value="#450a0a" title="Rojo Oscuro"></button>
+                        <button class="bg-blue-950 border border-gray-700 h-8 rounded-lg bg-option" data-type="solid" data-value="#172554" title="Azul Marino"></button>
+                        <button class="bg-teal-950 border border-gray-700 h-8 rounded-lg bg-option" data-type="solid" data-value="#042f2e" title="Teal"></button>
+                    </div>
+
+                    <!-- Degradados -->
+                    <span class="text-[10px] uppercase text-gray-500 block mb-1">Degradados Modernos</span>
+                    <div class="grid grid-cols-4 gap-1.5 mb-3">
+                        <button class="bg-gradient-to-br from-indigo-950 via-slate-900 to-black border border-gray-700 h-8 rounded-lg bg-option" data-type="gradient" data-value="linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #000000 100%)" title="Noche Estelar"></button>
+                        <button class="bg-gradient-to-br from-amber-950 via-stone-900 to-black border border-gray-700 h-8 rounded-lg bg-option" data-type="gradient" data-value="linear-gradient(135deg, #451a03 0%, #1c1917 50%, #000000 100%)" title="Cálido"></button>
+                        <button class="bg-gradient-to-br from-emerald-950 via-zinc-900 to-black border border-gray-700 h-8 rounded-lg bg-option" data-type="gradient" data-value="linear-gradient(135deg, #022c22 0%, #18181b 50%, #000000 100%)" title="Esperanza"></button>
+                        <button class="bg-gradient-to-br from-purple-950 via-neutral-900 to-black border border-gray-700 h-8 rounded-lg bg-option" data-type="gradient" data-value="linear-gradient(135deg, #3b0764 0%, #171717 50%, #000000 100%)" title="Realeza"></button>
+                    </div>
+
+                    <!-- Imágenes -->
+                    <span class="text-[10px] uppercase text-gray-500 block mb-1">Imágenes de Fondo</span>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button class="bg-cover bg-center h-12 rounded-lg border border-gray-700 relative overflow-hidden bg-option flex items-center justify-center" 
+                                data-type="image" 
+                                data-value="https://images.unsplash.com/photo-1438032005730-c779502df39b?auto=format&fit=crop&w=1920&q=80"
+                                style="background-image: url('https://images.unsplash.com/photo-1438032005730-c779502df39b?auto=format&fit=crop&w=150&q=50');">
+                            <span class="text-[10px] font-bold bg-black/60 px-1 py-0.5 rounded text-white z-10">Catedral</span>
+                        </button>
+                        <button class="bg-cover bg-center h-12 rounded-lg border border-gray-700 relative overflow-hidden bg-option flex items-center justify-center" 
+                                data-type="image" 
+                                data-value="https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?auto=format&fit=crop&w=1920&q=80"
+                                style="background-image: url('https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?auto=format&fit=crop&w=150&q=50');">
+                            <span class="text-[10px] font-bold bg-black/60 px-1 py-0.5 rounded text-white z-10">Cielo/Nubes</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Nivel de Opacidad de la imagen -->
+                    <div class="mt-3">
+                        <label class="block text-[10px] text-gray-400 mb-1" id="lblOverlayOpacity">Filtro Oscuro de Imagen: 65%</label>
+                        <input type="range" id="opacityRange" min="0" max="100" step="5" value="65" class="w-full accent-amber-500 bg-gray-800 rounded-lg appearance-none h-1">
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ================= PROYECTOR INTEGRADO (MODAL LOCAL PANTALLA COMPLETA) ================= -->
+    <div id="localProjectorModal" class="fixed inset-0 bg-black z-50 hidden flex flex-col justify-between p-12 select-none">
+        <button id="btnCloseLocalProjector" class="absolute top-4 right-4 bg-black/60 hover:bg-black/95 text-white/50 hover:text-white border border-white/20 p-2 rounded-full transition-all z-50 opacity-0 hover:opacity-100">
+            <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+
+        <div id="localProjBg" class="absolute inset-0 z-0"></div>
+        <div id="localProjBgImage" class="absolute inset-0 bg-cover bg-center z-0 filter" style="display: none;"></div>
+        <div id="localProjOverlay" class="absolute inset-0 bg-black z-10"></div>
+
+        <div class="z-20 flex flex-col justify-between h-full relative text-center" id="localProjContent">
+            <div id="localProjRefHeader" class="text-amber-400 text-2xl font-semibold uppercase tracking-widest fade-transition"></div>
+            <div id="localProjText" class="text-gray-100 font-medium px-8 my-auto italic fade-transition"></div>
+            <div id="localProjRefFooter" class="text-amber-400 text-2xl font-semibold tracking-wider fade-transition"></div>
+        </div>
+    </div>
+
+    <!-- ================= PANTALLA DE PROYECCIÓN INDEPENDIENTE (URL LINK) ================= -->
+    <div id="projector-view-wrapper" class="hidden fixed inset-0 bg-black z-50 flex flex-col justify-between p-16 select-none w-screen h-screen">
+        <div id="projBg" class="absolute inset-0 z-0 transition-all duration-500"></div>
+        <div id="projBgImage" class="absolute inset-0 bg-cover bg-center z-0 filter transition-all duration-500" style="display: none;"></div>
+        <div id="projOverlay" class="absolute inset-0 z-10 transition-all duration-500"></div>
+
+        <div class="z-20 flex flex-col justify-between h-full relative text-center" id="projContent">
+            <div id="projRefHeader" class="text-amber-400 text-3xl font-semibold uppercase tracking-widest fade-transition"></div>
+            <div id="projText" class="text-gray-100 font-medium px-12 my-auto italic fade-transition"></div>
+            <div id="projRefFooter" class="text-amber-400 text-3xl font-semibold tracking-wider fade-transition"></div>
+        </div>
+    </div>
+
+    <!-- MODAL DE ADVERTENCIA PARA POPUPS BLOQUEADOS -->
+    <div id="popupWarningModal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 hidden transition-all duration-300">
+        <div class="bg-gray-900 border border-amber-600/50 rounded-xl p-6 max-w-md w-full shadow-2xl">
+            <div class="flex items-center gap-3 text-amber-500 mb-4">
+                <i data-lucide="alert-triangle" class="w-8 h-8"></i>
+                <h3 class="text-lg font-bold text-gray-100">Ventana Emergente Bloqueada</h3>
+            </div>
+            <p class="text-sm text-gray-300 mb-4 leading-relaxed">
+                Tu navegador bloqueó la ventana del proyector externo. Esto es normal por motivos de seguridad en páginas interactivas.
+            </p>
+            <div class="bg-gray-950 p-3 rounded-lg text-xs text-gray-400 space-y-2 mb-6 border border-gray-800">
+                <p class="font-semibold text-gray-300 flex items-center gap-1">
+                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-amber-500"></i> ¿Cómo solucionarlo?
+                </p>
+                <ol class="list-decimal pl-5 space-y-1.5">
+                    <li>Mira la barra de direcciones de tu navegador arriba a la derecha.</li>
+                    <li>Busca el ícono de <strong>"Ventana/Pop-up bloqueado"</strong> <i data-lucide="external-link" class="inline w-3 h-3"></i>.</li>
+                    <li>Haz clic y selecciona <strong>"Permitir siempre"</strong> para este sitio.</li>
+                    <li>Vuelve a hacer clic en <strong>"Abrir Ventana de Proyector"</strong> o copia la URL para abrirla manualmente.</li>
+                </ol>
+            </div>
+            <div class="flex gap-2">
+                <button id="btnWarningUseLocal" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white font-medium py-2.5 rounded-lg text-xs transition-all flex items-center justify-center gap-1.5">
+                    <i data-lucide="maximize" class="w-3.5 h-3.5"></i> Usar Pantalla Completa Aquí
+                </button>
+                <button id="btnCloseWarning" class="bg-gray-800 hover:bg-gray-750 text-gray-300 px-4 py-2.5 rounded-lg text-xs font-medium transition-all">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-gray-950 border border-amber-600 text-amber-400 text-xs py-2.5 px-4 rounded-lg shadow-2xl transition-all duration-300 transform translate-y-12 opacity-0 z-50 flex items-center gap-2">
+        <i data-lucide="info" class="w-4 h-4"></i>
+        <span id="toastText">Acción realizada</span>
+    </div>
+
+    <!-- LIBROS DE LA BIBLIA -->
+    <script>
+        const BIBLE_BOOKS = [
+            // Antiguo Testamento
+            { name: "Génesis", chapters: 50 },
+            { name: "Éxodo", chapters: 40 },
+            { name: "Levítico", chapters: 27 },
+            { name: "Números", chapters: 36 },
+            { name: "Deuteronomio", chapters: 34 },
+            { name: "Josué", chapters: 24 },
+            { name: "Jueces", chapters: 21 },
+            { name: "Rut", chapters: 4 },
+            { name: "1 Samuel", chapters: 31 },
+            { name: "2 Samuel", chapters: 24 },
+            { name: "1 Reyes", chapters: 22 },
+            { name: "2 Reyes", chapters: 25 },
+            { name: "1 Crónicas", chapters: 29 },
+            { name: "2 Crónicas", chapters: 36 },
+            { name: "Esdras", chapters: 10 },
+            { name: "Nehemías", chapters: 13 },
+            { name: "Ester", chapters: 10 },
+            { name: "Job", chapters: 42 },
+            { name: "Salmos", chapters: 150 },
+            { name: "Proverbios", chapters: 31 },
+            { name: "Eclesiastés", chapters: 12 },
+            { name: "Cantares", chapters: 8 },
+            { name: "Isaías", chapters: 66 },
+            { name: "Jeremías", chapters: 52 },
+            { name: "Lamentaciones", chapters: 5 },
+            { name: "Ezequiel", chapters: 48 },
+            { name: "Daniel", chapters: 12 },
+            { name: "Oseas", chapters: 14 },
+            { name: "Joel", chapters: 3 },
+            { name: "Amós", chapters: 9 },
+            { name: "Abdías", chapters: 1 },
+            { name: "Jonás", chapters: 4 },
+            { name: "Miqueas", chapters: 7 },
+            { name: "Nahúm", chapters: 3 },
+            { name: "Habacuc", chapters: 3 },
+            { name: "Sofonías", chapters: 3 },
+            { name: "Hageo", chapters: 2 },
+            { name: "Zacarías", chapters: 14 },
+            { name: "Malaquías", chapters: 4 },
+            // Nuevo Testamento
+            { name: "Mateo", chapters: 28 },
+            { name: "Marcos", chapters: 16 },
+            { name: "Lucas", chapters: 24 },
+            { name: "Juan", chapters: 21 },
+            { name: "Hechos", chapters: 28 },
+            { name: "Romanos", chapters: 16 },
+            { name: "1 Corintios", chapters: 16 },
+            { name: "2 Corintios", chapters: 13 },
+            { name: "Gálatas", chapters: 6 },
+            { name: "Efesios", chapters: 6 },
+            { name: "Filipenses", chapters: 4 },
+            { name: "Colosenses", chapters: 4 },
+            { name: "1 Tesalonicenses", chapters: 5 },
+            { name: "2 Tesalonicenses", chapters: 3 },
+            { name: "1 Timoteo", chapters: 6 },
+            { name: "2 Timoteo", chapters: 4 },
+            { name: "Tito", chapters: 3 },
+            { name: "Filemón", chapters: 1 },
+            { name: "Hebreos", chapters: 13 },
+            { name: "Santiago", chapters: 5 },
+            { name: "1 Pedro", chapters: 5 },
+            { name: "2 Pedro", chapters: 3 },
+            { name: "1 Juan", chapters: 5 },
+            { name: "2 Juan", chapters: 1 },
+            { name: "3 Juan", chapters: 1 },
+            { name: "Judas", chapters: 1 },
+            { name: "Apocalipsis", chapters: 22 }
+        ];
+    </script>
+
+    <!-- MOTOR LÓGICO COMPLETO -->
+    <script>
+        // Inicializar Iconos
+        lucide.createIcons();
+
+        // Variable global para almacenar el JSON completo de la Biblia
+        let bibliaCompleta = null;
+        const RUTA_BIBLIA = "https://raw.githubusercontent.com/dscottpi/bibles/master/RVR1960-Spanish.json"; 
+
+        // Estado inicial de proyección
+        let currentSlide = {
+            book: "Salmos",
+            chapter: "23",
+            verse: "1",
+            text: "Jehová es mi pastor; nada me faltará.",
+            reference: "Salmos 23:1",
+            blackout: false,
+            clearText: false
+        };
+
+        let projectionStyle = {
+            fontFamily: "'Lora', serif",
+            fontSize: "6xl", 
+            alignment: "text-center",
+            refDisplay: "footer",
+            bgType: "gradient",
+            bgValue: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #000000 100%)",
+            opacity: "65"
+        };
+
+        let playlist = [
+            { id: 1, reference: "Salmos 23:1", text: "Jehová es mi pastor; nada me faltará.", book: "Salmos", chapter: "23", verse: "1" },
+            { id: 2, reference: "Salmos 23:2", text: "En lugares de delicados pastos me hará descansar; junto a aguas de reposo me pastoreará.", book: "Salmos", chapter: "23", verse: "2" },
+            { id: 3, reference: "Juan 3:16", text: "Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna.", book: "Juan", chapter: "3", verse: "16" }
+        ];
+
+        let activePlaylistId = null;
+        let externalWindow = null;
+        const channel = new BroadcastChannel('bible_projector_channel');
+
+        // Capturar elementos de la consola
+        const bookSelect = document.getElementById('bookSelect');
+        const chapterSelect = document.getElementById('chapterSelect');
+        const versesList = document.getElementById('versesList');
+        const searchBar = document.getElementById('searchBar');
+        const btnSearch = document.getElementById('btnSearch');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const versesTitle = document.getElementById('versesTitle');
+
+        const previewContainer = document.getElementById('previewContainer');
+        const previewBg = document.getElementById('previewBg');
+        const previewBgImage = document.getElementById('previewBgImage');
+        const previewRefHeader = document.getElementById('previewRefHeader');
+        const previewRefFooter = document.getElementById('previewRefFooter');
+        const previewText = document.getElementById('previewText');
+
+        const playlistContainer = document.getElementById('playlistContainer');
+        const btnClearPlaylist = document.getElementById('btnClearPlaylist');
+        const btnPrevPlaylist = document.getElementById('btnPrevPlaylist');
+        const btnNextPlaylist = document.getElementById('btnNextPlaylist');
+
+        const btnBlackout = document.getElementById('btnBlackout');
+        const btnClearText = document.getElementById('btnClearText');
+        const btnRestore = document.getElementById('btnRestore');
+
+        const fontFamilySelect = document.getElementById('fontFamilySelect');
+        const alignmentSelect = document.getElementById('alignmentSelect');
+        const refDisplaySelect = document.getElementById('refDisplaySelect');
+        const fontSizeRange = document.getElementById('fontSizeRange');
+        const opacityRange = document.getElementById('opacityRange');
+        const lblFontSize = document.getElementById('lblFontSize');
+        const lblOverlayOpacity = document.getElementById('lblOverlayOpacity');
+
+        const localProjectorModal = document.getElementById('localProjectorModal');
+        const btnLocalFullscreen = document.getElementById('btnLocalFullscreen');
+        const btnCloseLocalProjector = document.getElementById('btnCloseLocalProjector');
+        const popupWarningModal = document.getElementById('popupWarningModal');
+        const btnCloseWarning = document.getElementById('btnCloseWarning');
+        const btnWarningUseLocal = document.getElementById('btnWarningUseLocal');
+        const btnOpenProjector = document.getElementById('btnOpenProjector');
+        const operatorStatus = document.getElementById('operatorStatus');
+
+        // --- CARGA DE LA BASE DE DATOS DE LA BIBLIA ---
+        async function loadBibleData() {
+            if (bibliaCompleta) return; 
+
+            loadingIndicator.classList.remove('hidden');
+            versesTitle.innerText = "Cargando Biblia Reina-Valera 1960...";
+
+            try {
+                const response = await fetch(RUTA_BIBLIA);
+                if (!response.ok) throw new Error("No se pudo descargar la Biblia");
+                bibliaCompleta = await response.json();
+                showToast("Biblia cargada correctamente de forma local");
+            } catch (error) {
+                console.error("Error al cargar Biblia:", error);
+                showOfflineMessage();
+            } finally {
+                loadingIndicator.classList.add('hidden');
+                versesTitle.innerText = "Versículos cargados:";
+            }
+        }
+
+        // --- FETCH DE DATOS DESDE LA API O LOCAL ---
+        async function fetchChapterVerses(spanishBook, chapter, targetVerse = null) {
+            loadingIndicator.classList.remove('hidden');
+            versesTitle.innerText = `Buscando ${spanishBook} ${chapter}...`;
+            versesList.innerHTML = "";
+
+            // Prioridad: Datos del JSON completo si está cargado
+            if (bibliaCompleta) {
+                const libro = bibliaCompleta[spanishBook];
+                if (libro && libro[chapter]) {
+                    const versosObj = libro[chapter];
+                    const verses = Object.keys(versosObj).map(num => ({
+                        verse: parseInt(num),
+                        text: versosObj[num]
+                    })).sort((a, b) => a.verse - b.verse);
+
+                    renderVerses(spanishBook, chapter, verses, targetVerse);
+                    loadingIndicator.classList.add('hidden');
+                    versesTitle.innerText = `Versículos de ${spanishBook} ${chapter}:`;
+                    return;
+                }
+            }
+
+            // Fallback: API de consulta externa si falla la descarga
+            const bookIndex = BIBLE_BOOKS.findIndex(b => b.name === spanishBook);
+            const bookId = bookIndex + 1;
+            const apiEndpoint = `https://bolls.life/get-text/RVR1960/${bookId}/${chapter}/`;
+
+            try {
+                const response = await fetch(apiEndpoint);
+                if (!response.ok) throw new Error("Error en consulta de red");
+                const verses = await response.json();
+                renderVerses(spanishBook, chapter, verses, targetVerse);
+            } catch (error) {
+                console.error("Fallo de API", error);
+                showOfflineMessage();
+            } finally {
+                loadingIndicator.classList.add('hidden');
+                versesTitle.innerText = `Versículos de ${spanishBook} ${chapter}:`;
+            }
+        }
+
+        function renderVerses(book, chapter, versesArray, targetVerse = null) {
+            versesList.innerHTML = "";
+            versesArray.forEach(v => {
+                const cleanText = v.text.replace(/<[^>]*>/g, '').replace(/\n/g, ' ').trim();
+                const item = document.createElement('div');
+                
+                const isTarget = targetVerse && parseInt(v.verse) === targetVerse;
+                
+                item.className = `p-2 hover:bg-gray-800 rounded-lg cursor-pointer transition-all border ${
+                    isTarget ? 'border-amber-500 bg-amber-950/45' : 'border-transparent hover:border-gray-700'
+                } flex flex-col gap-1 text-xs`;
+                
+                item.innerHTML = `
+                    <div class="flex justify-between items-center text-amber-500 font-semibold">
+                        <span>Versículo ${v.verse}</span>
+                        <button class="add-to-playlist text-gray-500 hover:text-amber-400 p-0.5" title="Añadir a lista">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                    <p class="text-gray-300 leading-relaxed">${cleanText}</p>
+                `;
+
+                // Lanzar a proyección al hacer clic
+                item.addEventListener('click', (e) => {
+                    if (e.target.closest('.add-to-playlist')) return;
+                    projectVerse(book, chapter, v.verse, cleanText);
+                });
+
+                // Añadir a lista de reproducción
+                item.querySelector('.add-to-playlist').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    addToPlaylist(book, chapter, v.verse, cleanText);
+                });
+
+                versesList.appendChild(item);
+                
+                if (isTarget) {
+                    setTimeout(() => {
+                        item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        projectVerse(book, chapter, v.verse, cleanText);
+                    }, 200);
+                }
+            });
+            lucide.createIcons();
+        }
+
+        function showOfflineMessage() {
+            versesList.innerHTML = `
+                <div class="p-4 text-center">
+                    <p class="text-xs text-amber-500 font-semibold">Modo de Emergencia / Sin Conexión</p>
+                    <p class="text-[11px] text-gray-400 mt-1">No se pudo cargar la Biblia desde el servidor. Puedes escribir cualquier pasaje a mano utilizando el formulario de "Pasaje al Instante" de abajo.</p>
+                </div>
+            `;
+        }
+
+        // --- SISTEMA DE BÚSQUEDA INTELIGENTE ---
+        async function performSearch() {
+            const query = searchBar.value.trim();
+            if (!query) return;
+
+            loadingIndicator.classList.remove('hidden');
+            versesTitle.innerText = "Buscando...";
+
+            const match = query.match(/^([123]?\s*[A-Za-záéíóúÁÉÍÓÚñÑ]+)\s*(\d+)?(?:\s*:\s*(\d+))?$/);
+            
+            if (match) {
+                const searchBook = match[1].trim();
+                const matchedBook = BIBLE_BOOKS.find(b => b.name.toLowerCase().startsWith(searchBook.toLowerCase()));
+                
+                if (matchedBook) {
+                    const chapter = parseInt(match[2] || "1");
+                    const targetVerse = match[3] ? parseInt(match[3]) : null;
+                    bookSelect.value = matchedBook.name;
+                    loadChapters(matchedBook.name, chapter, targetVerse);
+                    return;
+                }
+            }
+
+            // Búsqueda de palabra clave externa (Bolls API)
+            const apiSearchEndpoint = `https://bolls.life/v2/find/RVR1960?search=${encodeURIComponent(query)}&match_case=false`;
+            try {
+                const response = await fetch(apiSearchEndpoint);
+                if (!response.ok) throw new Error();
+                const data = await response.json();
+
+                if (data.results && data.results.length > 0) {
+                    renderSearchResults(data.results);
+                } else {
+                    versesList.innerHTML = `<p class="text-xs text-gray-400 italic text-center py-4">Sin resultados de pasajes con la palabra "${query}".</p>`;
+                }
+            } catch (e) {
+                showOfflineMessage();
+            } finally {
+                loadingIndicator.classList.add('hidden');
+                versesTitle.innerText = `Resultados de: "${query}"`;
+            }
+        }
+
+        function renderSearchResults(results) {
+            versesList.innerHTML = "";
+            results.forEach(v => {
+                const spanishBook = BIBLE_BOOKS[v.book - 1] ? BIBLE_BOOKS[v.book - 1].name : "Libro";
+                const cleanText = v.text.replace(/<[^>]*>/g, '').replace(/\n/g, ' ').trim();
+                const item = document.createElement('div');
+                item.className = "p-2 hover:bg-gray-800 rounded-lg cursor-pointer transition-all border border-transparent hover:border-gray-700 flex flex-col gap-1 text-xs";
+                
+                item.innerHTML = `
+                    <div class="flex justify-between items-center text-amber-500 font-semibold">
+                        <span>${spanishBook} ${v.chapter}:${v.verse}</span>
+                        <button class="add-to-playlist text-gray-500 hover:text-amber-400 p-0.5" title="Añadir a lista">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                    <p class="text-gray-300 leading-relaxed">${cleanText}</p>
+                `;
+
+                item.addEventListener('click', (e) => {
+                    if (e.target.closest('.add-to-playlist')) return;
+                    projectVerse(spanishBook, v.chapter, v.verse, cleanText);
+                });
+
+                item.querySelector('.add-to-playlist').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    addToPlaylist(spanishBook, v.chapter, v.verse, cleanText);
+                });
+
+                versesList.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        // --- MANEJO DE PLAYLIST / PROGRAMA DEL CULTO ---
+        function renderPlaylist() {
+            if (playlist.length === 0) {
+                playlistContainer.innerHTML = `
+                    <div id="playlistEmpty" class="text-gray-500 text-center py-8 text-xs flex flex-col items-center gap-2">
+                        <i data-lucide="plus-circle" class="w-8 h-8 opacity-40"></i>
+                        Añade versículos para el servicio de hoy.
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            playlistContainer.innerHTML = "";
+            playlist.forEach((item, index) => {
+                const activeClass = (activePlaylistId === item.id) ? "border-amber-500 bg-amber-950/20" : "border-gray-800 bg-gray-900/40 hover:bg-gray-900/80";
+                
+                const card = document.createElement('div');
+                card.className = `p-2.5 rounded-lg border flex items-start gap-2 cursor-pointer transition-all group ${activeClass}`;
+                card.innerHTML = `
+                    <span class="text-xs font-semibold text-gray-500 min-w-[18px] text-center mt-0.5">${index + 1}</span>
+                    <div class="flex-1 min-w-0">
+                        <span class="text-xs font-bold text-amber-500 block">${item.reference}</span>
+                        <p class="text-xs text-gray-300 truncate">${item.text}</p>
+                    </div>
+                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button class="remove-item p-1 text-gray-500 hover:text-red-400" title="Eliminar">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                `;
+
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('.remove-item')) return;
+                    selectPlaylistItem(item.id);
+                });
+
+                card.querySelector('.remove-item').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    playlist = playlist.filter(p => p.id !== item.id);
+                    if (activePlaylistId === item.id) activePlaylistId = null;
+                    renderPlaylist();
+                    showToast("Pasaje removido del orden del servicio");
+                });
+
+                playlistContainer.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        function addToPlaylist(book, chapter, verse, text) {
+            const newItem = {
+                id: Date.now() + Math.random(),
+                reference: `${book} ${chapter}:${verse}`,
+                text: text,
+                book: book,
+                chapter: chapter,
+                verse: verse
+            };
+            playlist.push(newItem);
+            renderPlaylist();
+            showToast(`Añadido a lista: ${newItem.reference}`);
+        }
+
+        function selectPlaylistItem(id) {
+            activePlaylistId = id;
+            const item = playlist.find(p => p.id === id);
+            if (item) {
+                projectVerse(item.book, item.chapter, item.verse, item.text);
+                renderPlaylist();
+            }
+        }
+
+        function navigatePlaylist(direction) {
+            if (playlist.length === 0) return;
+            if (activePlaylistId === null) {
+                selectPlaylistItem(playlist[0].id);
+                return;
+            }
+
+            const currentIndex = playlist.findIndex(p => p.id === activePlaylistId);
+            let nextIndex = currentIndex + direction;
+
+            if (nextIndex >= 0 && nextIndex < playlist.length) {
+                selectPlaylistItem(playlist[nextIndex].id);
+            }
+        }
+
+        // --- SISTEMAS DE SALIDA Y TRANSMISIÓN ---
+        function projectVerse(book, chapter, verse, text) {
+            currentSlide.book = book;
+            currentSlide.chapter = chapter;
+            currentSlide.verse = verse;
+            currentSlide.text = text;
+            currentSlide.reference = verse ? `${book} ${chapter}:${verse}` : book;
+            currentSlide.blackout = false;
+            currentSlide.clearText = false;
+
+            updateAllOutputs();
+        }
+
+        // Sincronizar todos los medios de visualización de inmediato
+        function updateAllOutputs() {
+            // 1. Vista previa local del Operador
+            updateOperatorPreview();
+            
+            // 2. Transmisión del estado global a los proyector externos (mismo origen)
+            broadcastState();
+            
+            // 3. Modal local de pantalla completa
+            updateLocalProjector();
+        }
+
+        function updateOperatorPreview() {
+            previewBg.style.background = "none";
+            previewBgImage.style.display = "none";
+
+            if (projectionStyle.bgType === 'solid') {
+                previewBg.style.backgroundColor = projectionStyle.bgValue;
+            } else if (projectionStyle.bgType === 'gradient') {
+                previewBg.style.backgroundImage = projectionStyle.bgValue;
+            } else if (projectionStyle.bgType === 'image') {
+                previewBgImage.style.display = "block";
+                previewBgImage.style.backgroundImage = `url('${projectionStyle.bgValue}')`;
+                previewBg.style.backgroundColor = `rgba(0, 0, 0, ${projectionStyle.opacity / 100})`;
+            }
+
+            previewContainer.style.fontFamily = projectionStyle.fontFamily;
+            previewText.className = `text-gray-100 font-medium px-4 my-auto italic transition-all ${projectionStyle.alignment}`;
+            
+            let relativeSize = "text-base md:text-lg";
+            const val = parseFloat(fontSizeRange.value);
+            if (val <= 3) relativeSize = "text-xs";
+            else if (val <= 5) relativeSize = "text-sm md:text-base";
+            else relativeSize = "text-base md:text-xl";
+
+            previewText.className += " " + relativeSize;
+
+            if (currentSlide.blackout) {
+                previewBg.style.backgroundColor = "#000000";
+                previewBg.style.backgroundImage = "none";
+                previewBgImage.style.display = "none";
+                previewText.style.opacity = "0";
+                previewRefHeader.style.opacity = "0";
+                previewRefFooter.style.opacity = "0";
+            } else {
+                previewText.style.opacity = currentSlide.clearText ? "0" : "1";
+                
+                const showRef = projectionStyle.refDisplay;
+                previewRefHeader.style.opacity = (showRef === 'header' || showRef === 'both') && !currentSlide.clearText ? "1" : "0";
+                previewRefFooter.style.opacity = (showRef === 'footer' || showRef === 'both') && !currentSlide.clearText ? "1" : "0";
+
+                previewText.innerText = `"${currentSlide.text}"`;
+                previewRefHeader.innerText = currentSlide.reference;
+                previewRefFooter.innerText = currentSlide.reference;
+            }
+        }
+
+        function broadcastState() {
+            const dataToSync = {
+                slide: currentSlide,
+                style: projectionStyle,
+                timestamp: Date.now()
+            };
+
+            // Canal 1: BroadcastChannel para respuestas instantáneas
+            channel.postMessage(dataToSync);
+
+            // Canal 2: LocalStorage para sincronización inter-navegador/pestaña heredada
+            localStorage.setItem('bible_projector_state', JSON.stringify(dataToSync));
+        }
+
+        // --- CONFIGURACIÓN DE PANTALLA COMPLETA INTEGRADA ---
+        function updateLocalProjector() {
+            if (localProjectorModal.classList.contains('hidden')) return;
+
+            const localProjBg = document.getElementById('localProjBg');
+            const localProjBgImage = document.getElementById('localProjBgImage');
+            const localProjOverlay = document.getElementById('localProjOverlay');
+            const localProjText = document.getElementById('localProjText');
+            const localProjRefHeader = document.getElementById('localProjRefHeader');
+            const localProjRefFooter = document.getElementById('localProjRefFooter');
+
+            localProjectorModal.style.fontFamily = projectionStyle.fontFamily;
+            localProjText.className = localProjText.className.replace(/text-[a-z0-9]+/g, '');
+            
+            localProjText.classList.add('text-' + projectionStyle.fontSize);
+            localProjText.classList.add(projectionStyle.alignment);
+
+            localProjBg.style.backgroundImage = 'none';
+            localProjBg.style.backgroundColor = 'transparent';
+            localProjBgImage.style.display = 'none';
+            localProjOverlay.style.backgroundColor = 'transparent';
+
+            if (currentSlide.blackout) {
+                localProjBg.style.backgroundColor = "#000000";
+                localProjText.style.opacity = "0";
+                localProjRefHeader.style.opacity = "0";
+                localProjRefFooter.style.opacity = "0";
+            } else {
+                if (projectionStyle.bgType === 'solid') {
+                    localProjBg.style.backgroundColor = projectionStyle.bgValue;
+                } else if (projectionStyle.bgType === 'gradient') {
+                    localProjBg.style.backgroundImage = projectionStyle.bgValue;
+                } else if (projectionStyle.bgType === 'image') {
+                    localProjBgImage.style.display = 'block';
+                    localProjBgImage.style.backgroundImage = `url('${projectionStyle.bgValue}')`;
+                    localProjOverlay.style.backgroundColor = `rgba(0, 0, 0, ${projectionStyle.opacity / 100})`;
+                }
+
+                localProjText.innerText = `"${currentSlide.text}"`;
+                localProjRefHeader.innerText = currentSlide.reference;
+                localProjRefFooter.innerText = currentSlide.reference;
+
+                localProjText.style.opacity = currentSlide.clearText ? "0" : "1";
+
+                const showRef = projectionStyle.refDisplay;
+                localProjRefHeader.style.opacity = (showRef === 'header' || showRef === 'both') && !currentSlide.clearText ? "1" : "0";
+                localProjRefFooter.style.opacity = (showRef === 'footer' || showRef === 'both') && !currentSlide.clearText ? "1" : "0";
+            }
+        }
+
+        // --- SISTEMA DEDICADO DE PANTALLA DE PROYECCIÓN INDEPENDIENTE ---
+        function updateStandaloneProjector(slide, style) {
+            const bg = document.getElementById('projBg');
+            const bgImage = document.getElementById('projBgImage');
+            const overlay = document.getElementById('projOverlay');
+            const text = document.getElementById('projText');
+            const refHeader = document.getElementById('projRefHeader');
+            const refFooter = document.getElementById('projRefFooter');
+            const wrapper = document.getElementById('projector-view-wrapper');
+
+            if (!wrapper || !bg || !bgImage || !overlay || !text) return;
+
+            // Tipografía
+            wrapper.style.fontFamily = style.fontFamily;
+            
+            // Tamaños de texto dinámicos por clases adaptadas de Tailwind
+            text.className = text.className.replace(/text-[a-z0-9]+/g, '');
+            text.classList.add('text-' + style.fontSize);
+            text.classList.add(style.alignment);
+
+            // Reseteo general de fondo
+            bg.style.backgroundImage = 'none';
+            bg.style.backgroundColor = 'transparent';
+            bgImage.style.display = 'none';
+            overlay.style.backgroundColor = 'transparent';
+
+            if (slide.blackout) {
+                bg.style.backgroundColor = "#000000";
+                text.style.opacity = "0";
+                refHeader.style.opacity = "0";
+                refFooter.style.opacity = "0";
+            } else {
+                // Fondos configurados
+                if (style.bgType === 'solid') {
+                    bg.style.backgroundColor = style.bgValue;
+                } else if (style.bgType === 'gradient') {
+                    bg.style.backgroundImage = style.bgValue;
+                } else if (style.bgType === 'image') {
+                    bgImage.style.display = 'block';
+                    bgImage.style.backgroundImage = `url('${style.bgValue}')`;
+                    overlay.style.backgroundColor = `rgba(0, 0, 0, ${style.opacity / 100})`;
+                }
+
+                text.innerText = slide.clearText ? "" : `"${slide.text}"`;
+                refHeader.innerText = slide.reference;
+                refFooter.innerText = slide.reference;
+
+                text.style.opacity = slide.clearText ? "0" : "1";
+
+                const showRef = style.refDisplay;
+                refHeader.style.opacity = (showRef === 'header' || showRef === 'both') && !slide.clearText ? "1" : "0";
+                refFooter.style.opacity = (showRef === 'footer' || showRef === 'both') && !slide.clearText ? "1" : "0";
+            }
+        }
+
+        // --- MANEJADORES DE ENLACE DE PROYECCIÓN AUTÓNOMA (PAGINA EN MODO PROYECTOR) ---
+        function initProjectorView() {
+            document.getElementById('operator-view-wrapper').classList.add('hidden');
+            document.getElementById('projector-view-wrapper').classList.remove('hidden');
+
+            // Cargar primer estado si existe guardado
+            const savedState = localStorage.getItem('bible_projector_state');
+            if (savedState) {
+                const parsed = JSON.parse(savedState);
+                updateStandaloneProjector(parsed.slide, parsed.style);
+            }
+
+            // Escuchar cambios de operador en tiempo real
+            channel.onmessage = (event) => {
+                if (event.data.slide && event.data.style) {
+                    updateStandaloneProjector(event.data.slide, event.data.style);
+                }
+            };
+
+            // Escuchar cambios a través de Storage de respaldo
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'bible_projector_state' && e.newValue) {
+                    const parsed = JSON.parse(e.newValue);
+                    updateStandaloneProjector(parsed.slide, parsed.style);
+                }
+            });
+
+            // Notificar que el proyector se ha conectado
+            channel.postMessage({ requestInitialState: true });
+        }
+
+        function initConsoleView() {
+            // Inicialización de menús y selectores de la biblia
+            initSelectors();
+            loadBibleData();
+            renderPlaylist();
+            setupConsoleEventListeners();
+            updateAllOutputs();
+
+            // Escuchar peticiones de estado inicial de proyectores abiertos más tarde
+            channel.onmessage = (event) => {
+                if (event.data.requestInitialState) {
+                    broadcastState();
+                    setOperatorOnline(true);
+                }
+            };
+        }
+
+        function initSelectors() {
+            bookSelect.innerHTML = '<option value="" disabled selected>Selecciona un libro</option>';
+            BIBLE_BOOKS.forEach(book => {
+                const option = document.createElement('option');
+                option.value = book.name;
+                option.textContent = book.name;
+                bookSelect.appendChild(option);
+            });
+
+            bookSelect.addEventListener('change', () => {
+                const book = BIBLE_BOOKS.find(b => b.name === bookSelect.value);
+                if (book) {
+                    loadChapters(book.name, 1);
+                }
+            });
+
+            chapterSelect.addEventListener('change', () => {
+                if (bookSelect.value) {
+                    fetchChapterVerses(bookSelect.value, chapterSelect.value);
+                }
+            });
+        }
+
+        function loadChapters(bookName, defaultChapter = 1, targetVerse = null) {
+            const book = BIBLE_BOOKS.find(b => b.name === bookName);
+            if (!book) return;
+
+            chapterSelect.innerHTML = '';
+            for (let i = 1; i <= book.chapters; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `Capítulo ${i}`;
+                chapterSelect.appendChild(option);
+            }
+            chapterSelect.value = defaultChapter;
+            fetchChapterVerses(bookName, defaultChapter, targetVerse);
+        }
+
+        function setupConsoleEventListeners() {
+            // Buscador
+            btnSearch.addEventListener('click', performSearch);
+            searchBar.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') performSearch();
+            });
+
+            // Playlist Navegadores
+            btnPrevPlaylist.addEventListener('click', () => navigatePlaylist(-1));
+            btnNextPlaylist.addEventListener('click', () => navigatePlaylist(1));
+            btnClearPlaylist.addEventListener('click', () => {
+                playlist = [];
+                activePlaylistId = null;
+                renderPlaylist();
+                showToast("Programa de culto limpiado");
+            });
+
+            // Pasaje al Instante Manual
+            document.getElementById('btnSendCustom').addEventListener('click', () => {
+                const ref = document.getElementById('customReference').value.trim();
+                const text = document.getElementById('customText').value.trim();
+
+                if (!ref || !text) {
+                    showToast("Por favor ingresa cita y pasaje bíblico.");
+                    return;
+                }
+
+                projectVerse(ref, "", "", text);
+                addToPlaylist(ref, "", "", text);
+
+                document.getElementById('customReference').value = "";
+                document.getElementById('customText').value = "";
+                showToast("Lanzado de forma manual");
+            });
+
+            // Acciones Rápidas
+            btnBlackout.addEventListener('click', () => {
+                currentSlide.blackout = !currentSlide.blackout;
+                if (currentSlide.blackout) {
+                    btnBlackout.className = "bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all animate-pulse";
+                } else {
+                    btnBlackout.className = "bg-red-950/40 hover:bg-red-900/60 border border-red-900 text-red-300 font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all";
+                }
+                updateAllOutputs();
+            });
+
+            btnClearText.addEventListener('click', () => {
+                currentSlide.clearText = !currentSlide.clearText;
+                if (currentSlide.clearText) {
+                    btnClearText.className = "bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all";
+                } else {
+                    btnClearText.className = "bg-gray-800 hover:bg-gray-750 text-gray-300 font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all";
+                }
+                updateAllOutputs();
+            });
+
+            btnRestore.addEventListener('click', () => {
+                currentSlide.blackout = false;
+                currentSlide.clearText = false;
+                btnBlackout.className = "bg-red-950/40 hover:bg-red-900/60 border border-red-900 text-red-300 font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all";
+                btnClearText.className = "bg-gray-800 hover:bg-gray-750 text-gray-300 font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all";
+                updateAllOutputs();
+                showToast("Señal restablecida correctamente");
+            });
+
+            // Cambios de Estilos
+            fontFamilySelect.addEventListener('change', (e) => {
+                projectionStyle.fontFamily = e.target.value;
+                updateAllOutputs();
+            });
+
+            alignmentSelect.addEventListener('change', (e) => {
+                projectionStyle.alignment = e.target.value;
+                updateAllOutputs();
+            });
+
+            refDisplaySelect.addEventListener('change', (e) => {
+                projectionStyle.refDisplay = e.target.value;
+                updateAllOutputs();
+            });
+
+            fontSizeRange.addEventListener('input', (e) => {
+                const sizeMap = {
+                    '2': '2xl', '2.5': '3xl', '3': '4xl', '3.5': '5xl',
+                    '4': '6xl', '4.5': '7xl', '5': '8xl', '5.5': '9xl',
+                    '6': '10xl', '6.5': '11xl', '7': '12xl', '7.5': '13xl', '8': '14xl'
+                };
+                const mappedVal = sizeMap[e.target.value] || '6xl';
+                projectionStyle.fontSize = mappedVal;
+                lblFontSize.innerText = `Tamaño de Letra (Proyector): ${mappedVal}`;
+                updateAllOutputs();
+            });
+
+            opacityRange.addEventListener('input', (e) => {
+                projectionStyle.opacity = e.target.value;
+                lblOverlayOpacity.innerText = `Filtro Oscuro de Imagen: ${e.target.value}%`;
+                updateAllOutputs();
+            });
+
+            document.querySelectorAll('.bg-option').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    projectionStyle.bgType = btn.getAttribute('data-type');
+                    projectionStyle.bgValue = btn.getAttribute('data-value');
+                    
+                    document.querySelectorAll('.bg-option').forEach(b => b.classList.remove('ring-4', 'ring-amber-500'));
+                    btn.classList.add('ring-4', 'ring-amber-500');
+
+                    updateAllOutputs();
+                    showToast("Estilo de fondo modificado");
+                });
+            });
+
+            // Enlace de Apertura del Proyector Dedicado
+            btnOpenProjector.addEventListener('click', () => {
+                // Siguiente paso clave: Construye la URL exacta con la vista del proyector
+                const projectorUrl = window.location.origin + window.location.pathname + '?view=projector';
+                
+                const width = 1280;
+                const height = 720;
+                const left = (window.screen.width - width) / 2;
+                const top = (window.screen.height - height) / 2;
+
+                try {
+                    externalWindow = window.open(projectorUrl, "ProyectorBibliaScreen", `width=${width},height=${height},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no,scrollbars=no`);
+                    
+                    if (!externalWindow || externalWindow.closed || typeof externalWindow.closed === 'undefined') {
+                        throw new Error('Ventana bloqueada');
+                    }
+
+                    setOperatorOnline(true);
+                    showToast("Pantalla de proyección externa cargada.");
+                } catch (error) {
+                    console.warn("Se bloqueó la apertura automática:", error);
+                    popupWarningModal.classList.remove('hidden');
+                    setOperatorOnline(false);
+                }
+            });
+
+            btnCloseWarning.addEventListener('click', () => {
+                popupWarningModal.classList.add('hidden');
+            });
+
+            btnWarningUseLocal.addEventListener('click', () => {
+                popupWarningModal.classList.add('hidden');
+                btnLocalFullscreen.click();
+            });
+
+            btnLocalFullscreen.addEventListener('click', () => {
+                localProjectorModal.classList.remove('hidden');
+                if (localProjectorModal.requestFullscreen) {
+                    localProjectorModal.requestFullscreen();
+                } else if (localProjectorModal.webkitRequestFullscreen) {
+                    localProjectorModal.webkitRequestFullscreen();
+                }
+                updateLocalProjector();
+            });
+
+            btnCloseLocalProjector.addEventListener('click', exitLocalProjector);
+        }
+
+        function setOperatorOnline(online) {
+            if (online) {
+                operatorStatus.className = "text-xs px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-900 flex items-center gap-1";
+                operatorStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Proyector Activo`;
+            } else {
+                operatorStatus.className = "text-xs px-2 py-0.5 rounded-full bg-red-950 text-red-400 border border-red-900 flex items-center gap-1";
+                operatorStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Offline`;
+            }
+        }
+
+        function exitLocalProjector() {
+            localProjectorModal.classList.add('hidden');
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                localProjectorModal.classList.add('hidden');
+            }
+        });
+
+        // Visibilidad dinámica de controles en pantalla completa
+        let moveTimer;
+        localProjectorModal.addEventListener('mousemove', () => {
+            btnCloseLocalProjector.style.opacity = "1";
+            clearTimeout(moveTimer);
+            moveTimer = setTimeout(() => {
+                btnCloseLocalProjector.style.opacity = "0";
+            }, 3000);
+        });
+
+        // --- TECLAS DE NAVEGACIÓN ---
+        document.addEventListener('keydown', (e) => {
+            if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+                return;
+            }
+
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                navigatePlaylist(1);
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                navigatePlaylist(-1);
+            } else if (e.key === 'b' || e.key === 'B') {
+                btnBlackout.click();
+            } else if (e.key === 'c' || e.key === 'C') {
+                btnClearText.click();
+            } else if (e.key === 'Escape') {
+                if (!localProjectorModal.classList.contains('hidden')) {
+                    exitLocalProjector();
+                }
+            }
+        });
+
+        // TOAST NOTIFICATIONS
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastText').innerText = message;
+            toast.classList.remove('translate-y-12', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-12', 'opacity-0');
+            }, 2500);
+        }
+
+        // CARGA GENERAL SEGÚN TIPO DE PÁGINA
+        window.onload = function () {
+            const isProjectorView = new URLSearchParams(window.location.search).get('view') === 'projector';
+            
+            if (isProjectorView) {
+                initProjectorView();
+            } else {
+                initConsoleView();
+            }
+        };
+    </script>
+</body>
+</html>
