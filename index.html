@@ -1255,13 +1255,24 @@
                                         }
 
                                         if (videoEl) {
-                                            if (data.mediaMode === 'video' && data.videoUrl) {
+                                            if (data.mediaMode === 'screen') {
+                                                var stream = (window.opener && window.opener.screenStream) ? window.opener.screenStream : null;
+                                                if (stream) {
+                                                    if (videoEl.srcObject !== stream) videoEl.srcObject = stream;
+                                                    videoEl.classList.remove('hidden');
+                                                    videoEl.play().catch(function(){});
+                                                } else {
+                                                    videoEl.classList.add('hidden');
+                                                }
+                                            } else if (data.mediaMode === 'video' && data.videoUrl) {
+                                                videoEl.srcObject = null;
                                                 if (videoEl.src !== data.videoUrl) videoEl.src = data.videoUrl;
                                                 videoEl.classList.remove('hidden');
                                                 if (data.isVideoPlaying) videoEl.play().catch(function(){});
                                                 else videoEl.pause();
                                             } else {
                                                 videoEl.classList.add('hidden');
+                                                videoEl.srcObject = null;
                                             }
                                         }
 
