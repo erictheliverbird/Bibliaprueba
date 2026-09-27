@@ -49,7 +49,6 @@
 </head>
 <body class="bg-gray-950 text-gray-100 h-screen overflow-hidden flex flex-col font-['Inter'] antialiased select-none">
 
-    <!-- CONSOLA DE CONTROL PRINCIPAL -->
     <div id="operator-interface" class="h-full flex flex-col min-h-0">
         
         <!-- CABECERA DE LA CONSOLA -->
@@ -61,7 +60,7 @@
                 <div>
                     <h1 class="font-black text-base md:text-lg leading-none tracking-wide text-white flex items-center gap-2">
                         PROYECTOR BÍBLICO
-                        <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-bold">PRO iPadOS v3.2</span>
+                        <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-bold">PRO iPadOS v3.3</span>
                     </h1>
                     <span class="text-[10px] text-gray-400 font-semibold tracking-wider uppercase hidden sm:inline-block">Consola de Control Multi-Pantalla & OBS Stream</span>
                 </div>
@@ -200,8 +199,8 @@
 
                         <!-- Texto en Vista Previa -->
                         <div class="z-30 text-center w-full flex flex-col justify-between h-full pointer-events-none select-none">
-                            <p id="preview-text" class="text-white text-xs my-auto line-clamp-4 leading-relaxed transition-all text-projection-shadow"></p>
-                            <p id="preview-citation" class="text-[9px] text-gray-300 uppercase font-black tracking-widest mt-1 text-projection-shadow"></p>
+                            <p id="preview-text" class="text-white text-xs my-auto line-clamp-4 leading-relaxed transition-all"></p>
+                            <p id="preview-citation" class="text-[9px] text-gray-300 uppercase font-black tracking-widest mt-1"></p>
                         </div>
                     </div>
 
@@ -537,10 +536,10 @@
         </button>
 
         <div class="z-30 text-center w-full my-auto px-12 select-none">
-            <p id="local-fs-text" class="text-white leading-relaxed text-projection-shadow"></p>
+            <p id="local-fs-text" class="text-white leading-relaxed"></p>
         </div>
         <div class="z-30 text-center w-full select-none pb-6">
-            <p id="local-fs-citation" class="text-white/80 tracking-widest font-black uppercase text-lg text-projection-shadow"></p>
+            <p id="local-fs-citation" class="text-white/80 tracking-widest font-black uppercase text-lg"></p>
         </div>
     </div>
 
@@ -698,7 +697,7 @@
             logoPosition: 'top-left'
         };
 
-        let mediaMode = 'none'; // 'none', 'video', 'youtube', 'screen'
+        let mediaMode = 'none';
         let activeVideoUrl = '';
         let isVideoPlaying = false;
 
@@ -707,10 +706,8 @@
         let externalWindow = null;
         let broadcastChannel = new BroadcastChannel('biblical-projector-channel');
         
-        // CRUCIAL: Utilizar el objeto 'window' global para que la ventana 'opener' tenga acceso.
         window.screenStream = null; 
 
-        // NUEVO SISTEMA DE MEMORIA LOCAL
         function saveOperatorState() {
             const stateToSave = {
                 selectedBook,
@@ -748,7 +745,6 @@
                     if(saved.cultoList) cultoList = saved.cultoList;
                     if(saved.projectionStyles) projectionStyles = {...projectionStyles, ...saved.projectionStyles};
 
-                    // Restaurar elementos de Interfaz Visual que dependen del estado
                     document.getElementById('style-font').value = projectionStyles.font;
                     document.getElementById('style-size').value = projectionStyles.size;
                     document.getElementById('val-font-size').innerText = projectionStyles.size + "vw";
@@ -766,12 +762,19 @@
                     }
                     document.getElementById('toggle-logo-corner').checked = projectionStyles.showLogoCorner;
 
-                    // Actualizar botones de Apagar y Ocultar texto según memoria
                     if(isBlackout) {
                         document.getElementById('btn-blackout').className = "bg-red-600 hover:bg-red-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-red-950/50";
                     }
                     if(isClearText) {
                         document.getElementById('btn-cleartext').className = "bg-amber-600 hover:bg-amber-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-amber-950/50";
+                    }
+
+                    // Sincronizar estilo visual del botón sombra según estado guardado
+                    const shadowBtn = document.getElementById('btn-format-shadow');
+                    if (projectionStyles.hasShadow) {
+                        shadowBtn.className = "transition py-2 rounded-xl text-xs font-bold border border-blue-500 bg-blue-600/20 text-blue-400 flex items-center justify-center";
+                    } else {
+                        shadowBtn.className = "transition py-2 rounded-xl text-xs font-bold border border-gray-800 text-gray-300 flex items-center justify-center";
                     }
 
                     updateBgTypeUI(projectionStyles.bgType);
@@ -784,7 +787,6 @@
         function getYouTubeEmbedUrl(url) {
             if (!url) return '';
             let videoId = '';
-            
             try {
                 if (url.includes('youtu.be/')) {
                     videoId = url.split('youtu.be/')[1].split('?')[0].split('&')[0];
@@ -799,7 +801,6 @@
             } catch (e) {
                 console.error("Error al extraer ID de YouTube", e);
             }
-
             if (videoId) {
                 return `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&rel=0`;
             }
@@ -1033,20 +1034,15 @@
                 localStorage.setItem('biblical_projector_data', JSON.stringify(payload));
             } catch (e) {}
 
-            // Actualizar Previo del Operador
             updateProjectorDOM(document, payload, false);
 
-            // Actualizar Ventana Externa si está activa
             if (externalWindow && !externalWindow.closed) {
                 try {
                     updateProjectorDOM(externalWindow.document, payload);
                 } catch (e) {}
             }
 
-            // Actualizar Simulador Local Modal
             updateProjectorDOM(document, payload, true);
-            
-            // Guardar siempre el estado general tras cualquier cambio en vivo
             saveOperatorState();
         }
 
@@ -1064,7 +1060,6 @@
 
             if (!textEl) return;
 
-            // Apagado de pantalla (Blackout)
             if (data.isBlackout) {
                 if (backdropEl) backdropEl.style.background = '#000000';
                 if (textEl) textEl.innerText = '';
@@ -1076,7 +1071,6 @@
                 return;
             }
 
-            // Reproductor de YouTube
             if (youtubeEl) {
                 if (data.mediaMode === 'youtube' && data.videoUrl) {
                     if (youtubeEl.src !== data.videoUrl) {
@@ -1089,9 +1083,7 @@
                 }
             }
 
-            // Reproductor de Video Local / Captura de Pantalla
             if (videoEl) {
-                // Se usa window.screenStream para compatibilidad
                 if (data.mediaMode === 'screen' && window.screenStream) {
                     if (videoEl.srcObject !== window.screenStream) {
                         videoEl.srcObject = window.screenStream;
@@ -1112,24 +1104,37 @@
                 }
             }
 
-            // Aplicar Texto y Cita Bibliográfica
             if (textEl) {
                 textEl.innerText = data.text;
-                textEl.style.fontFamily = data.styles.font;
+                // Aplicación robusta de familia tipográfica usando comillas para soportar fuentes con espacios (ej: 'Playfair Display')
+                textEl.style.fontFamily = `"${data.styles.font}", sans-serif`;
                 textEl.style.fontSize = isLocalFs ? (parseFloat(data.styles.size) * 1.2) + 'vw' : (docObj === document && !isLocalFs ? '12px' : data.styles.size + 'vw');
                 textEl.style.fontWeight = data.styles.isBold ? '800' : '400';
                 textEl.style.fontStyle = data.styles.isItalic ? 'italic' : 'normal';
                 textEl.style.textAlign = data.styles.align;
                 textEl.style.color = data.styles.textcolor;
+
+                // Aplicación dinámica del botón de sombra corregido
+                if (data.styles.hasShadow) {
+                    textEl.classList.add('text-projection-shadow');
+                } else {
+                    textEl.classList.remove('text-projection-shadow');
+                }
             }
 
             if (citationEl) {
                 citationEl.innerText = data.citation;
+                citationEl.style.fontFamily = `"${data.styles.font}", sans-serif`;
                 citationEl.style.color = data.styles.textcolor;
                 citationEl.style.textAlign = data.styles.align;
+
+                if (data.styles.hasShadow) {
+                    citationEl.classList.add('text-projection-shadow');
+                } else {
+                    citationEl.classList.remove('text-projection-shadow');
+                }
             }
 
-            // Fondos
             if (backdropEl) {
                 if (data.styles.bgType === 'color') {
                     backdropEl.style.background = data.styles.bgcolor;
@@ -1143,12 +1148,10 @@
                 }
             }
 
-            // Filtro Oscuro
             if (overlayEl) {
                 overlayEl.style.backgroundColor = `rgba(0, 0, 0, ${data.styles.bgOpacity / 100})`;
             }
 
-            // Manejo de Logos
             const hasText = data.text.trim().length > 0;
             if (logoStandbyEl) {
                 if (!hasText && data.styles.logoUrl) {
@@ -1177,7 +1180,6 @@
 
         async function startScreenCapture() {
             try {
-                // Almacenar en window.screenStream hace que sea accesible desde la ventana pop-up externa
                 window.screenStream = await navigator.mediaDevices.getDisplayMedia({
                     video: { cursor: "always" },
                     audio: false
@@ -1226,12 +1228,10 @@
                 });
             };
 
-            // Captura OBS / iPadOS
             document.getElementById('btn-quick-screen-share').onclick = startScreenCapture;
             document.getElementById('btn-start-screen-capture').onclick = startScreenCapture;
             document.getElementById('btn-stop-screen-capture').onclick = stopScreenCapture;
 
-            // YouTube Integrado
             document.getElementById('btn-load-youtube').onclick = () => {
                 const inputUrl = document.getElementById('video-url-input').value.trim();
                 const embedUrl = getYouTubeEmbedUrl(inputUrl);
@@ -1251,7 +1251,6 @@
                 }
             };
 
-            // Cargar Video Local
             document.getElementById('video-file-input').onchange = (e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -1277,10 +1276,8 @@
                 showToast("Reproducción detenida", "info");
             };
 
-            // Búsqueda de Libros
             document.getElementById('search-book').oninput = renderBooks;
 
-            // Navegación de Capítulos Ant / Sig
             document.getElementById('btn-prev-chapter').onclick = () => {
                 const chapters = Object.keys(bibleData[selectedBook] || {});
                 const currentIdx = chapters.indexOf(selectedChapter);
@@ -1305,7 +1302,6 @@
                 }
             };
 
-            // Cargar Biblia JSON
             document.getElementById('json-bible-input').onchange = (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -1329,7 +1325,6 @@
                 reader.readAsText(file);
             };
 
-            // Ventana Externa Proyector
             document.getElementById('btn-toggle-ext-projector').onclick = () => {
                 if (!externalWindow || externalWindow.closed) {
                     externalWindow = window.open('', 'BiblicalProjectorWindow', 'width=1920,height=1080,menubar=no,toolbar=no,location=no,status=no,resizable=yes');
@@ -1342,8 +1337,11 @@
                                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                                 <title>Proyección Bíblica en Vivo</title>
                                 <script src="https://cdn.tailwindcss.com"><\/script>
+                                <link rel="preconnect" href="https://fonts.googleapis.com">
+                                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                                <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Merriweather:wght@300;400;700&family=Montserrat:wght@400;600;800&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
                                 <style>
-                                    body { margin: 0; background: #000; overflow: hidden; font-family: 'Inter', sans-serif; user-select: none; }
+                                    body { margin: 0; background: #000; overflow: hidden; user-select: none; }
                                     .text-projection-shadow { text-shadow: 0 2px 12px rgba(0, 0, 0, 0.95), 0 4px 24px rgba(0, 0, 0, 0.85); }
                                 <\/style>
                             <\/head>
@@ -1356,10 +1354,10 @@
                                 <img id="proj-logo-corner" class="absolute max-w-[12%] max-h-[15%] object-contain z-30 hidden" />
                                 
                                 <div class="z-30 text-center w-full my-auto px-12 md:px-24">
-                                    <p id="proj-text" class="text-white leading-relaxed text-projection-shadow"></p>
+                                    <p id="proj-text" class="text-white leading-relaxed"></p>
                                 </div>
                                 <div class="z-30 text-center w-full pb-10">
-                                    <p id="proj-citation" class="text-white/90 tracking-widest font-black uppercase text-xl text-projection-shadow"></p>
+                                    <p id="proj-citation" class="text-white/90 tracking-widest font-black uppercase text-xl"></p>
                                 </div>
 
                                 <script>
@@ -1440,20 +1438,33 @@
                                         if (textEl) {
                                             textEl.innerText = data.text || '';
                                             if (data.styles) {
-                                                textEl.style.fontFamily = data.styles.font || 'Inter';
+                                                textEl.style.fontFamily = '"' + (data.styles.font || 'Inter') + '", sans-serif';
                                                 textEl.style.fontSize = (data.styles.size || '4.5') + 'vw';
                                                 textEl.style.fontWeight = data.styles.isBold ? '800' : '400';
                                                 textEl.style.fontStyle = data.styles.isItalic ? 'italic' : 'normal';
                                                 textEl.style.textAlign = data.styles.align || 'center';
                                                 textEl.style.color = data.styles.textcolor || '#ffffff';
+
+                                                if (data.styles.hasShadow) {
+                                                    textEl.classList.add('text-projection-shadow');
+                                                } else {
+                                                    textEl.classList.remove('text-projection-shadow');
+                                                }
                                             }
                                         }
 
                                         if (citationEl) {
                                             citationEl.innerText = data.citation || '';
                                             if (data.styles) {
+                                                citationEl.style.fontFamily = '"' + (data.styles.font || 'Inter') + '", sans-serif';
                                                 citationEl.style.color = data.styles.textcolor || '#ffffff';
                                                 citationEl.style.textAlign = data.styles.align || 'center';
+
+                                                if (data.styles.hasShadow) {
+                                                    citationEl.classList.add('text-projection-shadow');
+                                                } else {
+                                                    citationEl.classList.remove('text-projection-shadow');
+                                                }
                                             }
                                         }
 
@@ -1511,7 +1522,6 @@
                 }
             };
 
-            // Simulador Local Fullscreen
             document.getElementById('btn-toggle-local-fs').onclick = () => {
                 const modal = document.getElementById('local-fullscreen-container');
                 modal.classList.toggle('hidden');
@@ -1522,7 +1532,6 @@
                 document.getElementById('local-fullscreen-container').classList.add('hidden');
             };
 
-            // Blackout & Ocultar Texto
             document.getElementById('btn-blackout').onclick = () => {
                 isBlackout = !isBlackout;
                 const btn = document.getElementById('btn-blackout');
@@ -1558,7 +1567,6 @@
                 showToast("Proyección limpiada", "info");
             };
 
-            // Canto Custom
             document.getElementById('btn-add-custom-culto').onclick = () => {
                 const val = document.getElementById('custom-culto-text').value.trim();
                 if (val) {
@@ -1574,23 +1582,59 @@
                 showToast("Lista vaciada", "info");
             };
 
-            // Estilos de Fuente y Formato
-            document.getElementById('style-font').onchange = (e) => { projectionStyles.font = e.target.value; syncToProjector(); };
+            // Estilos de Fuente y Formato (Corregido select y botón de sombra)
+            document.getElementById('style-font').onchange = (e) => { 
+                projectionStyles.font = e.target.value; 
+                syncToProjector(); 
+                showToast(`Fuente cambiada a: ${e.target.value}`, "info");
+            };
+
             document.getElementById('style-size').oninput = (e) => { 
                 projectionStyles.size = e.target.value; 
                 document.getElementById('val-font-size').innerText = e.target.value + "vw";
                 syncToProjector(); 
             };
-            document.getElementById('btn-format-bold').onclick = () => { projectionStyles.isBold = !projectionStyles.isBold; syncToProjector(); };
-            document.getElementById('btn-format-italic').onclick = () => { projectionStyles.isItalic = !projectionStyles.isItalic; syncToProjector(); };
-            document.getElementById('btn-format-shadow').onclick = () => { projectionStyles.hasShadow = !projectionStyles.hasShadow; syncToProjector(); };
 
-            // Alineación
+            document.getElementById('btn-format-bold').onclick = () => { 
+                projectionStyles.isBold = !projectionStyles.isBold; 
+                const btn = document.getElementById('btn-format-bold');
+                if (projectionStyles.isBold) {
+                    btn.className = "transition py-2 rounded-xl text-xs font-bold border border-blue-500 bg-blue-600/20 text-blue-400 flex items-center justify-center";
+                } else {
+                    btn.className = "transition py-2 rounded-xl text-xs font-bold border border-gray-800 text-gray-300 flex items-center justify-center";
+                }
+                syncToProjector(); 
+            };
+
+            document.getElementById('btn-format-italic').onclick = () => { 
+                projectionStyles.isItalic = !projectionStyles.isItalic; 
+                const btn = document.getElementById('btn-format-italic');
+                if (projectionStyles.isItalic) {
+                    btn.className = "transition py-2 rounded-xl text-xs border border-blue-500 bg-blue-600/20 text-blue-400 flex items-center justify-center";
+                } else {
+                    btn.className = "transition py-2 rounded-xl text-xs border border-gray-800 text-gray-300 flex items-center justify-center";
+                }
+                syncToProjector(); 
+            };
+
+            // CORRECCIÓN CLAVE: Botón de sombra funcional y con indicador visual activo/inactivo
+            document.getElementById('btn-format-shadow').onclick = () => { 
+                projectionStyles.hasShadow = !projectionStyles.hasShadow; 
+                const btn = document.getElementById('btn-format-shadow');
+                if (projectionStyles.hasShadow) {
+                    btn.className = "transition py-2 rounded-xl text-xs font-bold border border-blue-500 bg-blue-600/20 text-blue-400 flex items-center justify-center";
+                    showToast("Sombra de texto activada", "success");
+                } else {
+                    btn.className = "transition py-2 rounded-xl text-xs font-bold border border-gray-800 text-gray-300 flex items-center justify-center";
+                    showToast("Sombra de texto desactivada", "info");
+                }
+                syncToProjector(); 
+            };
+
             document.getElementById('btn-align-left').onclick = () => { projectionStyles.align = 'left'; syncToProjector(); };
             document.getElementById('btn-align-center').onclick = () => { projectionStyles.align = 'center'; syncToProjector(); };
             document.getElementById('btn-align-right').onclick = () => { projectionStyles.align = 'right'; syncToProjector(); };
 
-            // Selección Tipo de Fondo
             document.getElementById('btn-bg-color').onclick = () => updateBgTypeUI('color');
             document.getElementById('btn-bg-grad').onclick = () => updateBgTypeUI('gradient');
             document.getElementById('btn-bg-img').onclick = () => updateBgTypeUI('image');
@@ -1625,7 +1669,6 @@
                 };
             });
 
-            // Subir Imagen de Fondo propia
             document.getElementById('bg-image-uploader').onchange = (e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -1639,7 +1682,6 @@
                 }
             };
 
-            // Logo Institucional
             document.getElementById('logo-image-uploader').onchange = (e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -1667,24 +1709,20 @@
                 syncToProjector();
             };
 
-            // CÓDIGO RESTAURADO Y CORREGIDO
             document.getElementById('toggle-logo-corner').onchange = (e) => {
                 projectionStyles.showLogoCorner = e.target.checked;
                 syncToProjector();
             };
 
-            // Posicionamiento de logo en esquina
             document.getElementById('btn-logo-tl').onclick = () => { projectionStyles.logoPosition = 'top-left'; syncToProjector(); };
             document.getElementById('btn-logo-tr').onclick = () => { projectionStyles.logoPosition = 'top-right'; syncToProjector(); };
             document.getElementById('btn-logo-bl').onclick = () => { projectionStyles.logoPosition = 'bottom-left'; syncToProjector(); };
             document.getElementById('btn-logo-br').onclick = () => { projectionStyles.logoPosition = 'bottom-right'; syncToProjector(); };
 
-            // Pestañas
             document.getElementById('btn-tab-culto').onclick = () => switchTab('tab-culto');
             document.getElementById('btn-tab-video').onclick = () => switchTab('tab-video');
             document.getElementById('btn-tab-estilos').onclick = () => switchTab('tab-estilos');
 
-            // Renderizar Imágenes Predeterminadas (Faltaba poblar en HTML inicial)
             const bgContainer = document.getElementById('preset-hd-backgrounds');
             if (bgContainer) {
                 PRESET_HD_IMAGES.forEach(img => {
@@ -1701,7 +1739,7 @@
                     bgContainer.appendChild(btn);
                 });
             }
-        } // Fin de setupEventListeners
+        }
 
         function switchTab(tabId) {
             ['tab-culto', 'tab-video', 'tab-estilos'].forEach(id => document.getElementById(id).classList.add('hidden'));
@@ -1724,42 +1762,40 @@
             document.getElementById('palette-image-container').classList.add('hidden');
             document.getElementById('overlay-opacity-container').classList.add('hidden');
             
-            document.getElementById('btn-bg-color').classList.remove('text-blue-400', 'border-blue-500');
-            document.getElementById('btn-bg-grad').classList.remove('text-blue-400', 'border-blue-500');
-            document.getElementById('btn-bg-img').classList.remove('text-blue-400', 'border-blue-500');
-            
+            document.getElementById('btn-bg-color').className = "transition py-2 rounded-xl border border-gray-800 text-gray-300";
+            document.getElementById('btn-bg-grad').className = "transition py-2 rounded-xl border border-gray-800 text-gray-300";
+            document.getElementById('btn-bg-img').className = "transition py-2 rounded-xl border border-gray-800 text-gray-300";
+
             if (type === 'color') {
                 document.getElementById('palette-color-container').classList.remove('hidden');
-                document.getElementById('btn-bg-color').classList.add('text-blue-400', 'border-blue-500');
+                document.getElementById('btn-bg-color').className = "transition py-2 rounded-xl border border-blue-500 bg-blue-600/20 text-blue-400 font-bold";
             } else if (type === 'gradient') {
                 document.getElementById('palette-gradient-container').classList.remove('hidden');
-                document.getElementById('btn-bg-grad').classList.add('text-blue-400', 'border-blue-500');
+                document.getElementById('btn-bg-grad').className = "transition py-2 rounded-xl border border-blue-500 bg-blue-600/20 text-blue-400 font-bold";
             } else if (type === 'image') {
                 document.getElementById('palette-image-container').classList.remove('hidden');
                 document.getElementById('overlay-opacity-container').classList.remove('hidden');
-                document.getElementById('btn-bg-img').classList.add('text-blue-400', 'border-blue-500');
+                document.getElementById('btn-bg-img').className = "transition py-2 rounded-xl border border-blue-500 bg-blue-600/20 text-blue-400 font-bold";
             }
             syncToProjector();
         }
 
-        // CARGA INICIAL (Entry point)
         window.onload = () => {
-            // 1. Cargamos el estado memorizado primero
             loadOperatorState();
-            
-            // 2. Activamos listeners (eventos)
-            setupEventListeners();
-            
-            // 3. Renderizamos según la memoria cargada
             renderBooks();
             renderChapters();
             renderVerses();
             renderCultoList();
+            setupEventListeners();
             
-            // 4. Sincronizamos proyección
+            // Si ya hay un versículo guardado o por defecto, proyectarlo al iniciar
+            if (!currentText) {
+                currentText = bibleData["Salmos"]["23"][0];
+                currentCitation = "Salmos 23:1";
+                selectedVerseIdx = 0;
+            }
             syncToProjector();
         };
-
     </script>
 </body>
 </html>
