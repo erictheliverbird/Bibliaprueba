@@ -936,15 +936,24 @@
                 timestamp: Date.now()
             };
 
-            // Transmitir en canal local
-            broadcastChannel.postMessage(payload);
+            // Transmitir en canal local (BroadcastChannel)
+            try {
+                broadcastChannel.postMessage(payload);
+            } catch (e) {}
+
+            // Almacenar en localStorage para sincronización inter-ventana en caso de arrastre/separación
+            try {
+                localStorage.setItem('biblical_projector_data', JSON.stringify(payload));
+            } catch (e) {}
 
             // Actualizar vista previa del operador
             updateProjectorDOM(document, payload, false);
 
-            // Actualizar ventana externa si está abierta
+            // Actualizar ventana externa si mantiene referencia DOM directa
             if (externalWindow && !externalWindow.closed) {
-                updateProjectorDOM(externalWindow.document, payload);
+                try {
+                    updateProjectorDOM(externalWindow.document, payload);
+                } catch (e) {}
             }
 
             // Actualizar simulador modal local
@@ -1202,6 +1211,122 @@
                                 <div class="z-20 text-center w-full pb-10">
                                     <p id="proj-citation" class="text-white/90 tracking-widest font-black uppercase text-xl text-projection-shadow"></p>
                                 </div>
+
+                                <script>
+                                    // Receptor Autónomo para sincronización aunque la pestaña se arrastre fuera
+                                    const bc = new BroadcastChannel('biblical-projector-channel');
+                                    bc.onmessage = function(event) {
+                                        if (event.data) applyData(event.data);
+                                    };
+
+                                    window.addEventListener('storage', function(e) {
+                                        if (e.key === 'biblical_projector_data' && e.newValue) {
+                                            try {
+                                                applyData(JSON.parse(e.newValue));
+                                            } catch(err) {}
+                                        }
+                                    });
+
+                                    try {
+                                        const initialData = localStorage.getItem('biblical_projector_data');
+                                        if (initialData) applyData(JSON.parse(initialData));
+                                    } catch(err) {}
+
+                                    function applyData(data) {
+                                        const prefix = 'proj-';
+                                        const textEl = document.getElementById(prefix + 'text');
+                                        const citationEl = document.getElementById(prefix + 'citation');
+                                        const backdropEl = document.getElementById(prefix + 'backdrop');
+                                        const overlayEl = document.getElementById(prefix + 'overlay');
+                                        const videoEl = document.getElementById(prefix + 'video');
+                                        const logoStandbyEl = document.getElementById(prefix + 'logo-standby');
+                                        const logoCornerEl = document.getElementById(prefix + 'logo-corner');
+
+                                        if (!textEl) return;
+
+                                        if (data.isBlackout) {
+                                            if (backdropEl) backdropEl.style.background = '#000000';
+                                            if (textEl) textEl.innerText = '';
+                                            if (citationEl) citationEl.innerText = '';
+                                            if (logoStandbyEl) logoStandbyEl.classList.add('hidden');
+                                            if (logoCornerEl) logoCornerEl.classList.add('hidden');
+                                            if (videoEl) videoEl.classList.add('hidden');
+                                            return;
+                                        }
+
+                                        if (videoEl) {
+                                            if (data.mediaMode === 'video' && data.videoUrl) {
+                                                if (videoEl.src !== data.videoUrl) videoEl.src = data.videoUrl;
+                                                videoEl.classList.remove('hidden');
+                                                if (data.isVideoPlaying) videoEl.play().catch(function(){});
+                                                else videoEl.pause();
+                                            } else {
+                                                videoEl.classList.add('hidden');
+                                            }
+                                        }
+
+                                        if (textEl) {
+                                            textEl.innerText = data.text || '';
+                                            if (data.styles) {
+                                                textEl.style.fontFamily = data.styles.font || 'Inter';
+                                                textEl.style.fontSize = (data.styles.size || '4.5') + 'vw';
+                                                textEl.style.fontWeight = data.styles.isBold ? '800' : '400';
+                                                textEl.style.fontStyle = data.styles.isItalic ? 'italic' : 'normal';
+                                                textEl.style.textAlign = data.styles.align || 'center';
+                                                textEl.style.color = data.styles.textcolor || '#ffffff';
+                                            }
+                                        }
+
+                                        if (citationEl) {
+                                            citationEl.innerText = data.citation || '';
+                                            if (data.styles) {
+                                                citationEl.style.color = data.styles.textcolor || '#ffffff';
+                                                citationEl.style.textAlign = data.styles.align || 'center';
+                                            }
+                                        }
+
+                                        if (backdropEl && data.styles) {
+                                            if (data.styles.bgType === 'color') {
+                                                backdropEl.style.background = data.styles.bgcolor;
+                                                backdropEl.style.backgroundImage = 'none';
+                                            } else if (data.styles.bgType === 'gradient') {
+                                                backdropEl.style.background = data.styles.gradient;
+                                            } else if (data.styles.bgType === 'image') {
+                                                backdropEl.style.backgroundImage = 'url("' + data.styles.bgImage + '")';
+                                                backdropEl.style.backgroundSize = 'cover';
+                                                backdropEl.style.backgroundPosition = 'center';
+                                            }
+                                        }
+
+                                        if (overlayEl && data.styles) {
+                                            overlayEl.style.backgroundColor = 'rgba(0, 0, 0, ' + ((data.styles.bgOpacity || 40) / 100) + ')';
+                                        }
+
+                                        const hasText = (data.text || '').trim().length > 0;
+                                        if (logoStandbyEl && data.styles) {
+                                            if (!hasText && data.styles.logoUrl) {
+                                                logoStandbyEl.src = data.styles.logoUrl;
+                                                logoStandbyEl.classList.remove('hidden');
+                                            } else {
+                                                logoStandbyEl.classList.add('hidden');
+                                            }
+                                        }
+
+                                        if (logoCornerEl && data.styles) {
+                                            if (hasText && data.styles.logoUrl && data.styles.showLogoCorner) {
+                                                logoCornerEl.src = data.styles.logoUrl;
+                                                logoCornerEl.classList.remove('hidden');
+                                                logoCornerEl.className = "absolute max-w-[12%] max-h-[15%] object-contain z-20 transition-all ";
+                                                if (data.styles.logoPosition === 'top-left') logoCornerEl.classList.add('top-4', 'left-4');
+                                                else if (data.styles.logoPosition === 'top-right') logoCornerEl.classList.add('top-4', 'right-4');
+                                                else if (data.styles.logoPosition === 'bottom-left') logoCornerEl.classList.add('bottom-4', 'left-4');
+                                                else logoCornerEl.classList.add('bottom-4', 'right-4');
+                                            } else {
+                                                logoCornerEl.classList.add('hidden');
+                                            }
+                                        }
+                                    }
+                                <\/script>
                             <\/body>
                             </html>
                         `);
