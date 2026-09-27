@@ -1,26 +1,39 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proyector de la Biblia RVR1960 Profesional</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Proyector Bíblico Profesional & Captura Multimedia</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts para tipografías de proyección -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Merriweather:wght@300;400;700&family=Montserrat:wght@400;600;800&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(71, 85, 105, 0.6);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(100, 116, 139, 0.9);
+        }
+
         .fade-transition {
-            transition: all 0.5s ease-in-out;
+            transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        /* OPTIMIZACIÓN DE SCROLL PARA MÓVILES */
-        html, body {
-            height: 100%;
-            overflow: hidden;
-            /* Evita que el navegador rebote el scroll completo de la página */
-            overscroll-behavior-y: none;
-        }
+
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -28,1340 +41,1438 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        .text-projection-shadow {
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.95), 0 4px 24px rgba(0, 0, 0, 0.85);
+        }
+
+        .pulse-red {
+            animation: pulse-red-anim 1.8s infinite;
+        }
+        @keyframes pulse-red-anim {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
     </style>
 </head>
-<body class="bg-gray-950 text-gray-100 font-['Inter'] h-screen">
+<body class="bg-gray-950 text-gray-100 h-screen overflow-hidden flex flex-col font-['Inter'] antialiased select-none">
 
-    <!-- ================= VISTA DE CONSOLA (OPERADOR) ================= -->
-    <div id="operator-view-wrapper" class="h-full flex flex-col">
-        <!-- HEADER -->
-        <header class="bg-gray-900 border-b border-gray-800 px-6 py-4 flex flex-wrap justify-between items-center gap-4 shrink-0">
+    <!-- CONSOLA DE CONTROL PRINCIPAL -->
+    <div id="operator-interface" class="h-full flex flex-col min-h-0">
+        
+        <!-- CABECERA DE LA CONSOLA -->
+        <header class="bg-gray-900 border-b border-gray-800 h-16 px-4 md:px-6 flex items-center justify-between shrink-0 gap-3">
             <div class="flex items-center gap-3">
-                <div class="p-2 bg-amber-600 rounded-lg text-white">
-                    <i data-lucide="book-open" class="w-6 h-6"></i>
+                <div class="bg-blue-600 text-white p-2.5 rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/40 shrink-0">
+                    <i class="fa-solid fa-book-bible text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-xl tracking-wide text-amber-500">PROYECTA BÍBLICA RVR1960</h1>
-                    <p class="text-xs text-gray-400">Software Profesional de Proyección • Biblia Reina-Valera 1960</p>
+                    <h1 class="font-black text-base md:text-lg leading-none tracking-wide text-white flex items-center gap-2">
+                        PROYECTOR BÍBLICO
+                        <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-bold">PRO v3.0</span>
+                    </h1>
+                    <span class="text-[10px] text-gray-400 font-semibold tracking-wider uppercase hidden sm:inline-block">Consola de Control Multi-Pantalla & OBS Stream</span>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                <button id="btnOpenProjector" class="bg-amber-600 hover:bg-amber-500 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg transition-all text-sm animate-pulse">
-                    <i data-lucide="monitor" class="w-4 h-4"></i>
-                    Abrir Ventana de Proyector (Nueva Pestaña)
+
+            <!-- Panel de Sincronización de Sala -->
+            <div class="flex items-center gap-2 bg-gray-950 border border-gray-800 rounded-xl px-3 py-1.5 shadow-inner">
+                <div class="flex flex-col">
+                    <span class="text-[9px] uppercase tracking-wider text-gray-400 font-bold">Sala de Red</span>
+                    <div class="flex items-center gap-1.5">
+                        <span id="sync-indicator-dot" class="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" title="Sincronización Activa"></span>
+                        <input id="room-id-input" type="text" class="bg-transparent border-none text-blue-400 font-extrabold text-xs w-20 focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1 uppercase" value="GEN-777">
+                    </div>
+                </div>
+                <button id="btn-copy-link" class="bg-gray-900 hover:bg-gray-800 border border-gray-800 text-gray-300 p-2 rounded-lg transition hover:text-white" title="Copiar enlace directo para la pantalla remota">
+                    <i class="fa-solid fa-link text-xs"></i>
                 </button>
-                <button id="btnLocalFullscreen" class="bg-gray-800 hover:bg-gray-750 text-gray-200 border border-gray-700 font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition-all text-sm">
-                    <i data-lucide="maximize" class="w-4 h-4"></i>
-                    Pantalla Completa Aquí
+            </div>
+
+            <!-- Acciones Principales de Cabecera -->
+            <div class="flex items-center gap-2">
+                <!-- Botón de Captura Rápida estilo OBS -->
+                <button id="btn-quick-screen-share" class="bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg shadow-red-950/40">
+                    <i class="fa-solid fa-display text-xs"></i>
+                    <span class="hidden md:inline">Capturar Pantalla / Ventana</span>
+                </button>
+
+                <!-- Cargar Biblia JSON -->
+                <label class="bg-amber-600 hover:bg-amber-500 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer transition shadow-lg shadow-amber-950/40">
+                    <i class="fa-solid fa-file-import text-xs"></i>
+                    <span class="hidden lg:inline">Cargar Biblia JSON</span>
+                    <input type="file" id="json-bible-input" accept=".json" class="hidden">
+                </label>
+
+                <!-- Ventana Externa Proyector -->
+                <button id="btn-toggle-ext-projector" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg shadow-blue-950/40">
+                    <i class="fa-solid fa-desktop text-xs"></i>
+                    <span id="ext-win-text" class="hidden sm:inline">Proyectar (Ventana)</span>
+                </button>
+
+                <!-- Simulador de Pantalla Completa Local -->
+                <button id="btn-toggle-local-fs" class="bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-expand text-xs"></i>
+                    <span class="hidden md:inline">Simular Pantalla</span>
                 </button>
             </div>
         </header>
 
-        <!-- CONTENIDO PRINCIPAL -->
-        <main class="flex-1 flex flex-col lg:flex-row h-auto overflow-hidden">
-            
-            <!-- SELECTOR BÍBLICO (COLUMNA 1) -->
-            <section class="w-full lg:w-1/4 border-b lg:border-b-0 lg:border-r border-gray-800 p-4 flex flex-col gap-4 bg-gray-900/50 min-h-[400px]">
-                <h2 class="font-semibold text-gray-300 flex items-center gap-2 border-b border-gray-800 pb-2">
-                    <i data-lucide="library" class="w-4 h-4 text-amber-500"></i> Canon Bíblico (66 Libros)
-                </h2>
+        <!-- CUERPO PRINCIPAL (3 COLUMNAS RESPONSIVAS) -->
+        <main class="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden p-3 md:p-5 gap-3 md:gap-5">
 
-                <!-- Buscador Rápido -->
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">Buscar por Cita o Palabra (ej: Juan 3:16, amor)</label>
-                    <div class="relative flex gap-2">
-                        <input type="text" id="searchBar" placeholder="Libro Cap:Ver o palabra..." class="w-full bg-gray-850 border border-gray-700 rounded-lg py-2 pl-3 pr-10 text-sm focus:outline-none focus:border-amber-500 text-gray-100">
-                        <button id="btnSearch" class="bg-amber-600 hover:bg-amber-500 text-white px-3 rounded-lg text-sm">
-                            Buscar
-                        </button>
+            <!-- COLUMNA 1: BÚSQUEDA, LIBROS Y CAPÍTULOS -->
+            <section class="w-full lg:w-72 xl:w-80 h-64 lg:h-full flex flex-col bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-xl shrink-0">
+                <!-- Búsqueda de Libros -->
+                <div class="p-3 border-b border-gray-800 bg-gray-900/80">
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                        <input type="text" id="search-book" placeholder="Buscar libro..." class="w-full bg-gray-950 border border-gray-800 rounded-xl py-2 pl-8 pr-3 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500 transition">
                     </div>
                 </div>
 
-                <!-- Selectores Desplegables -->
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Libro</label>
-                        <select id="bookSelect" class="w-full bg-gray-850 border border-gray-700 rounded-lg p-2 text-sm text-black focus:outline-none focus:border-amber-500"></select>
-                    </div>
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Capítulo</label>
-                        <select id="chapterSelect" class="w-full bg-gray-850 border border-gray-700 rounded-lg p-2 text-sm text-black focus:outline-none focus:border-amber-500"></select>
-                    </div>
+                <!-- Lista de Libros -->
+                <div class="flex-1 min-h-0 overflow-y-auto p-3 space-y-1" id="books-container">
+                    <!-- Se renderiza mediante JS -->
                 </div>
 
-                <!-- Listado de Versículos -->
-                <div class="flex-1 flex flex-col min-h-0">
-                    <div class="flex justify-between items-center mb-2">
-                        <span id="versesTitle" class="text-xs font-semibold text-gray-400">Versículos cargados:</span>
-                        <span id="loadingIndicator" class="text-xs text-amber-500 hidden flex items-center gap-1">
-                            <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span> Cargando...
-                        </span>
-                    </div>
-                    <div id="versesList" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg p-2 overflow-y-auto space-y-1 touch-auto no-scrollbar" style="-webkit-overflow-scrolling: touch; min-height: 0;">
-                        <!-- Cargado de forma dinámica -->
-                    </div>
-                </div>
-
-                <!-- Creador de Versículo Manual -->
-                <div class="border-t border-gray-800 pt-4 mt-auto">
-                    <h3 class="text-xs font-semibold text-amber-500 uppercase tracking-wider mb-2">Pasaje al Instante (Offline / Manual)</h3>
-                    <div class="space-y-2">
-                        <input type="text" id="customReference" placeholder="Ej: Romanos 8:28" class="w-full bg-gray-850 border border-gray-700 rounded-lg p-2 text-xs focus:outline-none focus:border-amber-500 text-gray-200">
-                        <textarea id="customText" rows="2" placeholder="Escribe o pega el versículo aquí..." class="w-full bg-gray-850 border border-gray-700 rounded-lg p-2 text-xs focus:outline-none focus:border-amber-500 resize-none text-gray-200"></textarea>
-                        <button id="btnSendCustom" class="w-full bg-gray-800 hover:bg-gray-700 text-white text-xs font-medium py-2 rounded-lg transition-all flex justify-center items-center gap-1">
-                            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Lanzar a Proyección
-                        </button>
+                <!-- Selector de Capítulos -->
+                <div class="p-3 bg-gray-950 border-t border-gray-800 flex flex-col h-48 lg:h-56">
+                    <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2 flex items-center justify-between">
+                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-list-numeric text-blue-400"></i> Capítulos</span>
+                        <span id="selected-book-label" class="text-blue-400 text-xs font-bold">Génesis</span>
+                    </span>
+                    <div class="flex-1 min-h-0 overflow-y-auto grid grid-cols-5 gap-1.5 content-start pr-1" id="chapters-container">
+                        <!-- Se renderiza mediante JS -->
                     </div>
                 </div>
             </section>
 
-            <!-- COLUMNA CENTRAL: MONITOR Y PROGRAMA (COLUMNA 2) -->
-            <section class="w-full lg:w-1/2 p-4 flex flex-col gap-4 border-b lg:border-b-0 lg:border-r border-gray-800 min-h-[400px]">
-                <!-- Monitor Operador -->
-                <div>
-                    <h2 class="font-semibold text-gray-300 flex items-center justify-between border-b border-gray-800 pb-2 mb-3">
-                        <span class="flex items-center gap-2"><i data-lucide="eye" class="w-4 h-4 text-amber-500"></i> Monitor de Control</span>
-                        <span id="operatorStatus" class="text-xs px-2 py-0.5 rounded-full bg-red-950 text-red-400 border border-red-900 flex items-center gap-1">
-                            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Offline
-                        </span>
-                    </h2>
+            <!-- COLUMNA 2: LISTADO DE VERSÍCULOS -->
+            <section class="flex-1 h-72 lg:h-full flex flex-col bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-xl">
+                <div class="p-3 md:p-4 bg-gray-900 border-b border-gray-800 flex items-center justify-between shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-emerald-500/10 text-emerald-400 p-2 rounded-xl border border-emerald-500/20">
+                            <i class="fa-solid fa-quote-left text-sm"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-sm md:text-base text-white" id="current-title">Cargando pasaje...</h2>
+                            <span class="text-[11px] text-gray-400 hidden sm:inline">Haz clic en un versículo para proyectarlo en vivo inmediatamente</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button id="btn-prev-chapter" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="Capítulo Anterior">
+                            <i class="fa-solid fa-chevron-left"></i> Ant.
+                        </button>
+                        <button id="btn-next-chapter" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="Capítulo Siguiente">
+                            Sig. <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
 
-                    <!-- Preview de Salida -->
-                    <div class="bg-gray-950 rounded-xl border border-gray-800 overflow-hidden relative shadow-inner aspect-video flex flex-col justify-between p-6" id="previewContainer">
-                        <div id="previewBg" class="absolute inset-0 bg-gradient-to-br from-indigo-950 via-slate-900 to-black opacity-80 z-0"></div>
-                        <div id="previewBgImage" class="absolute inset-0 bg-cover bg-center z-0 filter brightness-50" style="background-image: url('https://images.unsplash.com/photo-1438032005730-c779502df39b?auto=format&fit=crop&w=1200&q=80');"></div>
+                <!-- Contenedor de Versículos -->
+                <div class="flex-1 min-h-0 overflow-y-auto p-4 space-y-2.5 bg-gray-950" id="verses-container">
+                    <!-- Se inyecta dinámicamente -->
+                </div>
+            </section>
+
+            <!-- COLUMNA 3: PREVIEW EN VIVO Y PESTAÑAS (LISTA DE CULTO / MULTIMEDIA / ESTILOS) -->
+            <section class="w-full lg:w-96 h-auto lg:h-full flex flex-col gap-4 shrink-0 overflow-hidden">
+                
+                <!-- PREVIEW EN VIVO -->
+                <div class="bg-gray-900 border border-gray-800 rounded-2xl p-3.5 shadow-xl shrink-0 flex flex-col">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                            <i class="fa-solid fa-eye text-emerald-400"></i> Previo Proyección en Vivo
+                        </span>
+                        <button id="btn-clear-projection" class="text-[11px] bg-red-950/70 text-red-400 border border-red-900/50 hover:bg-red-900/60 px-2.5 py-1 rounded-lg transition font-bold">
+                            <i class="fa-solid fa-ban mr-1"></i> Limpiar
+                        </button>
+                    </div>
+
+                    <!-- Cuadro de Vista Previa 16:9 -->
+                    <div id="projector-preview-container" class="w-full aspect-video rounded-xl relative overflow-hidden flex flex-col items-center justify-center p-3 border border-gray-800 shadow-inner bg-slate-950">
+                        <div id="preview-backdrop" class="absolute inset-0 z-0 bg-slate-950 bg-cover bg-center transition-all duration-300"></div>
                         
-                        <div class="z-10 flex flex-col justify-between h-full relative text-center">
-                            <div id="previewRefHeader" class="text-amber-400 text-xs font-semibold uppercase tracking-widest">---</div>
-                            <div id="previewText" class="text-gray-100 text-base md:text-xl font-medium px-4 my-auto italic">"Selecciona un versículo para comenzar a proyectar."</div>
-                            <div id="previewRefFooter" class="text-amber-400 text-xs font-semibold tracking-wider">---</div>
+                        <!-- Video Elements (Local & Screen Stream) -->
+                        <video id="preview-video" class="absolute inset-0 w-full h-full object-contain bg-black z-5 hidden" playsinline muted autoplay></video>
+                        <iframe id="preview-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-5 hidden" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+
+                        <div id="preview-overlay" class="absolute inset-0 bg-black/40 z-10 transition-all duration-300"></div>
+                        
+                        <!-- Standby Logo -->
+                        <img id="preview-logo-standby" class="absolute max-w-[35%] max-h-[50%] object-contain z-20 hidden transition-all" alt="Standby Logo Preview" />
+                        
+                        <!-- Corner Logo -->
+                        <img id="preview-logo-corner" class="absolute max-w-[12%] max-h-[18%] object-contain z-20 hidden transition-all" alt="Corner Logo Preview" />
+
+                        <!-- Texto en Vista Previa -->
+                        <div class="z-20 text-center w-full flex flex-col justify-between h-full pointer-events-none select-none">
+                            <p id="preview-text" class="text-white text-xs my-auto line-clamp-4 leading-relaxed transition-all text-projection-shadow"></p>
+                            <p id="preview-citation" class="text-[9px] text-gray-300 uppercase font-black tracking-widest mt-1 text-projection-shadow"></p>
                         </div>
                     </div>
 
-                    <!-- Botones Rápidos -->
-                    <div class="grid grid-cols-3 gap-2 mt-3">
-                        <button id="btnBlackout" class="bg-red-950/40 hover:bg-red-900/60 border border-red-900 text-red-300 font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all">
-                            <i data-lucide="eye-off" class="w-4 h-4"></i> PANTALLA NEGRA
+                    <!-- Botones de Acción Inmediata (Operador) -->
+                    <div class="grid grid-cols-2 gap-2 mt-3">
+                        <button id="btn-blackout" class="bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-eye-slash"></i>
+                            <span id="lbl-blackout">Apagar (B)</span>
                         </button>
-                        <button id="btnClearText" class="bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all">
-                            <i data-lucide="delete" class="w-4 h-4"></i> QUITAR TEXTO
-                        </button>
-                        <button id="btnRestore" class="bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-900 text-emerald-300 font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all">
-                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> RESTAURAR
+                        <button id="btn-cleartext" class="bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-eraser"></i>
+                            <span id="lbl-cleartext">Ocultar Texto (C)</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Lista de Proyección para el Servicio (Playlist) -->
-                <div class="flex-1 flex flex-col overflow-hidden">
-                    <div class="flex justify-between items-center border-b border-gray-800 pb-2 mb-2">
-                        <h2 class="font-semibold text-gray-300 flex items-center gap-2">
-                            <i data-lucide="list-video" class="w-4 h-4 text-amber-500"></i> Programa de Culto / Lista
-                        </h2>
-                        <button id="btnClearPlaylist" class="text-xs text-gray-400 hover:text-red-400 transition-all">Limpiar todo</button>
-                    </div>
-                    
-                    <div id="playlistContainer" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg p-3 overflow-y-auto space-y-2 no-scrollbar">
-                        <div id="playlistEmpty" class="text-gray-500 text-center py-8 text-xs flex flex-col items-center gap-2">
-                            <i data-lucide="plus-circle" class="w-8 h-8 opacity-40"></i>
-                            Añade versículos para el servicio.
-                        </div>
+                <!-- PESTAÑAS (LISTA DE CULTO / VIDEOS / CONFIGURACIÓN DE ESTILO) -->
+                <div class="flex-1 min-h-0 bg-gray-900 border border-gray-800 rounded-2xl flex flex-col overflow-hidden shadow-xl">
+                    <!-- Selector de Pestaña -->
+                    <div class="flex border-b border-gray-800 bg-gray-900/80 shrink-0 text-center">
+                        <button id="btn-tab-culto" class="flex-1 py-2.5 text-xs font-bold border-b-2 border-blue-500 text-blue-400 transition">
+                            <i class="fa-solid fa-list-check mr-1"></i>Culto
+                        </button>
+                        <button id="btn-tab-video" class="flex-1 py-2.5 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-white transition">
+                            <i class="fa-solid fa-video mr-1"></i>Multimedia
+                        </button>
+                        <button id="btn-tab-estilos" class="flex-1 py-2.5 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-white transition">
+                            <i class="fa-solid fa-sliders mr-1"></i>Diseño
+                        </button>
                     </div>
 
-                    <!-- Teclas de Navegación Rápida -->
-                    <div class="mt-2 flex gap-2 justify-between items-center text-xs text-gray-400 bg-gray-900 p-2 rounded-lg border border-gray-800">
-                        <span>Navegar: <kbd class="px-1.5 py-0.5 bg-gray-800 rounded">←</kbd> Anterior / <kbd class="px-1.5 py-0.5 bg-gray-800 rounded">→</kbd> Siguiente o <kbd class="px-1.5 py-0.5 bg-gray-800 rounded">Espacio</kbd></span>
-                        <div class="flex gap-1">
-                            <button id="btnPrevPlaylist" class="bg-gray-800 hover:bg-gray-700 p-1.5 rounded"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
-                            <button id="btnNextPlaylist" class="bg-gray-800 hover:bg-gray-700 p-1.5 rounded"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                    <!-- CONTENIDO DE PESTAÑAS -->
+                    <div class="flex-1 min-h-0 overflow-y-auto p-4 bg-gray-950">
+                        
+                        <!-- TAB 1: LISTA DE CULTO (ORDEN DE SERVICIO) -->
+                        <div id="tab-culto" class="space-y-3 h-full flex flex-col min-h-0">
+                            <div class="flex items-center justify-between text-xs text-gray-400 shrink-0">
+                                <span>Pasajes y elementos agregados:</span>
+                                <button id="btn-clear-culto-list" class="text-gray-500 hover:text-red-400 transition font-semibold text-[11px]" title="Limpiar lista entera">
+                                    <i class="fa-solid fa-trash-can mr-1"></i> Limpiar todo
+                                </button>
+                            </div>
+
+                            <!-- Agregar texto o canto libre -->
+                            <div class="space-y-1.5 shrink-0 bg-gray-900 p-2.5 rounded-xl border border-gray-800">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Agregar Canto o Nota a la Lista</span>
+                                <div class="flex gap-1.5">
+                                    <input type="text" id="custom-culto-text" placeholder="Ej: Estrofa 1: Cuán grande es Él..." class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500">
+                                    <button id="btn-add-custom-culto" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Contenedor scrollable -->
+                            <div id="culto-list-items" class="flex-1 min-h-0 overflow-y-auto space-y-2 pr-1">
+                                <!-- Se inyecta dinámicamente -->
+                            </div>
+                        </div>
+
+                        <!-- TAB 2: VIDEOS Y MULTIMEDIA -->
+                        <div id="tab-video" class="hidden space-y-4">
+                            
+                            <!-- Opción 1: Captura de Pantalla estilo OBS -->
+                            <div class="bg-gradient-to-br from-blue-950/60 to-purple-950/60 border border-blue-500/30 p-3.5 rounded-xl space-y-2.5">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-extrabold text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
+                                        <i class="fa-solid fa-circle-dot text-red-500 animate-pulse"></i> Captura de Pantalla / Ventana (OBS Mode)
+                                    </span>
+                                    <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold">100% Solución YouTube</span>
+                                </div>
+                                <p class="text-[11px] text-gray-300 leading-snug">
+                                    Si YouTube no permite reproducciones incrustadas, abre el video en otra pestaña o ventana y transmítelo en vivo seleccionándolo aquí:
+                                </p>
+                                <div class="flex gap-2">
+                                    <button id="btn-start-screen-capture" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-blue-900/40">
+                                        <i class="fa-solid fa-desktop"></i>
+                                        <span>Transmitir Pestaña / Ventana</span>
+                                    </button>
+                                    <button id="btn-stop-screen-capture" class="bg-red-950 hover:bg-red-900 border border-red-800 text-red-300 py-2 px-3 rounded-xl text-xs font-bold transition hidden">
+                                        <i class="fa-solid fa-square"></i> Detener
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Opción 2: Archivo de Video Local -->
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Subir Archivo de Video Local</label>
+                                <label class="w-full bg-gray-900 hover:bg-gray-850 border border-dashed border-gray-700 p-3 rounded-xl flex flex-col items-center justify-center cursor-pointer transition">
+                                    <i class="fa-solid fa-file-video text-emerald-400 text-xl mb-1"></i>
+                                    <span class="text-xs font-bold text-gray-200">Seleccionar video de la PC</span>
+                                    <span class="text-[10px] text-gray-500">MP4, WEBM, MOV, MKV</span>
+                                    <input type="file" id="video-file-input" accept="video/*" class="hidden">
+                                </label>
+                            </div>
+
+                            <!-- Opción 3: Link de YouTube Directo -->
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Enlace directo de YouTube</label>
+                                <div class="flex gap-1.5">
+                                    <input type="text" id="video-url-input" placeholder="Ej: https://www.youtube.com/watch?v=..." class="flex-1 bg-gray-900 border border-gray-800 rounded-xl px-2.5 py-2 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500">
+                                    <button id="btn-load-youtube" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center">
+                                        <i class="fa-solid fa-play mr-1"></i> Cargar
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Consola de Control de Reproducción de Video -->
+                            <div id="video-control-panel" class="bg-gray-900/90 border border-gray-800 rounded-xl p-3 space-y-3 hidden">
+                                <div class="flex items-center justify-between border-b border-gray-800/80 pb-2">
+                                    <div class="flex items-center gap-2 overflow-hidden">
+                                        <i class="fa-solid fa-circle-play text-emerald-400 text-sm"></i>
+                                        <span id="video-title-lbl" class="text-xs font-bold text-blue-400 truncate max-w-[170px]">Video activo</span>
+                                    </div>
+                                    <button id="btn-stop-video" class="text-[10px] bg-red-950/80 text-red-400 hover:bg-red-900 px-2 py-1 rounded-lg border border-red-900/50 font-bold transition">
+                                        <i class="fa-solid fa-square mr-1"></i> Detener
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 3: ESTILOS Y PERSONALIZACIÓN -->
+                        <div id="tab-estilos" class="hidden space-y-4">
+                            
+                            <!-- Fuente Tipográfica -->
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Fuente Tipográfica</label>
+                                <select id="style-font" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-blue-500 font-medium">
+                                    <option value="Inter">Inter (Moderna y Limpia)</option>
+                                    <option value="Montserrat">Montserrat (Geométrica)</option>
+                                    <option value="Cinzel">Cinzel (Clásica y Solemne)</option>
+                                    <option value="Playfair Display">Playfair Display (Elegante Serif)</option>
+                                    <option value="Roboto Slab">Roboto Slab (Robusta)</option>
+                                    <option value="Lora">Lora (Literaria Serif)</option>
+                                    <option value="Merriweather">Merriweather (Lectura Clara)</option>
+                                    <option value="Oswald">Oswald (Imponente Titular)</option>
+                                    <option value="EB Garamond">EB Garamond (Tradicional)</option>
+                                </select>
+                            </div>
+
+                            <!-- Formato de Texto -->
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Formato de Texto</label>
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    <button id="btn-format-bold" class="transition py-2 rounded-xl text-xs font-bold border border-gray-800 flex items-center justify-center">
+                                        <i class="fa-solid fa-bold mr-1"></i> Negrita
+                                    </button>
+                                    <button id="btn-format-italic" class="transition py-2 rounded-xl text-xs border border-gray-800 flex items-center justify-center">
+                                        <i class="fa-solid fa-italic mr-1"></i> Cursiva
+                                    </button>
+                                    <button id="btn-format-shadow" class="transition py-2 rounded-xl text-xs border border-gray-800 flex items-center justify-center">
+                                        <i class="fa-solid fa-circle-half-stroke mr-1"></i> Sombra
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Alineación -->
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Alineación del Texto</label>
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    <button id="btn-align-left" class="transition py-2 rounded-xl border border-gray-800 text-xs"><i class="fa-solid fa-align-left"></i> Izq</button>
+                                    <button id="btn-align-center" class="transition py-2 rounded-xl border border-gray-800 text-xs"><i class="fa-solid fa-align-center"></i> Centro</button>
+                                    <button id="btn-align-right" class="transition py-2 rounded-xl border border-gray-800 text-xs"><i class="fa-solid fa-align-right"></i> Der</button>
+                                </div>
+                            </div>
+
+                            <!-- Tamaño de Letra Proyector -->
+                            <div class="space-y-1.5">
+                                <div class="flex justify-between items-center">
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Tamaño del Texto (Pantalla)</label>
+                                    <span id="val-font-size" class="text-xs font-extrabold text-blue-400">4.5vw</span>
+                                </div>
+                                <input type="range" id="style-size" min="2" max="8" step="0.1" value="4.5" class="w-full accent-blue-500">
+                            </div>
+
+                            <!-- Tipo de Fondo -->
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Estilo del Fondo</label>
+                                <div class="grid grid-cols-3 gap-1.5 text-xs font-semibold" id="bg-type-selection-container">
+                                    <button id="btn-bg-color" class="transition py-2 rounded-xl border border-gray-800 text-gray-300">Sólido</button>
+                                    <button id="btn-bg-grad" class="transition py-2 rounded-xl border border-gray-800 text-gray-300">Degradado</button>
+                                    <button id="btn-bg-img" class="transition py-2 rounded-xl border border-gray-800 text-gray-300">Imagen</button>
+                                </div>
+                            </div>
+
+                            <!-- Color Sólido -->
+                            <div id="palette-color-container" class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Color de Fondo</label>
+                                <div class="flex gap-2">
+                                    <input type="color" id="style-bgcolor" value="#0f172a" class="bg-transparent border-0 rounded cursor-pointer w-10 h-9">
+                                    <div class="grid grid-cols-6 gap-1 flex-1">
+                                        <button class="w-full h-9 rounded-lg border border-white/10" style="background-color: #0f172a" data-color="#0f172a"></button>
+                                        <button class="w-full h-9 rounded-lg border border-white/10" style="background-color: #050505" data-color="#050505"></button>
+                                        <button class="w-full h-9 rounded-lg border border-white/10" style="background-color: #1e1b4b" data-color="#1e1b4b"></button>
+                                        <button class="w-full h-9 rounded-lg border border-white/10" style="background-color: #14532d" data-color="#14532d"></button>
+                                        <button class="w-full h-9 rounded-lg border border-white/10" style="background-color: #701a75" data-color="#701a75"></button>
+                                        <button class="w-full h-9 rounded-lg border border-white/10" style="background-color: #7c2d12" data-color="#7c2d12"></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Degradado -->
+                            <div id="palette-gradient-container" class="space-y-1.5 hidden">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Degradados Predefinidos</label>
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    <button class="btn-grad-preset h-9 rounded-lg border border-white/10" data-grad="linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)"></button>
+                                    <button class="btn-grad-preset h-9 rounded-lg border border-white/10" data-grad="linear-gradient(135deg, #0f172a 0%, #14532d 100%)" style="background: linear-gradient(135deg, #0f172a 0%, #14532d 100%)"></button>
+                                    <button class="btn-grad-preset h-9 rounded-lg border border-white/10" data-grad="linear-gradient(135deg, #180828 0%, #3b0764 100%)" style="background: linear-gradient(135deg, #180828 0%, #3b0764 100%)"></button>
+                                    <button class="btn-grad-preset h-9 rounded-lg border border-white/10" data-grad="linear-gradient(135deg, #020617 0%, #0f172a 100%)" style="background: linear-gradient(135deg, #020617 0%, #0f172a 100%)"></button>
+                                    <button class="btn-grad-preset h-9 rounded-lg border border-white/10" data-grad="linear-gradient(135deg, #1e1b4b 0%, #311042 100%)" style="background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%)"></button>
+                                    <button class="btn-grad-preset h-9 rounded-lg border border-white/10" data-grad="linear-gradient(135deg, #450a0a 0%, #0f0505 100%)" style="background: linear-gradient(135deg, #450a0a 0%, #0f0505 100%)"></button>
+                                </div>
+                            </div>
+
+                            <!-- Imagen de Fondo -->
+                            <div id="palette-image-container" class="space-y-2.5 hidden">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Imagen de Fondo HD</label>
+                                
+                                <label class="w-full bg-gray-900 hover:bg-gray-850 border border-dashed border-gray-700 p-3 rounded-xl flex flex-col items-center justify-center cursor-pointer transition">
+                                    <i class="fa-solid fa-cloud-arrow-up text-blue-400 text-lg mb-1"></i>
+                                    <span class="text-xs font-bold text-gray-200">Subir imagen propia</span>
+                                    <span class="text-[10px] text-gray-500">JPG, PNG, WEBP</span>
+                                    <input type="file" id="bg-image-uploader" accept="image/*" class="hidden">
+                                </label>
+
+                                <div class="border-t border-gray-800 pt-2.5">
+                                    <span class="text-[10px] text-gray-400 font-bold block uppercase mb-1.5">
+                                        <i class="fa-solid fa-images text-blue-400 mr-1"></i> Fondos Cristianos HD
+                                    </span>
+                                    <div class="grid grid-cols-2 gap-1.5" id="preset-hd-backgrounds">
+                                        <!-- Se puebla por JS -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Filtro Oscuro para Fondo -->
+                            <div id="overlay-opacity-container" class="space-y-1.5 hidden">
+                                <div class="flex justify-between items-center">
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Filtro Oscuro de Imagen</label>
+                                    <span id="val-overlay-opacity" class="text-xs font-bold text-blue-400">40%</span>
+                                </div>
+                                <input type="range" id="style-overlay-opacity" min="0" max="90" step="5" value="40" class="w-full accent-blue-500">
+                            </div>
+
+                            <!-- Color de Texto -->
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Color del Texto Proyectado</label>
+                                <div class="flex gap-2">
+                                    <input type="color" id="style-textcolor" value="#ffffff" class="bg-transparent border-0 rounded cursor-pointer w-10 h-9">
+                                    <div class="grid grid-cols-6 gap-1 flex-1">
+                                        <button class="w-full h-9 rounded-lg border border-white/10" style="background-color: #ffffff" data-textcolor="#ffffff"></button>
+                                        <button class="w-full h-9 rounded-lg border border-white/10" style="background-color: #fef08a" data-textcolor="#fef08a"></button>
+                                        <button class="w-full h-9 rounded-lg border border-white/10" style="background-color: #fed7aa" data-textcolor="#fed7aa"></button>
+                                        <button class="w-full h-9 rounded-lg border border-white/10" style="background-color: #bfdbfe" data-textcolor="#bfdbfe"></button>
+                                        <button class="w-full h-9 rounded-lg border border-white/10" style="background-color: #bbf7d0" data-textcolor="#bbf7d0"></button>
+                                        <button class="w-full h-9 rounded-lg border border-white/10" style="background-color: #fbcfe8" data-textcolor="#fbcfe8"></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Gestión del Logo Institucional -->
+                            <div class="border-t border-gray-800 pt-3 space-y-2.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block flex items-center gap-1.5">
+                                    <i class="fa-solid fa-church text-amber-500"></i> Logo de la Iglesia
+                                </label>
+                                
+                                <div class="flex items-center gap-3 bg-gray-900/60 p-2.5 rounded-xl border border-gray-800">
+                                    <div id="logo-preview-thumbnail" class="w-10 h-10 rounded-lg bg-gray-950 border border-gray-800 flex items-center justify-center overflow-hidden shrink-0">
+                                        <i id="logo-placeholder-icon" class="fa-solid fa-image text-gray-600"></i>
+                                        <img id="logo-thumbnail-img" class="w-full h-full object-contain hidden" alt="Miniatura Logo" />
+                                    </div>
+                                    <div class="flex-1 min-w-0 flex items-center justify-between">
+                                        <label class="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition inline-flex items-center gap-1">
+                                            <i class="fa-solid fa-upload"></i> Subir Logo
+                                            <input type="file" id="logo-image-uploader" accept="image/*" class="hidden">
+                                        </label>
+                                        <button id="btn-remove-logo" class="text-[11px] text-red-400 hover:text-red-300 font-bold hidden">
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Opciones del Logo -->
+                                <div id="logo-options-box" class="space-y-2.5 hidden bg-gray-900/30 p-2.5 rounded-xl border border-gray-800">
+                                    <div class="flex items-center justify-between">
+                                        <label class="text-xs text-gray-300 font-medium">Mostrar en esquina al proyectar</label>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" id="toggle-logo-corner" class="sr-only peer" checked>
+                                            <div class="w-8 h-4.5 bg-gray-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-300 after:border-gray-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+
+                                    <div class="space-y-1">
+                                        <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">Ubicación de Esquina</label>
+                                        <div class="grid grid-cols-2 gap-1 text-[10px]">
+                                            <button id="btn-logo-tl" class="py-1 px-2 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition">Sup. Izquierda</button>
+                                            <button id="btn-logo-tr" class="py-1 px-2 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition">Sup. Derecha</button>
+                                            <button id="btn-logo-bl" class="py-1 px-2 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition">Inf. Izquierda</button>
+                                            <button id="btn-logo-br" class="py-1 px-2 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition">Inf. Derecha</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
             </section>
-
-            <!-- SECCIÓN DE CONFIGURACIONES (COLUMNA 3) -->
-            <section class="w-full lg:w-1/4 p-4 flex flex-col gap-4 bg-gray-900/50 min-h-[400px] overflow-y-auto no-scrollbar">
-                <h2 class="font-semibold text-gray-300 flex items-center gap-2 border-b border-gray-800 pb-2">
-                    <i data-lucide="palette" class="w-4 h-4 text-amber-500"></i> Estilos del Proyector
-                </h2>
-
-                <!-- Tipografía -->
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">Familia Tipográfica</label>
-                    <select id="fontFamilySelect" class="w-full bg-gray-850 border border-gray-700 rounded-lg p-2 text-sm text-black">
-                        <option value="'Lora', serif" selected>Lora (Elegante / Con Serif)</option>
-                        <option value="'Inter', sans-serif">Inter (Limpio / Moderno)</option>
-                        <option value="'Montserrat', sans-serif">Montserrat (Fuerte / Bold)</option>
-                        <option value="'Cinzel', serif">Cinzel (Clásico / Solemne)</option>
-                    </select>
-                </div>
-
-                <!-- Alineación y Referencia -->
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Alineación</label>
-                        <select id="alignmentSelect" class="w-full bg-gray-850 border border-gray-700 rounded-lg p-2 text-sm text-black">
-                            <option value="text-center" selected>Centrado</option>
-                            <option value="text-left">Izquierda</option>
-                            <option value="text-right">Derecha</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Mostrar Cita</label>
-                        <select id="refDisplaySelect" class="w-full bg-gray-850 border border-gray-700 rounded-lg p-2 text-sm text-black">
-                            <option value="header">Arriba</option>
-                            <option value="footer" selected>Abajo</option>
-                            <option value="both">Ambos</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Ajuste de Tamaños -->
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1" id="lblFontSize">Tamaño de Letra (Proyector): 6xl</label>
-                    <input type="range" id="fontSizeRange" min="2" max="8" step="0.5" value="4" class="w-full accent-amber-500 bg-gray-800 rounded-lg appearance-none h-2">
-                    <div class="flex justify-between text-[10px] text-gray-500 mt-1">
-                        <span>Pequeño</span>
-                        <span>Mediano</span>
-                        <span>Gigante</span>
-                    </div>
-                </div>
-
-                <!-- Fondos Prediseñados -->
-                <div>
-                    <label class="block text-xs text-gray-400 mb-2">Fondo del Proyector</label>
-                    
-                    <!-- Sólidos -->
-                    <span class="text-[10px] uppercase text-gray-500 block mb-1">Colores Sólidos</span>
-                    <div class="grid grid-cols-5 gap-1.5 mb-3">
-                        <button class="bg-black border border-gray-700 h-8 rounded-lg bg-option ring-4 ring-amber-500" data-type="solid" data-value="#000000" title="Negro"></button>
-                        <button class="bg-indigo-950 border border-gray-700 h-8 rounded-lg bg-option" data-type="solid" data-value="#0c0a09" title="Pizarra"></button>
-                        <button class="bg-red-950 border border-gray-700 h-8 rounded-lg bg-option" data-type="solid" data-value="#450a0a" title="Rojo Oscuro"></button>
-                        <button class="bg-blue-950 border border-gray-700 h-8 rounded-lg bg-option" data-type="solid" data-value="#172554" title="Azul Marino"></button>
-                        <button class="bg-teal-950 border border-gray-700 h-8 rounded-lg bg-option" data-type="solid" data-value="#042f2e" title="Teal"></button>
-                    </div>
-
-                    <!-- Degradados -->
-                    <span class="text-[10px] uppercase text-gray-500 block mb-1">Degradados Modernos</span>
-                    <div class="grid grid-cols-4 gap-1.5 mb-3">
-                        <button class="bg-gradient-to-br from-indigo-950 via-slate-900 to-black border border-gray-700 h-8 rounded-lg bg-option" data-type="gradient" data-value="linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #000000 100%)" title="Noche Estelar"></button>
-                        <button class="bg-gradient-to-br from-amber-950 via-stone-900 to-black border border-gray-700 h-8 rounded-lg bg-option" data-type="gradient" data-value="linear-gradient(135deg, #451a03 0%, #1c1917 50%, #000000 100%)" title="Cálido"></button>
-                        <button class="bg-gradient-to-br from-emerald-950 via-zinc-900 to-black border border-gray-700 h-8 rounded-lg bg-option" data-type="gradient" data-value="linear-gradient(135deg, #022c22 0%, #18181b 50%, #000000 100%)" title="Esperanza"></button>
-                        <button class="bg-gradient-to-br from-purple-950 via-neutral-900 to-black border border-gray-700 h-8 rounded-lg bg-option" data-type="gradient" data-value="linear-gradient(135deg, #3b0764 0%, #171717 50%, #000000 100%)" title="Realeza"></button>
-                    </div>
-
-                    <!-- Imágenes -->
-                    <span class="text-[10px] uppercase text-gray-500 block mb-1">Imágenes de Fondo</span>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button class="bg-cover bg-center h-12 rounded-lg border border-gray-700 relative overflow-hidden bg-option flex items-center justify-center" 
-                                data-type="image" 
-                                data-value="https://images.unsplash.com/photo-1438032005730-c779502df39b?auto=format&fit=crop&w=1920&q=80"
-                                style="background-image: url('https://images.unsplash.com/photo-1438032005730-c779502df39b?auto=format&fit=crop&w=150&q=50');">
-                            <span class="text-[10px] font-bold bg-black/60 px-1 py-0.5 rounded text-white z-10">Catedral</span>
-                        </button>
-                        <button class="bg-cover bg-center h-12 rounded-lg border border-gray-700 relative overflow-hidden bg-option flex items-center justify-center" 
-                                data-type="image" 
-                                data-value="https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?auto=format&fit=crop&w=1920&q=80"
-                                style="background-image: url('https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?auto=format&fit=crop&w=150&q=50');">
-                            <span class="text-[10px] font-bold bg-black/60 px-1 py-0.5 rounded text-white z-10">Cielo/Nubes</span>
-                        </button>
-                    </div>
-                    
-                    <!-- Nivel de Opacidad de la imagen -->
-                    <div class="mt-3">
-                        <label class="block text-[10px] text-gray-400 mb-1" id="lblOverlayOpacity">Filtro Oscuro de Imagen: 65%</label>
-                        <input type="range" id="opacityRange" min="0" max="100" step="5" value="65" class="w-full accent-amber-500 bg-gray-800 rounded-lg appearance-none h-1">
-                    </div>
-                </div>
-            </section>
-
         </main>
     </div>
 
-    <!-- ================= PROYECTOR INTEGRADO (MODAL LOCAL PANTALLA COMPLETA) ================= -->
-    <div id="localProjectorModal" class="fixed inset-0 bg-black z-50 hidden flex flex-col justify-between p-12 select-none">
-        <button id="btnCloseLocalProjector" class="absolute top-4 right-4 bg-black/60 hover:bg-black/95 text-white/50 hover:text-white border border-white/20 p-2 rounded-full transition-all z-50 opacity-0 hover:opacity-100">
-            <i data-lucide="x" class="w-6 h-6"></i>
+    <!-- SIMULADOR LOCAL EN PANTALLA COMPLETA MODAL -->
+    <div id="local-fullscreen-container" class="fixed inset-0 z-50 hidden flex flex-col justify-between p-12 transition-all duration-300 bg-slate-950">
+        <div id="local-fs-backdrop" class="absolute inset-0 z-0 bg-slate-950 bg-cover bg-center"></div>
+        
+        <video id="local-fs-video" class="absolute inset-0 w-full h-full object-contain bg-black z-5 hidden" playsinline autoplay></video>
+        <iframe id="local-fs-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-5 hidden" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+
+        <div id="local-fs-overlay" class="absolute inset-0 z-10 bg-black/40"></div>
+
+        <img id="local-fs-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-20 hidden" alt="Standby Logo Sim" />
+        <img id="local-fs-logo-corner" class="absolute max-w-[12%] max-h-[15%] object-contain z-20 hidden" alt="Corner Logo Sim" />
+
+        <button id="btn-close-local-fs" class="absolute top-6 right-6 z-30 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full transition border border-white/20 backdrop-blur" title="Salir (Esc)">
+            <i class="fa-solid fa-xmark text-xl"></i>
         </button>
 
-        <div id="localProjBg" class="absolute inset-0 z-0"></div>
-        <div id="localProjBgImage" class="absolute inset-0 bg-cover bg-center z-0 filter" style="display: none;"></div>
-        <div id="localProjOverlay" class="absolute inset-0 bg-black z-10"></div>
-
-        <div class="z-20 flex flex-col justify-between h-full relative text-center" id="localProjContent">
-            <div id="localProjRefHeader" class="text-amber-400 text-2xl font-semibold uppercase tracking-widest fade-transition"></div>
-            <div id="localProjText" class="text-gray-100 font-medium px-8 my-auto italic fade-transition"></div>
-            <div id="localProjRefFooter" class="text-amber-400 text-2xl font-semibold tracking-wider fade-transition"></div>
+        <div class="z-20 text-center w-full my-auto px-12 select-none">
+            <p id="local-fs-text" class="text-white leading-relaxed text-projection-shadow"></p>
+        </div>
+        <div class="z-20 text-center w-full select-none pb-6">
+            <p id="local-fs-citation" class="text-white/80 tracking-widest font-black uppercase text-lg text-projection-shadow"></p>
         </div>
     </div>
 
-    <!-- ================= PANTALLA DE PROYECCIÓN INDEPENDIENTE (URL LINK) ================= -->
-    <div id="projector-view-wrapper" class="hidden fixed inset-0 bg-black z-50 flex flex-col justify-between p-16 select-none w-screen h-screen">
-        <div id="projBg" class="absolute inset-0 z-0 transition-all duration-500"></div>
-        <div id="projBgImage" class="absolute inset-0 bg-cover bg-center z-0 filter transition-all duration-500" style="display: none;"></div>
-        <div id="projOverlay" class="absolute inset-0 z-10 transition-all duration-500"></div>
-
-        <div class="z-20 flex flex-col justify-between h-full relative text-center" id="projContent">
-            <div id="projRefHeader" class="text-amber-400 text-3xl font-semibold uppercase tracking-widest fade-transition"></div>
-            <div id="projText" class="text-gray-100 font-medium px-12 my-auto italic fade-transition"></div>
-            <div id="projRefFooter" class="text-amber-400 text-3xl font-semibold tracking-wider fade-transition"></div>
-        </div>
+    <!-- NOTIFICACIONES TOAST -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 bg-gray-900 border border-gray-800 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 transition-all duration-300 pointer-events-none">
+        <span id="toast-icon" class="p-1.5 bg-blue-500/20 rounded-lg text-blue-400">
+            <i class="fa-solid fa-info-circle"></i>
+        </span>
+        <span id="toast-message" class="text-xs font-bold text-gray-200">Notificación</span>
     </div>
 
-    <!-- MODAL DE ADVERTENCIA PARA POPUPS BLOQUEADOS -->
-    <div id="popupWarningModal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 hidden transition-all duration-300">
-        <div class="bg-gray-900 border border-amber-600/50 rounded-xl p-6 max-w-md w-full shadow-2xl">
-            <div class="flex items-center gap-3 text-amber-500 mb-4">
-                <i data-lucide="alert-triangle" class="w-8 h-8"></i>
-                <h3 class="text-lg font-bold text-gray-100">Ventana Emergente Bloqueada</h3>
-            </div>
-            <p class="text-sm text-gray-300 mb-4 leading-relaxed">
-                Tu navegador bloqueó la ventana del proyector externo. Esto es normal por motivos de seguridad en páginas interactivas.
-            </p>
-            <div class="bg-gray-950 p-3 rounded-lg text-xs text-gray-400 space-y-2 mb-6 border border-gray-800">
-                <p class="font-semibold text-gray-300 flex items-center gap-1">
-                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-amber-500"></i> ¿Cómo solucionarlo?
-                </p>
-                <ol class="list-decimal pl-5 space-y-1.5">
-                    <li>Mira la barra de direcciones de tu navegador arriba a la derecha.</li>
-                    <li>Busca el ícono de <strong>"Ventana/Pop-up bloqueado"</strong> <i data-lucide="external-link" class="inline w-3 h-3"></i>.</li>
-                    <li>Haz clic y selecciona <strong>"Permitir siempre"</strong> para este sitio.</li>
-                    <li>Vuelve a hacer clic en <strong>"Abrir Ventana de Proyector"</strong> o copia la URL para abrirla manualmente.</li>
-                </ol>
-            </div>
-            <div class="flex gap-2">
-                <button id="btnWarningUseLocal" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white font-medium py-2.5 rounded-lg text-xs transition-all flex items-center justify-center gap-1.5">
-                    <i data-lucide="maximize" class="w-3.5 h-3.5"></i> Usar Pantalla Completa Aquí
-                </button>
-                <button id="btnCloseWarning" class="bg-gray-800 hover:bg-gray-750 text-gray-300 px-4 py-2.5 rounded-lg text-xs font-medium transition-all">
-                    Cerrar
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- TOAST -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-gray-950 border border-amber-600 text-amber-400 text-xs py-2.5 px-4 rounded-lg shadow-2xl transition-all duration-300 transform translate-y-12 opacity-0 z-50 flex items-center gap-2">
-        <i data-lucide="info" class="w-4 h-4"></i>
-        <span id="toastText">Acción realizada</span>
-    </div>
-
-    <!-- LIBROS DE LA BIBLIA -->
     <script>
-        const BIBLE_BOOKS = [
-            // Antiguo Testamento
-            { name: "Génesis", chapters: 50 },
-            { name: "Éxodo", chapters: 40 },
-            { name: "Levítico", chapters: 27 },
-            { name: "Números", chapters: 36 },
-            { name: "Deuteronomio", chapters: 34 },
-            { name: "Josué", chapters: 24 },
-            { name: "Jueces", chapters: 21 },
-            { name: "Rut", chapters: 4 },
-            { name: "1 Samuel", chapters: 31 },
-            { name: "2 Samuel", chapters: 24 },
-            { name: "1 Reyes", chapters: 22 },
-            { name: "2 Reyes", chapters: 25 },
-            { name: "1 Crónicas", chapters: 29 },
-            { name: "2 Crónicas", chapters: 36 },
-            { name: "Esdras", chapters: 10 },
-            { name: "Nehemías", chapters: 13 },
-            { name: "Ester", chapters: 10 },
-            { name: "Job", chapters: 42 },
-            { name: "Salmos", chapters: 150 },
-            { name: "Proverbios", chapters: 31 },
-            { name: "Eclesiastés", chapters: 12 },
-            { name: "Cantares", chapters: 8 },
-            { name: "Isaías", chapters: 66 },
-            { name: "Jeremías", chapters: 52 },
-            { name: "Lamentaciones", chapters: 5 },
-            { name: "Ezequiel", chapters: 48 },
-            { name: "Daniel", chapters: 12 },
-            { name: "Oseas", chapters: 14 },
-            { name: "Joel", chapters: 3 },
-            { name: "Amós", chapters: 9 },
-            { name: "Abdías", chapters: 1 },
-            { name: "Jonás", chapters: 4 },
-            { name: "Miqueas", chapters: 7 },
-            { name: "Nahúm", chapters: 3 },
-            { name: "Habacuc", chapters: 3 },
-            { name: "Sofonías", chapters: 3 },
-            { name: "Hageo", chapters: 2 },
-            { name: "Zacarías", chapters: 14 },
-            { name: "Malaquías", chapters: 4 },
-            // Nuevo Testamento
-            { name: "Mateo", chapters: 28 },
-            { name: "Marcos", chapters: 16 },
-            { name: "Lucas", chapters: 24 },
-            { name: "Juan", chapters: 21 },
-            { name: "Hechos", chapters: 28 },
-            { name: "Romanos", chapters: 16 },
-            { name: "1 Corintios", chapters: 16 },
-            { name: "2 Corintios", chapters: 13 },
-            { name: "Gálatas", chapters: 6 },
-            { name: "Efesios", chapters: 6 },
-            { name: "Filipenses", chapters: 4 },
-            { name: "Colosenses", chapters: 4 },
-            { name: "1 Tesalonicenses", chapters: 5 },
-            { name: "2 Tesalonicenses", chapters: 3 },
-            { name: "1 Timoteo", chapters: 6 },
-            { name: "2 Timoteo", chapters: 4 },
-            { name: "Tito", chapters: 3 },
-            { name: "Filemón", chapters: 1 },
-            { name: "Hebreos", chapters: 13 },
-            { name: "Santiago", chapters: 5 },
-            { name: "1 Pedro", chapters: 5 },
-            { name: "2 Pedro", chapters: 3 },
-            { name: "1 Juan", chapters: 5 },
-            { name: "2 Juan", chapters: 1 },
-            { name: "3 Juan", chapters: 1 },
-            { name: "Judas", chapters: 1 },
-            { name: "Apocalipsis", chapters: 22 }
-        ];
-    </script>
-
-    <!-- MOTOR LÓGICO COMPLETO -->
-    <script>
-        // Inicializar Iconos
-        lucide.createIcons();
-
-        // Variable global para almacenar el JSON completo de la Biblia
-        let bibliaCompleta = null;
-        const RUTA_BIBLIA = "https://raw.githubusercontent.com/dscottpi/bibles/master/RVR1960-Spanish.json"; 
-
-        // Estado inicial de proyección
-        let currentSlide = {
-            book: "Salmos",
-            chapter: "23",
-            verse: "1",
-            text: "Jehová es mi pastor; nada me faltará.",
-            reference: "Salmos 23:1",
-            blackout: false,
-            clearText: false
+        // BASE DE DATOS BÍBLICA DE PRUEBA COMPLETA Y FUNCIONAL EN ESPAÑOL
+        let bibleData = {
+            "Génesis": {
+                "1": [
+                    "En el principio creó Dios los cielos y la tierra.",
+                    "Y la tierra estaba desordenada y vacía, y las tinieblas estaban sobre la faz del abismo, y el Espíritu de Dios se movía sobre la faz de las aguas.",
+                    "Y dijo Dios: Sea la luz; y fue la luz.",
+                    "Y vio Dios que la luz era buena; y separó Dios la luz de las tinieblas.",
+                    "Y llamó Dios a la luz Día, y a las tinieblas llamó Noche. Y fue la tarde y la mañana un día."
+                ],
+                "2": [
+                    "Fueron, pues, acabados los cielos y la tierra, y todo el ejército de ellos.",
+                    "Y acabó Dios en el día séptimo la obra que hizo; y reposó el día séptimo de toda la obra que hizo.",
+                    "Y bendijo Dios al día séptimo, y lo santificó, porque en él reposó de toda la obra que había hecho en la creación."
+                ]
+            },
+            "Éxodo": {
+                "20": [
+                    "Y habló Dios todas estas palabras, diciendo:",
+                    "Yo soy Jehová tu Dios, que te saqué de la tierra de Egipto, de casa de servidumbre.",
+                    "No tendrás dioses ajenos delante de mí.",
+                    "No te harás imagen, ni ninguna semejanza de lo que esté arriba en el cielo, ni abajo en la tierra, ni en las aguas debajo de la tierra.",
+                    "Honra a tu padre y a tu madre, para que tus días se alarguen en la tierra que Jehová tu Dios te da."
+                ]
+            },
+            "Salmos": {
+                "23": [
+                    "Jehová es mi pastor; nada me faltará.",
+                    "En lugares de delicados pastos me hará descansar; junto a aguas de reposo me pastoreará.",
+                    "Confortará mi alma; me guiará por sendas de justicia por amor de su nombre.",
+                    "Aunque ande en valle de sombra de muerte, no temeré mal alguno, porque tú estarás conmigo; tu vara y tu cayado me infundirán aliento.",
+                    "Aderezas mesa delante de mí en presencia de mis angustiadores; unges mi cabeza con aceite; mi copa está rebosando.",
+                    "Ciertamente el bien y la misericordia me seguirán todos los días de mi vida, y en la casa de Jehová moraré por largos días."
+                ],
+                "91": [
+                    "El que habita al abrigo del Altísimo morará bajo la sombra del Omnipotente.",
+                    "Diré yo a Jehová: Esperanza mía, y castillo mío; mi Dios, en quien confiaré.",
+                    "Él te librará del lazo del cazador, de la peste destructora.",
+                    "Con sus plumas te cubrirá, y debajo de sus alas estarás seguro; escudo y adarga es su verdad."
+                ],
+                "100": [
+                    "Cantad alegres a Dios, habitantes de toda la tierra.",
+                    "Servid a Jehová con alegría; venid ante su presencia con regocijo.",
+                    "Reconoced que Jehová es Dios; él nos hizo, y no nosotros a nosotros mismos; pueblo suyo somos, y ovejas de su prado."
+                ]
+            },
+            "Isaías": {
+                "40": [
+                    "Consolaos, consolaos, pueblo mío, dice vuestro Dios.",
+                    "Voz que clama en el desierto: Preparad camino a Jehová; enderezad calzada en la soledad para nuestro Dios.",
+                    "Toda carne es como hierba, y toda su gloria como flor del campo.",
+                    "El que da esfuerzo al cansado, y multiplica las fuerzas al que no tiene ningunas.",
+                    "Pero los que esperan a Jehová tendrán nuevas fuerzas; levantarán alas como las águilas; correrán, y no se cansarán; caminarán, y no se fatigarán."
+                ]
+            },
+            "Mateo": {
+                "5": [
+                    "Viendo la multitud, subió al monte; y sentándose, vinieron a él sus discípulos.",
+                    "Y abriendo su boca les enseñaba, diciendo:",
+                    "Bienaventurados los pobres en espíritu, porque de ellos es el reino de los cielos.",
+                    "Bienaventurados los que lloran, porque ellos recibirán consolación.",
+                    "Bienaventurados los mansos, porque ellos recibirán la tierra por heredad.",
+                    "Vosotros sois la luz del mundo; una ciudad asentada sobre un monte no se puede esconder."
+                ]
+            },
+            "Juan": {
+                "1": [
+                    "En el principio era el Verbo, y el Verbo era con Dios, y el Verbo era Dios.",
+                    "Este era en el principio con Dios.",
+                    "Todas las cosas por él fueron hechas, y sin él nada de lo que ha sido hecho, fue hecho.",
+                    "En él estaba la vida, y la vida era la luz de los hombres.",
+                    "La luz en las tinieblas resplandece, y las tinieblas no prevalecieron contra ella."
+                ],
+                "3": [
+                    "Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna.",
+                    "Porque no envió Dios a su Hijo al mundo para condenar al mundo, sino para que el mundo sea salvo por él."
+                ],
+                "14": [
+                    "No se turbe vuestro corazón; creéis en Dios, creed también en mí.",
+                    "En la casa de mi Padre muchas moradas hay; si así no fuera, yo os lo hubiera dicho; voy, pues, a preparar lugar para vosotros.",
+                    "Jesús le dijo: Yo soy el camino, y la verdad, y la vida; nadie viene al Padre, sino por mí."
+                ]
+            },
+            "Romanos": {
+                "8": [
+                    "Ahora, pues, ninguna condenación hay para los que están en Cristo Jesús, los que no andan conforme a la carne, sino conforme al Espíritu.",
+                    "Y sabemos que a los que aman a Dios, todas las cosas les ayudan a bien, esto es, a los que conforme a su propósito son llamados.",
+                    "¿Qué, pues, diremos a esto? Si Dios es por nosotros, ¿quién contra nosotros?"
+                ]
+            },
+            "1 Corintios": {
+                "13": [
+                    "Si yo hablase lenguas humanas y angélicas, y no tengo amor, vengo a ser como metal que resuena, o címbalo que retiñe.",
+                    "El amor es sufrido, es benigno; el amor no tiene envidia, el amor no es jactancioso, no se envanece;",
+                    "Y ahora permanecen la fe, la esperanza y el amor, estos tres; pero el mayor de ellos es el amor."
+                ]
+            },
+            "Filipenses": {
+                "4": [
+                    "Regocijaos en el Señor siempre. Otra vez digo: ¡Regocijaos!",
+                    "Por nada estéis afanosos, sino sean conocidas vuestras peticiones delante de Dios en toda oración y ruego, con acción de gracias.",
+                    "Todo lo puedo en Cristo que me fortalece."
+                ]
+            },
+            "Apocalipsis": {
+                "21": [
+                    "Vi un cielo nuevo y una tierra nueva; porque el primer cielo y la primera tierra pasaron, y el mar ya no existía más.",
+                    "Enjugará Dios toda lágrima de los ojos de ellos; y ya no habrá muerte, ni habrá más llanto, ni clamor, ni dolor; porque las primeras cosas pasaron."
+                ]
+            }
         };
 
-        let projectionStyle = {
-            fontFamily: "'Lora', serif",
-            fontSize: "6xl", 
-            alignment: "text-center",
-            refDisplay: "footer",
-            bgType: "gradient",
-            bgValue: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #000000 100%)",
-            opacity: "65"
-        };
-
-        let playlist = [
-            { id: 1, reference: "Salmos 23:1", text: "Jehová es mi pastor; nada me faltará.", book: "Salmos", chapter: "23", verse: "1" },
-            { id: 2, reference: "Salmos 23:2", text: "En lugares de delicados pastos me hará descansar; junto a aguas de reposo me pastoreará.", book: "Salmos", chapter: "23", verse: "2" },
-            { id: 3, reference: "Juan 3:16", text: "Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna.", book: "Juan", chapter: "3", verse: "16" }
+        // FONDOS HD PREDEFINIDOS
+        const PRESET_HD_IMAGES = [
+            { title: "Montañas Soleadas", url: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80" },
+            { title: "Cielo Nubes Soft", url: "https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?auto=format&fit=crop&w=1920&q=80" },
+            { title: "Noche Estrellada", url: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=1920&q=80" },
+            { title: "Bosque Místico", url: "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920&q=80" }
         ];
 
-        let activePlaylistId = null;
+        // ESTADO GLOBAL DE LA APLICACIÓN
+        let selectedBook = "Salmos";
+        let selectedChapter = "23";
+        let selectedVerseIdx = null;
+
+        let currentText = "";
+        let currentCitation = "";
+        let isBlackout = false;
+        let isClearText = false;
+
+        let projectionStyles = {
+            font: 'Inter',
+            size: '4.5',
+            isBold: true,
+            isItalic: false,
+            hasShadow: true,
+            align: 'center',
+            bgType: 'color', // 'color', 'gradient', 'image'
+            bgcolor: '#0f172a',
+            gradient: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
+            bgImage: '',
+            bgOpacity: '40',
+            textcolor: '#ffffff',
+            logoUrl: '',
+            showLogoCorner: true,
+            logoPosition: 'top-left'
+        };
+
+        let mediaMode = 'none'; // 'none', 'video', 'youtube', 'screen'
+        let activeVideoUrl = '';
+        let isVideoPlaying = false;
+        let isVideoMuted = false;
+        let isVideoLooping = false;
+
+        let cultoList = [];
+        let roomId = "GEN-777";
         let externalWindow = null;
-        const channel = new BroadcastChannel('bible_projector_channel');
+        let broadcastChannel = new BroadcastChannel('biblical-projector-channel');
+        let screenStream = null;
 
-        // Capturar elementos de la consola
-        const bookSelect = document.getElementById('bookSelect');
-        const chapterSelect = document.getElementById('chapterSelect');
-        const versesList = document.getElementById('versesList');
-        const searchBar = document.getElementById('searchBar');
-        const btnSearch = document.getElementById('btnSearch');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const versesTitle = document.getElementById('versesTitle');
+        // Muestra notificación tostada
+        function showToast(msg, type = "info") {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            const message = document.getElementById('toast-message');
 
-        const previewContainer = document.getElementById('previewContainer');
-        const previewBg = document.getElementById('previewBg');
-        const previewBgImage = document.getElementById('previewBgImage');
-        const previewRefHeader = document.getElementById('previewRefHeader');
-        const previewRefFooter = document.getElementById('previewRefFooter');
-        const previewText = document.getElementById('previewText');
-
-        const playlistContainer = document.getElementById('playlistContainer');
-        const btnClearPlaylist = document.getElementById('btnClearPlaylist');
-        const btnPrevPlaylist = document.getElementById('btnPrevPlaylist');
-        const btnNextPlaylist = document.getElementById('btnNextPlaylist');
-
-        const btnBlackout = document.getElementById('btnBlackout');
-        const btnClearText = document.getElementById('btnClearText');
-        const btnRestore = document.getElementById('btnRestore');
-
-        const fontFamilySelect = document.getElementById('fontFamilySelect');
-        const alignmentSelect = document.getElementById('alignmentSelect');
-        const refDisplaySelect = document.getElementById('refDisplaySelect');
-        const fontSizeRange = document.getElementById('fontSizeRange');
-        const opacityRange = document.getElementById('opacityRange');
-        const lblFontSize = document.getElementById('lblFontSize');
-        const lblOverlayOpacity = document.getElementById('lblOverlayOpacity');
-
-        const localProjectorModal = document.getElementById('localProjectorModal');
-        const btnLocalFullscreen = document.getElementById('btnLocalFullscreen');
-        const btnCloseLocalProjector = document.getElementById('btnCloseLocalProjector');
-        const popupWarningModal = document.getElementById('popupWarningModal');
-        const btnCloseWarning = document.getElementById('btnCloseWarning');
-        const btnWarningUseLocal = document.getElementById('btnWarningUseLocal');
-        const btnOpenProjector = document.getElementById('btnOpenProjector');
-        const operatorStatus = document.getElementById('operatorStatus');
-
-        // --- CARGA DE LA BASE DE DATOS DE LA BIBLIA ---
-        async function loadBibleData() {
-            if (bibliaCompleta) return; 
-
-            loadingIndicator.classList.remove('hidden');
-            versesTitle.innerText = "Cargando Biblia Reina-Valera 1960...";
-
-            try {
-                const response = await fetch(RUTA_BIBLIA);
-                if (!response.ok) throw new Error("No se pudo descargar la Biblia");
-                bibliaCompleta = await response.json();
-                showToast("Biblia cargada correctamente de forma local");
-            } catch (error) {
-                console.error("Error al cargar Biblia:", error);
-                showOfflineMessage();
-            } finally {
-                loadingIndicator.classList.add('hidden');
-                versesTitle.innerText = "Versículos cargados:";
+            message.innerText = msg;
+            if (type === "success") {
+                icon.className = "p-1.5 bg-emerald-500/20 rounded-lg text-emerald-400";
+                icon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+            } else if (type === "error") {
+                icon.className = "p-1.5 bg-red-500/20 rounded-lg text-red-400";
+                icon.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>';
+            } else {
+                icon.className = "p-1.5 bg-blue-500/20 rounded-lg text-blue-400";
+                icon.innerHTML = '<i class="fa-solid fa-info-circle"></i>';
             }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
         }
 
-        // --- FETCH DE DATOS DESDE LA API O LOCAL ---
-        async function fetchChapterVerses(spanishBook, chapter, targetVerse = null, autoProject = true) {
-            loadingIndicator.classList.remove('hidden');
-            versesTitle.innerText = `Buscando ${spanishBook} ${chapter}...`;
-            versesList.innerHTML = "";
+        // Renderiza lista de libros
+        function renderBooks() {
+            const container = document.getElementById('books-container');
+            const filter = document.getElementById('search-book').value.toLowerCase().trim();
+            container.innerHTML = '';
 
-            // Prioridad: Datos del JSON completo si está cargado
-            if (bibliaCompleta) {
-                const libro = bibliaCompleta[spanishBook];
-                if (libro && libro[chapter]) {
-                    const versosObj = libro[chapter];
-                    const verses = Object.keys(versosObj).map(num => ({
-                        verse: parseInt(num),
-                        text: versosObj[num]
-                    })).sort((a, b) => a.verse - b.verse);
+            const books = Object.keys(bibleData);
+            books.forEach(book => {
+                if (filter && !book.toLowerCase().includes(filter)) return;
 
-                    renderVerses(spanishBook, chapter, verses, targetVerse, autoProject);
-                    loadingIndicator.classList.add('hidden');
-                    versesTitle.innerText = `Versículos de ${spanishBook} ${chapter}:`;
-                    return;
-                }
-            }
-
-            // Fallback: API de consulta externa si falla la descarga
-            const bookIndex = BIBLE_BOOKS.findIndex(b => b.name === spanishBook);
-            const bookId = bookIndex + 1;
-            const apiEndpoint = `https://bolls.life/get-text/RVR1960/${bookId}/${chapter}/`;
-
-            try {
-                const response = await fetch(apiEndpoint);
-                if (!response.ok) throw new Error("Error en consulta de red");
-                const verses = await response.json();
-                renderVerses(spanishBook, chapter, verses, targetVerse, autoProject);
-            } catch (error) {
-                console.error("Fallo de API", error);
-                showOfflineMessage();
-            } finally {
-                loadingIndicator.classList.add('hidden');
-                versesTitle.innerText = `Versículos de ${spanishBook} ${chapter}:`;
-            }
-        }
-
-        function renderVerses(book, chapter, versesArray, targetVerse = null, autoProject = true) {
-            versesList.innerHTML = "";
-            versesArray.forEach(v => {
-                const cleanText = v.text.replace(/<[^>]*>/g, '').replace(/\n/g, ' ').trim();
-                const item = document.createElement('div');
-                
-                const isTarget = targetVerse && parseInt(v.verse) === targetVerse;
-                
-                item.className = `p-2 hover:bg-gray-800 rounded-lg cursor-pointer transition-all border ${
-                    isTarget ? 'border-amber-500 bg-amber-950/45' : 'border-transparent hover:border-gray-700'
-                } flex flex-col gap-1 text-xs`;
-                
-                item.innerHTML = `
-                    <div class="flex justify-between items-center text-amber-500 font-semibold">
-                        <span>Versículo ${v.verse}</span>
-                        <button class="add-to-playlist text-gray-500 hover:text-amber-400 p-0.5" title="Añadir a lista">
-                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                        </button>
-                    </div>
-                    <p class="text-gray-300 leading-relaxed">${cleanText}</p>
+                const btn = document.createElement('button');
+                const isSelected = book === selectedBook;
+                btn.className = `w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-between ${
+                    isSelected 
+                        ? 'bg-blue-600 text-white shadow-md shadow-blue-900/30' 
+                        : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                }`;
+                btn.innerHTML = `
+                    <span>${book}</span>
+                    <i class="fa-solid fa-chevron-right text-[10px] opacity-60"></i>
                 `;
-
-                // Lanzar a proyección al hacer clic
-                item.addEventListener('click', (e) => {
-                    if (e.target.closest('.add-to-playlist')) return;
-                    projectVerse(book, chapter, v.verse, cleanText);
-                });
-
-                // Añadir a lista de reproducción
-                item.querySelector('.add-to-playlist').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    addToPlaylist(book, chapter, v.verse, cleanText);
-                });
-
-                versesList.appendChild(item);
-                
-                if (isTarget) {
-                    setTimeout(() => {
-                        item.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        if (autoProject) {
-                            projectVerse(book, chapter, v.verse, cleanText);
-                        }
-                    }, 200);
-                }
+                btn.onclick = () => {
+                    selectedBook = book;
+                    const chapters = Object.keys(bibleData[book] || {});
+                    selectedChapter = chapters[0] || "1";
+                    selectedVerseIdx = null;
+                    renderBooks();
+                    renderChapters();
+                    renderVerses();
+                };
+                container.appendChild(btn);
             });
-            lucide.createIcons();
         }
 
-        function showOfflineMessage() {
-            versesList.innerHTML = `
-                <div class="p-4 text-center">
-                    <p class="text-xs text-amber-500 font-semibold">Modo de Emergencia / Sin Conexión</p>
-                    <p class="text-[11px] text-gray-400 mt-1">No se pudo cargar la Biblia desde el servidor. Puedes escribir cualquier pasaje a mano utilizando el formulario de "Pasaje al Instante" de abajo.</p>
-                </div>
-            `;
-        }
+        // Renderiza selector de capítulos
+        function renderChapters() {
+            const container = document.getElementById('chapters-container');
+            document.getElementById('selected-book-label').innerText = selectedBook;
+            container.innerHTML = '';
 
-        // --- SISTEMA DE BÚSQUEDA INTELIGENTE ---
-        async function performSearch() {
-            const query = searchBar.value.trim();
-            if (!query) return;
-
-            loadingIndicator.classList.remove('hidden');
-            versesTitle.innerText = "Buscando...";
-
-            const match = query.match(/^([123]?\s*[A-Za-záéíóúÁÉÍÓÚñÑ]+)\s*(\d+)?(?:\s*:\s*(\d+))?$/);
-            
-            if (match) {
-                const searchBook = match[1].trim();
-                const matchedBook = BIBLE_BOOKS.find(b => b.name.toLowerCase().startsWith(searchBook.toLowerCase()));
-                
-                if (matchedBook) {
-                    const chapter = parseInt(match[2] || "1");
-                    const targetVerse = match[3] ? parseInt(match[3]) : null;
-                    bookSelect.value = matchedBook.name;
-                    loadChapters(matchedBook.name, chapter, targetVerse);
-                    return;
-                }
-            }
-
-            // Búsqueda de palabra clave externa (Bolls API)
-            const apiSearchEndpoint = `https://bolls.life/v2/find/RVR1960?search=${encodeURIComponent(query)}&match_case=false`;
-            try {
-                const response = await fetch(apiSearchEndpoint);
-                if (!response.ok) throw new Error();
-                const data = await response.json();
-
-                if (data.results && data.results.length > 0) {
-                    renderSearchResults(data.results);
-                } else {
-                    versesList.innerHTML = `<p class="text-xs text-gray-400 italic text-center py-4">Sin resultados de pasajes con la palabra "${query}".</p>`;
-                }
-            } catch (e) {
-                showOfflineMessage();
-            } finally {
-                loadingIndicator.classList.add('hidden');
-                versesTitle.innerText = `Resultados de: "${query}"`;
-            }
-        }
-
-        function renderSearchResults(results) {
-            versesList.innerHTML = "";
-            results.forEach(v => {
-                const spanishBook = BIBLE_BOOKS[v.book - 1] ? BIBLE_BOOKS[v.book - 1].name : "Libro";
-                const cleanText = v.text.replace(/<[^>]*>/g, '').replace(/\n/g, ' ').trim();
-                const item = document.createElement('div');
-                item.className = "p-2 hover:bg-gray-800 rounded-lg cursor-pointer transition-all border border-transparent hover:border-gray-700 flex flex-col gap-1 text-xs";
-                
-                item.innerHTML = `
-                    <div class="flex justify-between items-center text-amber-500 font-semibold">
-                        <span>${spanishBook} ${v.chapter}:${v.verse}</span>
-                        <button class="add-to-playlist text-gray-500 hover:text-amber-400 p-0.5" title="Añadir a lista">
-                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                        </button>
-                    </div>
-                    <p class="text-gray-300 leading-relaxed">${cleanText}</p>
-                `;
-
-                item.addEventListener('click', (e) => {
-                    if (e.target.closest('.add-to-playlist')) return;
-                    projectVerse(spanishBook, v.chapter, v.verse, cleanText);
-                });
-
-                item.querySelector('.add-to-playlist').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    addToPlaylist(spanishBook, v.chapter, v.verse, cleanText);
-                });
-
-                versesList.appendChild(item);
+            const chapters = Object.keys(bibleData[selectedBook] || {});
+            chapters.forEach(chap => {
+                const btn = document.createElement('button');
+                const isSelected = chap === selectedChapter;
+                btn.className = `aspect-square rounded-xl text-xs font-extrabold transition flex items-center justify-center border ${
+                    isSelected
+                        ? 'bg-emerald-600 text-white border-emerald-500 shadow-md shadow-emerald-950/40'
+                        : 'bg-gray-900 text-gray-300 border-gray-800 hover:bg-gray-800 hover:text-white'
+                }`;
+                btn.innerText = chap;
+                btn.onclick = () => {
+                    selectedChapter = chap;
+                    selectedVerseIdx = null;
+                    renderChapters();
+                    renderVerses();
+                };
+                container.appendChild(btn);
             });
-            lucide.createIcons();
         }
 
-        // --- MANEJO DE PLAYLIST / PROGRAMA DEL CULTO ---
-        function renderPlaylist() {
-            if (playlist.length === 0) {
-                playlistContainer.innerHTML = `
-                    <div id="playlistEmpty" class="text-gray-500 text-center py-8 text-xs flex flex-col items-center gap-2">
-                        <i data-lucide="plus-circle" class="w-8 h-8 opacity-40"></i>
-                        Añade versículos para el servicio.
+        // Renderiza listado de versículos
+        function renderVerses() {
+            const container = document.getElementById('verses-container');
+            const titleEl = document.getElementById('current-title');
+            titleEl.innerText = `${selectedBook} ${selectedChapter}`;
+            container.innerHTML = '';
+
+            const verses = bibleData[selectedBook]?.[selectedChapter] || [];
+            if (verses.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-gray-500 text-xs">
+                        <i class="fa-solid fa-folder-open text-2xl mb-2 block"></i>
+                        No hay versículos disponibles en este capítulo.
                     </div>
                 `;
-                lucide.createIcons();
                 return;
             }
 
-            playlistContainer.innerHTML = "";
-            playlist.forEach((item, index) => {
-                const activeClass = (activePlaylistId === item.id) ? "border-amber-500 bg-amber-950/20" : "border-gray-800 bg-gray-900/40 hover:bg-gray-900/80";
-                
+            verses.forEach((verseText, idx) => {
+                const num = idx + 1;
+                const isSelected = selectedVerseIdx === idx;
+                const citation = `${selectedBook} ${selectedChapter}:${num}`;
+
                 const card = document.createElement('div');
-                card.className = `p-2.5 rounded-lg border flex items-start gap-2 cursor-pointer transition-all group ${activeClass}`;
+                card.className = `p-3 rounded-xl border transition cursor-pointer flex gap-3 ${
+                    isSelected
+                        ? 'bg-blue-950/70 border-blue-500/80 text-white shadow-lg shadow-blue-950/50'
+                        : 'bg-gray-900/90 border-gray-800/80 text-gray-200 hover:bg-gray-850 hover:border-gray-700'
+                }`;
+
                 card.innerHTML = `
-                    <span class="text-xs font-semibold text-gray-500 min-w-[18px] text-center mt-0.5">${index + 1}</span>
-                    <div class="flex-1 min-w-0">
-                        <span class="text-xs font-bold text-amber-500 block">${item.reference}</span>
+                    <span class="font-black text-xs px-2 py-1 rounded-lg h-fit ${isSelected ? 'bg-blue-600 text-white' : 'bg-gray-800 text-blue-400'}">
+                        ${num}
+                    </span>
+                    <p class="text-xs md:text-sm leading-relaxed flex-1 select-text">${verseText}</p>
+                    <div class="flex flex-col gap-1 shrink-0">
+                        <button title="Agregar a la Orden de Culto" class="btn-add-culto text-gray-400 hover:text-amber-400 p-1 rounded transition">
+                            <i class="fa-solid fa-bookmark text-xs"></i>
+                        </button>
+                    </div>
+                `;
+
+                card.onclick = (e) => {
+                    if (e.target.closest('.btn-add-culto')) {
+                        e.stopPropagation();
+                        addToCultoList(verseText, citation);
+                        return;
+                    }
+                    projectVerse(verseText, citation, idx);
+                };
+
+                container.appendChild(card);
+            });
+        }
+
+        // Proyecta un versículo o texto directamente
+        function projectVerse(text, citation, idx = null) {
+            currentText = text;
+            currentCitation = citation;
+            selectedVerseIdx = idx;
+            isBlackout = false;
+            isClearText = false;
+
+            document.getElementById('btn-blackout').className = "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5";
+            document.getElementById('btn-cleartext').className = "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5";
+
+            renderVerses();
+            syncToProjector();
+            showToast(`Proyectando: ${citation}`, "success");
+        }
+
+        // Agrega elemento a la orden del culto
+        function addToCultoList(text, citation) {
+            cultoList.push({
+                id: Date.now(),
+                text: text,
+                citation: citation
+            });
+            renderCultoList();
+            showToast("Agregado a la lista de culto", "info");
+        }
+
+        // Renderiza lista de culto
+        function renderCultoList() {
+            const container = document.getElementById('culto-list-items');
+            container.innerHTML = '';
+
+            if (cultoList.length === 0) {
+                container.innerHTML = `
+                    <p class="text-center text-gray-500 text-xs py-8">La lista del culto está vacía. Agrega pasajes o canciones.</p>
+                `;
+                return;
+            }
+
+            cultoList.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = "bg-gray-900 border border-gray-800 p-2.5 rounded-xl flex items-center justify-between gap-2 group hover:border-blue-500/50 transition";
+                card.innerHTML = `
+                    <div class="flex-1 min-w-0 cursor-pointer">
+                        <span class="text-[10px] font-bold text-blue-400 block truncate">${item.citation}</span>
                         <p class="text-xs text-gray-300 truncate">${item.text}</p>
                     </div>
-                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button class="remove-item p-1 text-gray-500 hover:text-red-400" title="Eliminar">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    <div class="flex items-center gap-1">
+                        <button class="text-emerald-400 hover:text-emerald-300 p-1.5 rounded-lg bg-emerald-950/40 border border-emerald-900/50 text-xs font-bold" title="Proyectar ahora">
+                            <i class="fa-solid fa-play"></i>
+                        </button>
+                        <button class="btn-del-item text-gray-500 hover:text-red-400 p-1.5 rounded-lg text-xs" title="Quitar">
+                            <i class="fa-solid fa-trash"></i>
                         </button>
                     </div>
                 `;
 
-                card.addEventListener('click', (e) => {
-                    if (e.target.closest('.remove-item')) return;
-                    selectPlaylistItem(item.id);
-                });
+                card.querySelector('.flex-1').onclick = () => projectVerse(item.text, item.citation);
+                card.querySelector('.text-emerald-400').onclick = () => projectVerse(item.text, item.citation);
+                card.querySelector('.btn-del-item').onclick = () => {
+                    cultoList.splice(index, 1);
+                    renderCultoList();
+                };
 
-                card.querySelector('.remove-item').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    playlist = playlist.filter(p => p.id !== item.id);
-                    if (activePlaylistId === item.id) activePlaylistId = null;
-                    renderPlaylist();
-                    localStorage.setItem('bible_playlist', JSON.stringify(playlist));
-                    showToast("Pasaje removido del orden del servicio");
-                });
-
-                playlistContainer.appendChild(card);
+                container.appendChild(card);
             });
-            lucide.createIcons();
         }
 
-        function addToPlaylist(book, chapter, verse, text) {
-            const newItem = {
-                id: Date.now() + Math.random(),
-                reference: verse ? `${book} ${chapter}:${verse}` : book,
-                text: text,
-                book: book,
-                chapter: chapter,
-                verse: verse
-            };
-            playlist.push(newItem);
-            renderPlaylist();
-            localStorage.setItem('bible_playlist', JSON.stringify(playlist));
-            showToast(`Añadido a lista: ${newItem.reference}`);
-        }
-
-        function selectPlaylistItem(id) {
-            activePlaylistId = id;
-            const item = playlist.find(p => p.id === id);
-            if (item) {
-                projectVerse(item.book, item.chapter, item.verse, item.text);
-                renderPlaylist();
-            }
-        }
-
-        function navigatePlaylist(direction) {
-            if (playlist.length === 0) return;
-            if (activePlaylistId === null) {
-                selectPlaylistItem(playlist[0].id);
-                return;
-            }
-
-            const currentIndex = playlist.findIndex(p => p.id === activePlaylistId);
-            let nextIndex = currentIndex + direction;
-
-            if (nextIndex >= 0 && nextIndex < playlist.length) {
-                selectPlaylistItem(playlist[nextIndex].id);
-            }
-        }
-
-        // --- SISTEMAS DE SALIDA Y TRANSMISIÓN ---
-        function projectVerse(book, chapter, verse, text) {
-            currentSlide.book = book;
-            currentSlide.chapter = chapter;
-            currentSlide.verse = verse;
-            currentSlide.text = text;
-            currentSlide.reference = verse ? `${book} ${chapter}:${verse}` : book;
-            currentSlide.blackout = false;
-            currentSlide.clearText = false;
-
-            updateAllOutputs();
-        }
-
-        // Sincronizar todos los medios de visualización de inmediato
-        function updateAllOutputs() {
-            // 1. Vista previa local del Operador
-            updateOperatorPreview();
-            
-            // 2. Transmisión del estado global a los proyector externos (mismo origen)
-            broadcastState();
-            
-            // 3. Modal local de pantalla completa
-            updateLocalProjector();
-        }
-
-        function updateOperatorPreview() {
-            previewBg.style.background = "none";
-            previewBgImage.style.display = "none";
-
-            if (projectionStyle.bgType === 'solid') {
-                previewBg.style.backgroundColor = projectionStyle.bgValue;
-            } else if (projectionStyle.bgType === 'gradient') {
-                previewBg.style.backgroundImage = projectionStyle.bgValue;
-            } else if (projectionStyle.bgType === 'image') {
-                previewBgImage.style.display = "block";
-                previewBgImage.style.backgroundImage = `url('${projectionStyle.bgValue}')`;
-                previewBg.style.backgroundColor = `rgba(0, 0, 0, ${projectionStyle.opacity / 100})`;
-            }
-
-            previewContainer.style.fontFamily = projectionStyle.fontFamily;
-            previewText.className = `text-gray-100 font-medium px-4 my-auto italic transition-all ${projectionStyle.alignment}`;
-            
-            let relativeSize = "text-base md:text-lg";
-            const val = parseFloat(fontSizeRange.value);
-            if (val <= 3) relativeSize = "text-xs";
-            else if (val <= 5) relativeSize = "text-sm md:text-base";
-            else relativeSize = "text-base md:text-xl";
-
-            previewText.className += " " + relativeSize;
-
-            if (currentSlide.blackout) {
-                previewBg.style.backgroundColor = "#000000";
-                previewBg.style.backgroundImage = "none";
-                previewBgImage.style.display = "none";
-                previewText.style.opacity = "0";
-                previewRefHeader.style.opacity = "0";
-                previewRefFooter.style.opacity = "0";
-            } else {
-                previewText.style.opacity = currentSlide.clearText ? "0" : "1";
-                
-                const showRef = projectionStyle.refDisplay;
-                previewRefHeader.style.opacity = (showRef === 'header' || showRef === 'both') && !currentSlide.clearText ? "1" : "0";
-                previewRefFooter.style.opacity = (showRef === 'footer' || showRef === 'both') && !currentSlide.clearText ? "1" : "0";
-
-                previewText.innerText = `"${currentSlide.text}"`;
-                previewRefHeader.innerText = currentSlide.reference;
-                previewRefFooter.innerText = currentSlide.reference;
-            }
-        }
-
-        function broadcastState() {
-            const dataToSync = {
-                slide: currentSlide,
-                style: projectionStyle,
+        // Sincroniza estado con la ventana emergente, vista previa y BroadcastChannel
+        function syncToProjector() {
+            const payload = {
+                text: isClearText ? "" : currentText,
+                citation: isClearText ? "" : currentCitation,
+                isBlackout: isBlackout,
+                isClearText: isClearText,
+                styles: projectionStyles,
+                mediaMode: mediaMode,
+                videoUrl: activeVideoUrl,
+                isVideoPlaying: isVideoPlaying,
                 timestamp: Date.now()
             };
 
-            // Canal 1: BroadcastChannel para respuestas instantáneas
-            channel.postMessage(dataToSync);
+            // Transmitir en canal local
+            broadcastChannel.postMessage(payload);
 
-            // Canal 2: LocalStorage para sincronización inter-navegador/pestaña heredada
-            localStorage.setItem('bible_projector_state', JSON.stringify(dataToSync));
-        }
+            // Actualizar vista previa del operador
+            updateProjectorDOM(document, payload, false);
 
-        // --- CONFIGURACIÓN DE PANTALLA COMPLETA INTEGRADA ---
-        function updateLocalProjector() {
-            if (localProjectorModal.classList.contains('hidden')) return;
-
-            const localProjBg = document.getElementById('localProjBg');
-            const localProjBgImage = document.getElementById('localProjBgImage');
-            const localProjOverlay = document.getElementById('localProjOverlay');
-            const localProjText = document.getElementById('localProjText');
-            const localProjRefHeader = document.getElementById('localProjRefHeader');
-            const localProjRefFooter = document.getElementById('localProjRefFooter');
-
-            localProjectorModal.style.fontFamily = projectionStyle.fontFamily;
-            localProjText.className = localProjText.className.replace(/text-[a-z0-9]+/g, '');
-            
-            localProjText.classList.add('text-' + projectionStyle.fontSize);
-            localProjText.classList.add(projectionStyle.alignment);
-
-            localProjBg.style.backgroundImage = 'none';
-            localProjBg.style.backgroundColor = 'transparent';
-            localProjBgImage.style.display = 'none';
-            localProjOverlay.style.backgroundColor = 'transparent';
-
-            if (currentSlide.blackout) {
-                localProjBg.style.backgroundColor = "#000000";
-                localProjText.style.opacity = "0";
-                localProjRefHeader.style.opacity = "0";
-                localProjRefFooter.style.opacity = "0";
-            } else {
-                if (projectionStyle.bgType === 'solid') {
-                    localProjBg.style.backgroundColor = projectionStyle.bgValue;
-                } else if (projectionStyle.bgType === 'gradient') {
-                    localProjBg.style.backgroundImage = projectionStyle.bgValue;
-                } else if (projectionStyle.bgType === 'image') {
-                    localProjBgImage.style.display = 'block';
-                    localProjBgImage.style.backgroundImage = `url('${projectionStyle.bgValue}')`;
-                    localProjOverlay.style.backgroundColor = `rgba(0, 0, 0, ${projectionStyle.opacity / 100})`;
-                }
-
-                localProjText.innerText = `"${currentSlide.text}"`;
-                localProjRefHeader.innerText = currentSlide.reference;
-                localProjRefFooter.innerText = currentSlide.reference;
-
-                localProjText.style.opacity = currentSlide.clearText ? "0" : "1";
-
-                const showRef = projectionStyle.refDisplay;
-                localProjRefHeader.style.opacity = (showRef === 'header' || showRef === 'both') && !currentSlide.clearText ? "1" : "0";
-                localProjRefFooter.style.opacity = (showRef === 'footer' || showRef === 'both') && !currentSlide.clearText ? "1" : "0";
-            }
-        }
-
-        // --- SISTEMA DEDICADO DE PANTALLA DE PROYECCIÓN INDEPENDIENTE ---
-        function updateStandaloneProjector(slide, style) {
-            const bg = document.getElementById('projBg');
-            const bgImage = document.getElementById('projBgImage');
-            const overlay = document.getElementById('projOverlay');
-            const text = document.getElementById('projText');
-            const refHeader = document.getElementById('projRefHeader');
-            const refFooter = document.getElementById('projRefFooter');
-            const wrapper = document.getElementById('projector-view-wrapper');
-
-            if (!wrapper || !bg || !bgImage || !overlay || !text) return;
-
-            // Tipografía
-            wrapper.style.fontFamily = style.fontFamily;
-            
-            // Tamaños de texto dinámicos por clases adaptadas de Tailwind
-            text.className = text.className.replace(/text-[a-z0-9]+/g, '');
-            text.classList.add('text-' + style.fontSize);
-            text.classList.add(style.alignment);
-
-            // Reseteo general de fondo
-            bg.style.backgroundImage = 'none';
-            bg.style.backgroundColor = 'transparent';
-            bgImage.style.display = 'none';
-            overlay.style.backgroundColor = 'transparent';
-
-            if (slide.blackout) {
-                bg.style.backgroundColor = "#000000";
-                text.style.opacity = "0";
-                refHeader.style.opacity = "0";
-                refFooter.style.opacity = "0";
-            } else {
-                // Fondos configurados
-                if (style.bgType === 'solid') {
-                    bg.style.backgroundColor = style.bgValue;
-                } else if (style.bgType === 'gradient') {
-                    bg.style.backgroundImage = style.bgValue;
-                } else if (style.bgType === 'image') {
-                    bgImage.style.display = 'block';
-                    bgImage.style.backgroundImage = `url('${style.bgValue}')`;
-                    overlay.style.backgroundColor = `rgba(0, 0, 0, ${style.opacity / 100})`;
-                }
-
-                text.innerText = slide.clearText ? "" : `"${slide.text}"`;
-                refHeader.innerText = slide.reference;
-                refFooter.innerText = slide.reference;
-
-                text.style.opacity = slide.clearText ? "0" : "1";
-
-                const showRef = style.refDisplay;
-                refHeader.style.opacity = (showRef === 'header' || showRef === 'both') && !slide.clearText ? "1" : "0";
-                refFooter.style.opacity = (showRef === 'footer' || showRef === 'both') && !slide.clearText ? "1" : "0";
-            }
-        }
-
-        // --- MANEJADORES DE ENLACE DE PROYECCIÓN AUTÓNOMA (PAGINA EN MODO PROYECTOR) ---
-        function loadSavedState() {
-            const saved = localStorage.getItem('bible_projector_state');
-            if (saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    if (parsed.slide) currentSlide = parsed.slide;
-                    if (parsed.style) projectionStyle = parsed.style;
-                } catch (e) {
-                    console.error("Error al cargar estado guardado:", e);
-                }
-            }
-            const savedPlaylist = localStorage.getItem('bible_playlist');
-            if (savedPlaylist) {
-                try {
-                    playlist = JSON.parse(savedPlaylist);
-                } catch (e) {
-                    console.error("Error al cargar playlist guardada:", e);
-                }
-            }
-        }
-
-        function syncControlsWithState() {
-            fontFamilySelect.value = projectionStyle.fontFamily;
-            alignmentSelect.value = projectionStyle.alignment;
-            refDisplaySelect.value = projectionStyle.refDisplay;
-
-            const reverseSizeMap = {
-                '2xl': '2', '3xl': '2.5', '4xl': '3', '5xl': '3.5',
-                '6xl': '4', '7xl': '4.5', '8xl': '5', '9xl': '5.5',
-                '10xl': '6', '11xl': '6.5', '12xl': '7', '13xl': '7.5', '14xl': '8'
-            };
-            fontSizeRange.value = reverseSizeMap[projectionStyle.fontSize] || '4';
-            lblFontSize.innerText = `Tamaño de Letra (Proyector): ${projectionStyle.fontSize}`;
-
-            opacityRange.value = projectionStyle.opacity;
-            lblOverlayOpacity.innerText = `Filtro Oscuro de Imagen: ${projectionStyle.opacity}%`;
-
-            document.querySelectorAll('.bg-option').forEach(btn => {
-                const type = btn.getAttribute('data-type');
-                const val = btn.getAttribute('data-value');
-                if (type === projectionStyle.bgType && val === projectionStyle.bgValue) {
-                    btn.classList.add('ring-4', 'ring-amber-500');
-                } else {
-                    btn.classList.remove('ring-4', 'ring-amber-500');
-                }
-            });
-        }
-
-        function initProjectorView() {
-            document.getElementById('operator-view-wrapper').classList.add('hidden');
-            document.getElementById('projector-view-wrapper').classList.remove('hidden');
-
-            // Cargar primer estado si existe guardado
-            const savedState = localStorage.getItem('bible_projector_state');
-            if (savedState) {
-                const parsed = JSON.parse(savedState);
-                updateStandaloneProjector(parsed.slide, parsed.style);
+            // Actualizar ventana externa si está abierta
+            if (externalWindow && !externalWindow.closed) {
+                updateProjectorDOM(externalWindow.document, payload);
             }
 
-            // Escuchar cambios de operador en tiempo real
-            channel.onmessage = (event) => {
-                if (event.data.slide && event.data.style) {
-                    updateStandaloneProjector(event.data.slide, event.data.style);
-                }
-            };
-
-            // Escuchar cambios a través de Storage de respaldo
-            window.addEventListener('storage', (e) => {
-                if (e.key === 'bible_projector_state' && e.newValue) {
-                    const parsed = JSON.parse(e.newValue);
-                    updateStandaloneProjector(parsed.slide, parsed.style);
-                }
-            });
-
-            // Notificar que el proyector se ha conectado
-            channel.postMessage({ requestInitialState: true });
+            // Actualizar simulador modal local
+            updateProjectorDOM(document, payload, true);
         }
 
-        function initConsoleView() {
-            loadSavedState();
-            initSelectors();
-            loadBibleData();
-            renderPlaylist();
-            setupConsoleEventListeners();
+        // Actualiza el DOM objetivo (Previo, Ventana Externa o Simulador Local)
+        function updateProjectorDOM(docObj, data, isLocalFs = false) {
+            const prefix = isLocalFs ? 'local-fs-' : (docObj === document ? 'preview-' : 'proj-');
 
-            // Sincronizar selectores de UI con el estado guardado
-            const matchedBook = BIBLE_BOOKS.find(b => b.name === currentSlide.book);
-            if (matchedBook) {
-                bookSelect.value = currentSlide.book;
-                loadChapters(currentSlide.book, parseInt(currentSlide.chapter) || 1, parseInt(currentSlide.verse) || null, false);
-            } else {
-                loadChapters("Salmos", 23, 1, false);
-            }
+            const textEl = docObj.getElementById(prefix + 'text');
+            const citationEl = docObj.getElementById(prefix + 'citation');
+            const backdropEl = docObj.getElementById(prefix + 'backdrop');
+            const overlayEl = docObj.getElementById(prefix + 'overlay');
+            const videoEl = docObj.getElementById(prefix + 'video');
+            const youtubeEl = docObj.getElementById(prefix + 'youtube');
+            const logoStandbyEl = docObj.getElementById(prefix + 'logo-standby');
+            const logoCornerEl = docObj.getElementById(prefix + 'logo-corner');
 
-            syncControlsWithState();
-            updateAllOutputs();
+            if (!textEl) return;
 
-            // Escuchar peticiones de estado inicial de proyectores abiertos más tarde
-            channel.onmessage = (event) => {
-                if (event.data.requestInitialState) {
-                    broadcastState();
-                    setOperatorOnline(true);
-                }
-            };
-        }
-
-        function initSelectors() {
-            bookSelect.innerHTML = '<option value="" disabled selected>Selecciona un libro</option>';
-            BIBLE_BOOKS.forEach(book => {
-                const option = document.createElement('option');
-                option.value = book.name;
-                option.textContent = book.name;
-                bookSelect.appendChild(option);
-            });
-
-            bookSelect.addEventListener('change', () => {
-                const book = BIBLE_BOOKS.find(b => b.name === bookSelect.value);
-                if (book) {
-                    loadChapters(book.name, 1);
-                }
-            });
-
-            chapterSelect.addEventListener('change', () => {
-                if (bookSelect.value) {
-                    fetchChapterVerses(bookSelect.value, chapterSelect.value);
-                }
-            });
-        }
-
-        function loadChapters(bookName, defaultChapter = 1, targetVerse = null, autoProject = true) {
-            const book = BIBLE_BOOKS.find(b => b.name === bookName);
-            if (!book) return;
-
-            chapterSelect.innerHTML = '';
-            for (let i = 1; i <= book.chapters; i++) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = `Capítulo ${i}`;
-                chapterSelect.appendChild(option);
-            }
-            chapterSelect.value = defaultChapter;
-            fetchChapterVerses(bookName, defaultChapter, targetVerse, autoProject);
-        }
-
-        function setupConsoleEventListeners() {
-            // Buscador
-            btnSearch.addEventListener('click', performSearch);
-            searchBar.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') performSearch();
-            });
-
-            // Playlist Navegadores
-            btnPrevPlaylist.addEventListener('click', () => navigatePlaylist(-1));
-            btnNextPlaylist.addEventListener('click', () => navigatePlaylist(1));
-            btnClearPlaylist.addEventListener('click', () => {
-                playlist = [];
-                activePlaylistId = null;
-                renderPlaylist();
-                localStorage.setItem('bible_playlist', JSON.stringify(playlist));
-                showToast("Programa de culto limpiado");
-            });
-
-            // Pasaje al Instante Manual
-            document.getElementById('btnSendCustom').addEventListener('click', () => {
-                const ref = document.getElementById('customReference').value.trim();
-                const text = document.getElementById('customText').value.trim();
-
-                if (!ref || !text) {
-                    showToast("Por favor ingresa cita y pasaje bíblico.");
-                    return;
-                }
-
-                projectVerse(ref, "", "", text);
-                addToPlaylist(ref, "", "", text);
-
-                document.getElementById('customReference').value = "";
-                document.getElementById('customText').value = "";
-                showToast("Lanzado de forma manual");
-            });
-
-            // Acciones Rápidas
-            btnBlackout.addEventListener('click', () => {
-                currentSlide.blackout = !currentSlide.blackout;
-                if (currentSlide.blackout) {
-                    btnBlackout.className = "bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all animate-pulse";
-                } else {
-                    btnBlackout.className = "bg-red-950/40 hover:bg-red-900/60 border border-red-900 text-red-300 font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all";
-                }
-                updateAllOutputs();
-            });
-
-            btnClearText.addEventListener('click', () => {
-                currentSlide.clearText = !currentSlide.clearText;
-                if (currentSlide.clearText) {
-                    btnClearText.className = "bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all";
-                } else {
-                    btnClearText.className = "bg-gray-800 hover:bg-gray-750 text-gray-300 font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all";
-                }
-                updateAllOutputs();
-            });
-
-            btnRestore.addEventListener('click', () => {
-                currentSlide.blackout = false;
-                currentSlide.clearText = false;
-                btnBlackout.className = "bg-red-950/40 hover:bg-red-900/60 border border-red-900 text-red-300 font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all";
-                btnClearText.className = "bg-gray-800 hover:bg-gray-750 text-gray-300 font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all";
-                updateAllOutputs();
-                showToast("Señal restablecida correctamente");
-            });
-
-            // Cambios de Estilos
-            fontFamilySelect.addEventListener('change', (e) => {
-                projectionStyle.fontFamily = e.target.value;
-                updateAllOutputs();
-            });
-
-            alignmentSelect.addEventListener('change', (e) => {
-                projectionStyle.alignment = e.target.value;
-                updateAllOutputs();
-            });
-
-            refDisplaySelect.addEventListener('change', (e) => {
-                projectionStyle.refDisplay = e.target.value;
-                updateAllOutputs();
-            });
-
-            fontSizeRange.addEventListener('input', (e) => {
-                const sizeMap = {
-                    '2': '2xl', '2.5': '3xl', '3': '4xl', '3.5': '5xl',
-                    '4': '6xl', '4.5': '7xl', '5': '8xl', '5.5': '9xl',
-                    '6': '10xl', '6.5': '11xl', '7': '12xl', '7.5': '13xl', '8': '14xl'
-                };
-                const mappedVal = sizeMap[e.target.value] || '6xl';
-                projectionStyle.fontSize = mappedVal;
-                lblFontSize.innerText = `Tamaño de Letra (Proyector): ${mappedVal}`;
-                updateAllOutputs();
-            });
-
-            opacityRange.addEventListener('input', (e) => {
-                projectionStyle.opacity = e.target.value;
-                lblOverlayOpacity.innerText = `Filtro Oscuro de Imagen: ${e.target.value}%`;
-                updateAllOutputs();
-            });
-
-            document.querySelectorAll('.bg-option').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    projectionStyle.bgType = btn.getAttribute('data-type');
-                    projectionStyle.bgValue = btn.getAttribute('data-value');
-                    
-                    document.querySelectorAll('.bg-option').forEach(b => b.classList.remove('ring-4', 'ring-amber-500'));
-                    btn.classList.add('ring-4', 'ring-amber-500');
-
-                    updateAllOutputs();
-                    showToast("Estilo de fondo modificado");
-                });
-            });
-
-            // Enlace de Apertura del Proyector Dedicado
-            btnOpenProjector.addEventListener('click', () => {
-                // Siguiente paso clave: Construye la URL exacta con la vista del proyector
-                const projectorUrl = window.location.origin + window.location.pathname + '?view=projector';
-                
-                const width = 1280;
-                const height = 720;
-                const left = (window.screen.width - width) / 2;
-                const top = (window.screen.height - height) / 2;
-
-                try {
-                    externalWindow = window.open(projectorUrl, "ProyectorBibliaScreen", `width=${width},height=${height},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no,scrollbars=no`);
-                    
-                    if (!externalWindow || externalWindow.closed || typeof externalWindow.closed === 'undefined') {
-                        throw new Error('Ventana bloqueada');
-                    }
-
-                    setOperatorOnline(true);
-                    showToast("Pantalla de proyección externa cargada.");
-                } catch (error) {
-                    console.warn("Se bloqueó la apertura automática:", error);
-                    popupWarningModal.classList.remove('hidden');
-                    setOperatorOnline(false);
-                }
-            });
-
-            btnCloseWarning.addEventListener('click', () => {
-                popupWarningModal.classList.add('hidden');
-            });
-
-            btnWarningUseLocal.addEventListener('click', () => {
-                popupWarningModal.classList.add('hidden');
-                btnLocalFullscreen.click();
-            });
-
-            btnLocalFullscreen.addEventListener('click', () => {
-                localProjectorModal.classList.remove('hidden');
-                if (localProjectorModal.requestFullscreen) {
-                    localProjectorModal.requestFullscreen();
-                } else if (localProjectorModal.webkitRequestFullscreen) {
-                    localProjectorModal.webkitRequestFullscreen();
-                }
-                updateLocalProjector();
-            });
-
-            btnCloseLocalProjector.addEventListener('click', exitLocalProjector);
-        }
-
-        function setOperatorOnline(online) {
-            if (online) {
-                operatorStatus.className = "text-xs px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-900 flex items-center gap-1";
-                operatorStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Proyector Activo`;
-            } else {
-                operatorStatus.className = "text-xs px-2 py-0.5 rounded-full bg-red-950 text-red-400 border border-red-900 flex items-center gap-1";
-                operatorStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Offline`;
-            }
-        }
-
-        function exitLocalProjector() {
-            localProjectorModal.classList.add('hidden');
-            if (document.exitFullscreen) {
-                document.exitFullscreen().catch(() => {});
-            }
-        }
-
-        document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement) {
-                localProjectorModal.classList.add('hidden');
-            }
-        });
-
-        // Visibilidad dinámica de controles en pantalla completa
-        let moveTimer;
-        localProjectorModal.addEventListener('mousemove', () => {
-            btnCloseLocalProjector.style.opacity = "1";
-            clearTimeout(moveTimer);
-            moveTimer = setTimeout(() => {
-                btnCloseLocalProjector.style.opacity = "0";
-            }, 3000);
-        });
-
-        // --- TECLAS DE NAVEGACIÓN ---
-        document.addEventListener('keydown', (e) => {
-            if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+            // Blackout
+            if (data.isBlackout) {
+                if (backdropEl) backdropEl.style.background = '#000000';
+                if (textEl) textEl.innerText = '';
+                if (citationEl) citationEl.innerText = '';
+                if (logoStandbyEl) logoStandbyEl.classList.add('hidden');
+                if (logoCornerEl) logoCornerEl.classList.add('hidden');
                 return;
             }
 
-            if (e.key === 'ArrowRight' || e.key === ' ') {
-                e.preventDefault();
-                navigatePlaylist(1);
-            } else if (e.key === 'ArrowLeft') {
-                e.preventDefault();
-                navigatePlaylist(-1);
-            } else if (e.key === 'b' || e.key === 'B') {
-                btnBlackout.click();
-            } else if (e.key === 'c' || e.key === 'C') {
-                btnClearText.click();
-            } else if (e.key === 'Escape') {
-                if (!localProjectorModal.classList.contains('hidden')) {
-                    exitLocalProjector();
+            // Aplicar Texto y Citación
+            if (textEl) {
+                textEl.innerText = data.text;
+                textEl.style.fontFamily = data.styles.font;
+                textEl.style.fontSize = isLocalFs ? (parseFloat(data.styles.size) * 1.2) + 'vw' : (docObj === document && !isLocalFs ? '12px' : data.styles.size + 'vw');
+                textEl.style.fontWeight = data.styles.isBold ? '800' : '400';
+                textEl.style.fontStyle = data.styles.isItalic ? 'italic' : 'normal';
+                textEl.style.textAlign = data.styles.align;
+                textEl.style.color = data.styles.textcolor;
+            }
+
+            if (citationEl) {
+                citationEl.innerText = data.citation;
+                citationEl.style.color = data.styles.textcolor;
+                citationEl.style.textAlign = data.styles.align;
+            }
+
+            // Fondos
+            if (backdropEl) {
+                if (data.styles.bgType === 'color') {
+                    backdropEl.style.background = data.styles.bgcolor;
+                    backdropEl.style.backgroundImage = 'none';
+                } else if (data.styles.bgType === 'gradient') {
+                    backdropEl.style.background = data.styles.gradient;
+                } else if (data.styles.bgType === 'image') {
+                    backdropEl.style.backgroundImage = `url("${data.styles.bgImage}")`;
+                    backdropEl.style.backgroundSize = 'cover';
+                    backdropEl.style.backgroundPosition = 'center';
                 }
             }
-        });
 
-        // TOAST NOTIFICATIONS
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastText').innerText = message;
-            toast.classList.remove('translate-y-12', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
+            // Filtro Oscuro Overlay
+            if (overlayEl) {
+                overlayEl.style.backgroundColor = `rgba(0, 0, 0, ${data.styles.bgOpacity / 100})`;
+            }
 
-            setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-12', 'opacity-0');
-            }, 2500);
+            // Manejo de Logos
+            const hasText = data.text.trim().length > 0;
+            if (logoStandbyEl) {
+                if (!hasText && data.styles.logoUrl) {
+                    logoStandbyEl.src = data.styles.logoUrl;
+                    logoStandbyEl.classList.remove('hidden');
+                } else {
+                    logoStandbyEl.classList.add('hidden');
+                }
+            }
+
+            if (logoCornerEl) {
+                if (hasText && data.styles.logoUrl && data.styles.showLogoCorner) {
+                    logoCornerEl.src = data.styles.logoUrl;
+                    logoCornerEl.classList.remove('hidden');
+                    
+                    // Posicionamiento de esquina
+                    logoCornerEl.className = "absolute max-w-[12%] max-h-[15%] object-contain z-20 transition-all ";
+                    if (data.styles.logoPosition === 'top-left') logoCornerEl.classList.add('top-4', 'left-4');
+                    else if (data.styles.logoPosition === 'top-right') logoCornerEl.classList.add('top-4', 'right-4');
+                    else if (data.styles.logoPosition === 'bottom-left') logoCornerEl.classList.add('bottom-4', 'left-4');
+                    else logoCornerEl.classList.add('bottom-4', 'right-4');
+                } else {
+                    logoCornerEl.classList.add('hidden');
+                }
+            }
         }
 
-        // CARGA GENERAL SEGÚN TIPO DE PÁGINA
-        window.onload = function () {
-            const isProjectorView = new URLSearchParams(window.location.search).get('view') === 'projector';
-            
-            if (isProjectorView) {
-                initProjectorView();
-            } else {
-                initConsoleView();
+        // Captura de Pantalla / Ventana estilo OBS
+        async function startScreenCapture() {
+            try {
+                screenStream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { cursor: "always" },
+                    audio: false
+                });
+
+                const videoPreview = document.getElementById('preview-video');
+                const videoLocalFs = document.getElementById('local-fs-video');
+
+                videoPreview.srcObject = screenStream;
+                videoPreview.classList.remove('hidden');
+
+                if (videoLocalFs) {
+                    videoLocalFs.srcObject = screenStream;
+                    videoLocalFs.classList.remove('hidden');
+                }
+
+                mediaMode = 'screen';
+                document.getElementById('btn-start-screen-capture').classList.add('hidden');
+                document.getElementById('btn-stop-screen-capture').classList.remove('hidden');
+
+                screenStream.getVideoTracks()[0].onended = () => {
+                    stopScreenCapture();
+                };
+
+                showToast("Captura de pantalla activa", "success");
+            } catch (err) {
+                showToast("No se pudo iniciar la captura de pantalla", "error");
             }
-        };
+        }
+
+        function stopScreenCapture() {
+            if (screenStream) {
+                screenStream.getTracks().forEach(track => track.stop());
+                screenStream = null;
+            }
+
+            document.getElementById('preview-video').classList.add('hidden');
+            document.getElementById('local-fs-video').classList.add('hidden');
+
+            document.getElementById('btn-start-screen-capture').classList.remove('hidden');
+            document.getElementById('btn-stop-screen-capture').classList.add('hidden');
+            mediaMode = 'none';
+            showToast("Captura de pantalla detenida", "info");
+        }
+
+        function setupEventListeners() {
+            // Sincronización de Sala
+            document.getElementById('room-id-input').onchange = (e) => {
+                roomId = e.target.value.toUpperCase().trim() || "GEN-777";
+                showToast(`Sala de red: ${roomId}`, "info");
+            };
+
+            document.getElementById('btn-copy-link').onclick = () => {
+                const link = window.location.href;
+                navigator.clipboard.writeText(link).then(() => {
+                    showToast("Enlace de transmisión copiado", "success");
+                }).catch(() => {
+                    showToast("Enlace copiado al portapapeles", "success");
+                });
+            };
+
+            // Captura OBS
+            document.getElementById('btn-quick-screen-share').onclick = startScreenCapture;
+            document.getElementById('btn-start-screen-capture').onclick = startScreenCapture;
+            document.getElementById('btn-stop-screen-capture').onclick = stopScreenCapture;
+
+            // Búsqueda de Libros
+            document.getElementById('search-book').oninput = renderBooks;
+
+            // Navegación de Capítulos Ant / Sig
+            document.getElementById('btn-prev-chapter').onclick = () => {
+                const chapters = Object.keys(bibleData[selectedBook] || {});
+                const currentIdx = chapters.indexOf(selectedChapter);
+                if (currentIdx > 0) {
+                    selectedChapter = chapters[currentIdx - 1];
+                    selectedVerseIdx = null;
+                    renderChapters();
+                    renderVerses();
+                }
+            };
+
+            document.getElementById('btn-next-chapter').onclick = () => {
+                const chapters = Object.keys(bibleData[selectedBook] || {});
+                const currentIdx = chapters.indexOf(selectedChapter);
+                if (currentIdx >= 0 && currentIdx < chapters.length - 1) {
+                    selectedChapter = chapters[currentIdx + 1];
+                    selectedVerseIdx = null;
+                    renderChapters();
+                    renderVerses();
+                }
+            };
+
+            // Cargar Biblia JSON
+            document.getElementById('json-bible-input').onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const parsed = JSON.parse(event.target.result);
+                        bibleData = parsed;
+                        selectedBook = Object.keys(bibleData)[0] || "Génesis";
+                        selectedChapter = Object.keys(bibleData[selectedBook] || {})[0] || "1";
+                        selectedVerseIdx = null;
+                        renderBooks();
+                        renderChapters();
+                        renderVerses();
+                        showToast("Biblia JSON cargada correctamente", "success");
+                    } catch (err) {
+                        showToast("El archivo JSON no tiene un formato válido", "error");
+                    }
+                };
+                reader.readAsText(file);
+            };
+
+            // Ventana Externa Proyector
+            document.getElementById('btn-toggle-ext-projector').onclick = () => {
+                if (!externalWindow || externalWindow.closed) {
+                    externalWindow = window.open('', 'BiblicalProjectorWindow', 'width=1920,height=1080,menubar=no,toolbar=no,location=no,status=no,resizable=yes');
+                    if (externalWindow) {
+                        externalWindow.document.write(`
+                            <!DOCTYPE html>
+                            <html lang="es">
+                            <head>
+                                <meta charset="UTF-8">
+                                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                <title>Proyección Bíblica en Vivo</title>
+                                <script src="https://cdn.tailwindcss.com"><\/script>
+                                <style>
+                                    body { margin: 0; background: #000; overflow: hidden; font-family: 'Inter', sans-serif; user-select: none; }
+                                    .text-projection-shadow { text-shadow: 0 2px 12px rgba(0, 0, 0, 0.95), 0 4px 24px rgba(0, 0, 0, 0.85); }
+                                <\/style>
+                            <\/head>
+                            <body class="h-screen w-screen relative flex flex-col justify-between overflow-hidden">
+                                <div id="proj-backdrop" class="absolute inset-0 z-0 bg-slate-950 bg-cover bg-center transition-all duration-300"></div>
+                                <video id="proj-video" class="absolute inset-0 w-full h-full object-contain bg-black z-5 hidden" playsinline autoplay></video>
+                                <iframe id="proj-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-5 hidden" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+                                <div id="proj-overlay" class="absolute inset-0 z-10 bg-black/40"></div>
+                                <img id="proj-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-20 hidden" />
+                                <img id="proj-logo-corner" class="absolute max-w-[12%] max-h-[15%] object-contain z-20 hidden" />
+                                
+                                <div class="z-20 text-center w-full my-auto px-12 md:px-24">
+                                    <p id="proj-text" class="text-white leading-relaxed text-projection-shadow"></p>
+                                </div>
+                                <div class="z-20 text-center w-full pb-10">
+                                    <p id="proj-citation" class="text-white/90 tracking-widest font-black uppercase text-xl text-projection-shadow"></p>
+                                </div>
+                            <\/body>
+                            </html>
+                        `);
+                        externalWindow.document.close();
+                        showToast("Ventana de proyección abierta", "success");
+                        setTimeout(() => syncToProjector(), 300);
+                    }
+                } else {
+                    externalWindow.focus();
+                }
+            };
+
+            // Simulador Local Fullscreen
+            document.getElementById('btn-toggle-local-fs').onclick = () => {
+                const modal = document.getElementById('local-fullscreen-container');
+                modal.classList.toggle('hidden');
+                syncToProjector();
+            };
+
+            document.getElementById('btn-close-local-fs').onclick = () => {
+                document.getElementById('local-fullscreen-container').classList.add('hidden');
+            };
+
+            // Apagar Pantalla (Blackout) & Ocultar Texto
+            document.getElementById('btn-blackout').onclick = () => {
+                isBlackout = !isBlackout;
+                const btn = document.getElementById('btn-blackout');
+                if (isBlackout) {
+                    btn.className = "bg-red-600 hover:bg-red-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-red-950/50";
+                    showToast("Pantalla Apagada (Blackout)", "error");
+                } else {
+                    btn.className = "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5";
+                    showToast("Pantalla Restaurada", "info");
+                }
+                syncToProjector();
+            };
+
+            document.getElementById('btn-cleartext').onclick = () => {
+                isClearText = !isClearText;
+                const btn = document.getElementById('btn-cleartext');
+                if (isClearText) {
+                    btn.className = "bg-amber-600 hover:bg-amber-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-amber-950/50";
+                    showToast("Texto Oculto", "info");
+                } else {
+                    btn.className = "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5";
+                    showToast("Texto Visible", "info");
+                }
+                syncToProjector();
+            };
+
+            document.getElementById('btn-clear-projection').onclick = () => {
+                currentText = "";
+                currentCitation = "";
+                selectedVerseIdx = null;
+                renderVerses();
+                syncToProjector();
+                showToast("Proyección limpiada", "info");
+            };
+
+            // Pestañas
+            document.getElementById('btn-tab-culto').onclick = () => switchTab('tab-culto');
+            document.getElementById('btn-tab-video').onclick = () => switchTab('tab-video');
+            document.getElementById('btn-tab-estilos').onclick = () => switchTab('tab-estilos');
+
+            // Canto Custom
+            document.getElementById('btn-add-custom-culto').onclick = () => {
+                const val = document.getElementById('custom-culto-text').value.trim();
+                if (val) {
+                    addToCultoList(val, "Nota / Canto");
+                    document.getElementById('custom-culto-text').value = "";
+                }
+            };
+
+            document.getElementById('btn-clear-culto-list').onclick = () => {
+                cultoList = [];
+                renderCultoList();
+                showToast("Lista vaciada", "info");
+            };
+
+            // Estilos de Fuente y Formato
+            document.getElementById('style-font').onchange = (e) => {
+                projectionStyles.font = e.target.value;
+                syncToProjector();
+            };
+
+            document.getElementById('style-size').oninput = (e) => {
+                projectionStyles.size = e.target.value;
+                document.getElementById('val-font-size').innerText = e.target.value + "vw";
+                syncToProjector();
+            };
+
+            document.getElementById('btn-format-bold').onclick = () => {
+                projectionStyles.isBold = !projectionStyles.isBold;
+                syncToProjector();
+            };
+
+            document.getElementById('btn-format-italic').onclick = () => {
+                projectionStyles.isItalic = !projectionStyles.isItalic;
+                syncToProjector();
+            };
+
+            document.getElementById('btn-format-shadow').onclick = () => {
+                projectionStyles.hasShadow = !projectionStyles.hasShadow;
+                syncToProjector();
+            };
+
+            // Alineación
+            document.getElementById('btn-align-left').onclick = () => { projectionStyles.align = 'left'; syncToProjector(); };
+            document.getElementById('btn-align-center').onclick = () => { projectionStyles.align = 'center'; syncToProjector(); };
+            document.getElementById('btn-align-right').onclick = () => { projectionStyles.align = 'right'; syncToProjector(); };
+
+            // Selección Tipo de Fondo
+            document.getElementById('btn-bg-color').onclick = () => updateBgType('color');
+            document.getElementById('btn-bg-grad').onclick = () => updateBgType('gradient');
+            document.getElementById('btn-bg-img').onclick = () => updateBgType('image');
+
+            document.getElementById('style-bgcolor').oninput = (e) => {
+                projectionStyles.bgcolor = e.target.value;
+                syncToProjector();
+            };
+
+            document.querySelectorAll('[data-color]').forEach(btn => {
+                btn.onclick = () => {
+                    projectionStyles.bgcolor = btn.getAttribute('data-color');
+                    document.getElementById('style-bgcolor').value = projectionStyles.bgcolor;
+                    syncToProjector();
+                };
+            });
+
+            document.querySelectorAll('.btn-grad-preset').forEach(btn => {
+                btn.onclick = () => {
+                    projectionStyles.gradient = btn.getAttribute('data-grad');
+                    syncToProjector();
+                };
+            });
+
+            document.getElementById('style-overlay-opacity').oninput = (e) => {
+                projectionStyles.bgOpacity = e.target.value;
+                document.getElementById('val-overlay-opacity').innerText = e.target.value + "%";
+                syncToProjector();
+            };
+
+            document.getElementById('style-textcolor').oninput = (e) => {
+                projectionStyles.textcolor = e.target.value;
+                syncToProjector();
+            };
+
+            document.querySelectorAll('[data-textcolor]').forEach(btn => {
+                btn.onclick = () => {
+                    projectionStyles.textcolor = btn.getAttribute('data-textcolor');
+                    document.getElementById('style-textcolor').value = projectionStyles.textcolor;
+                    syncToProjector();
+                };
+            });
+
+            // Subir Imagen de Fondo propia
+            document.getElementById('bg-image-uploader').onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        projectionStyles.bgImage = event.target.result;
+                        syncToProjector();
+                        showToast("Fondo de imagen cargado", "success");
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            // Logo Institucional
+            document.getElementById('logo-image-uploader').onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        projectionStyles.logoUrl = event.target.result;
+                        document.getElementById('logo-thumbnail-img').src = event.target.result;
+                        document.getElementById('logo-thumbnail-img').classList.remove('hidden');
+                        document.getElementById('logo-placeholder-icon').classList.add('hidden');
+                        document.getElementById('btn-remove-logo').classList.remove('hidden');
+                        document.getElementById('logo-options-box').classList.remove('hidden');
+                        syncToProjector();
+                        showToast("Logo institucional cargado", "success");
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            document.getElementById('btn-remove-logo').onclick = () => {
+                projectionStyles.logoUrl = "";
+                document.getElementById('logo-thumbnail-img').classList.add('hidden');
+                document.getElementById('logo-placeholder-icon').classList.remove('hidden');
+                document.getElementById('btn-remove-logo').classList.add('hidden');
+                document.getElementById('logo-options-box').classList.add('hidden');
+                syncToProjector();
+            };
+
+            document.getElementById('toggle-logo-corner').onchange = (e) => {
+                projectionStyles.showLogoCorner = e.target.checked;
+                syncToProjector();
+            };
+
+            document.getElementById('btn-logo-tl').onclick = () => { projectionStyles.logoPosition = 'top-left'; syncToProjector(); };
+            document.getElementById('btn-logo-tr').onclick = () => { projectionStyles.logoPosition = 'top-right'; syncToProjector(); };
+            document.getElementById('btn-logo-bl').onclick = () => { projectionStyles.logoPosition = 'bottom-left'; syncToProjector(); };
+            document.getElementById('btn-logo-br').onclick = () => { projectionStyles.logoPosition = 'bottom-right'; syncToProjector(); };
+
+            // Atajos Teclado
+            window.addEventListener('keydown', (e) => {
+                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+
+                if (e.key === 'b' || e.key === 'B') {
+                    document.getElementById('btn-blackout').click();
+                } else if (e.key === 'c' || e.key === 'C') {
+                    document.getElementById('btn-cleartext').click();
+                } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    const verses = bibleData[selectedBook]?.[selectedChapter] || [];
+                    if (selectedVerseIdx !== null && selectedVerseIdx < verses.length - 1) {
+                        projectVerse(verses[selectedVerseIdx + 1], `${selectedBook} ${selectedChapter}:${selectedVerseIdx + 2}`, selectedVerseIdx + 1);
+                    }
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    const verses = bibleData[selectedBook]?.[selectedChapter] || [];
+                    if (selectedVerseIdx !== null && selectedVerseIdx > 0) {
+                        projectVerse(verses[selectedVerseIdx - 1], `${selectedBook} ${selectedChapter}:${selectedVerseIdx}`, selectedVerseIdx - 1);
+                    }
+                } else if (e.key === 'Escape') {
+                    document.getElementById('local-fullscreen-container').classList.add('hidden');
+                }
+            });
+        }
+
+        function switchTab(tabId) {
+            ['tab-culto', 'tab-video', 'tab-estilos'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+
+            ['btn-tab-culto', 'btn-tab-video', 'btn-tab-estilos'].forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                btn.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-white transition";
+            });
+
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-blue-500 text-blue-400 transition";
+        }
+
+        function updateBgType(type) {
+            projectionStyles.bgType = type;
+            document.getElementById('palette-color-container').classList.toggle('hidden', type !== 'color');
+            document.getElementById('palette-gradient-container').classList.toggle('hidden', type !== 'gradient');
+            document.getElementById('palette-image-container').classList.toggle('hidden', type !== 'image');
+            document.getElementById('overlay-opacity-container').classList.toggle('hidden', type !== 'image');
+            syncToProjector();
+        }
+
+        function renderPresetBackgrounds() {
+            const container = document.getElementById('preset-hd-backgrounds');
+            container.innerHTML = '';
+            PRESET_HD_IMAGES.forEach(img => {
+                const btn = document.createElement('button');
+                btn.className = "h-16 rounded-lg overflow-hidden relative border border-white/10 group cursor-pointer";
+                btn.innerHTML = `
+                    <img src="${img.url}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="${img.title}" />
+                    <span class="absolute inset-0 bg-black/40 flex items-end p-1 text-[9px] font-bold text-white truncate">${img.title}</span>
+                `;
+                btn.onclick = () => {
+                    projectionStyles.bgImage = img.url;
+                    syncToProjector();
+                    showToast(`Fondo aplicado: ${img.title}`, "info");
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderBooks();
+            renderChapters();
+            renderVerses();
+            renderCultoList();
+            renderPresetBackgrounds();
+            setupEventListeners();
+            syncToProjector();
+        });
     </script>
 </body>
 </html>
