@@ -973,7 +973,31 @@
                 if (citationEl) citationEl.innerText = '';
                 if (logoStandbyEl) logoStandbyEl.classList.add('hidden');
                 if (logoCornerEl) logoCornerEl.classList.add('hidden');
+                if (videoEl) videoEl.classList.add('hidden');
+                if (youtubeEl) youtubeEl.classList.add('hidden');
                 return;
+            }
+
+            // Manejo de Video y Captura de Pantalla Transmitida
+            if (videoEl) {
+                if (data.mediaMode === 'screen' && screenStream) {
+                    if (videoEl.srcObject !== screenStream) {
+                        videoEl.srcObject = screenStream;
+                    }
+                    videoEl.classList.remove('hidden');
+                    videoEl.play().catch(() => {});
+                } else if (data.mediaMode === 'video' && data.videoUrl) {
+                    videoEl.srcObject = null;
+                    if (videoEl.src !== data.videoUrl) {
+                        videoEl.src = data.videoUrl;
+                    }
+                    videoEl.classList.remove('hidden');
+                    if (data.isVideoPlaying) videoEl.play().catch(() => {});
+                    else videoEl.pause();
+                } else {
+                    videoEl.classList.add('hidden');
+                    if (videoEl.srcObject) videoEl.srcObject = null;
+                }
             }
 
             // Aplicar Texto y Citación
@@ -1048,17 +1072,6 @@
                     audio: false
                 });
 
-                const videoPreview = document.getElementById('preview-video');
-                const videoLocalFs = document.getElementById('local-fs-video');
-
-                videoPreview.srcObject = screenStream;
-                videoPreview.classList.remove('hidden');
-
-                if (videoLocalFs) {
-                    videoLocalFs.srcObject = screenStream;
-                    videoLocalFs.classList.remove('hidden');
-                }
-
                 mediaMode = 'screen';
                 document.getElementById('btn-start-screen-capture').classList.add('hidden');
                 document.getElementById('btn-stop-screen-capture').classList.remove('hidden');
@@ -1067,6 +1080,7 @@
                     stopScreenCapture();
                 };
 
+                syncToProjector();
                 showToast("Captura de pantalla activa", "success");
             } catch (err) {
                 showToast("No se pudo iniciar la captura de pantalla", "error");
@@ -1079,12 +1093,10 @@
                 screenStream = null;
             }
 
-            document.getElementById('preview-video').classList.add('hidden');
-            document.getElementById('local-fs-video').classList.add('hidden');
-
             document.getElementById('btn-start-screen-capture').classList.remove('hidden');
             document.getElementById('btn-stop-screen-capture').classList.add('hidden');
             mediaMode = 'none';
+            syncToProjector();
             showToast("Captura de pantalla detenida", "info");
         }
 
