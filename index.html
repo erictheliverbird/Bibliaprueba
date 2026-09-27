@@ -524,7 +524,6 @@
     <div id="local-fullscreen-container" class="fixed inset-0 z-50 hidden flex flex-col justify-between p-12 transition-all duration-300 bg-slate-950">
         <div id="local-fs-backdrop" class="absolute inset-0 z-0 bg-slate-950 bg-cover bg-center"></div>
         
-        <!-- Añadido 'muted' para asegurar el autoplay sin restricciones del navegador -->
         <video id="local-fs-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay muted></video>
         <iframe id="local-fs-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
 
@@ -711,6 +710,77 @@
         // CRUCIAL: Utilizar el objeto 'window' global para que la ventana 'opener' tenga acceso.
         window.screenStream = null; 
 
+        // NUEVO SISTEMA DE MEMORIA LOCAL
+        function saveOperatorState() {
+            const stateToSave = {
+                selectedBook,
+                selectedChapter,
+                selectedVerseIdx,
+                currentText,
+                currentCitation,
+                isBlackout,
+                isClearText,
+                cultoList,
+                projectionStyles
+            };
+            try {
+                localStorage.setItem('biblical_operator_state', JSON.stringify(stateToSave));
+            } catch(e) {
+                console.error("No se pudo guardar el estado", e);
+            }
+        }
+
+        function loadOperatorState() {
+            try {
+                const savedStr = localStorage.getItem('biblical_operator_state');
+                if (savedStr) {
+                    const saved = JSON.parse(savedStr);
+                    
+                    selectedBook = saved.selectedBook || selectedBook;
+                    selectedChapter = saved.selectedChapter || selectedChapter;
+                    selectedVerseIdx = saved.selectedVerseIdx !== undefined ? saved.selectedVerseIdx : selectedVerseIdx;
+                    
+                    currentText = saved.currentText || "";
+                    currentCitation = saved.currentCitation || "";
+                    isBlackout = saved.isBlackout || false;
+                    isClearText = saved.isClearText || false;
+                    
+                    if(saved.cultoList) cultoList = saved.cultoList;
+                    if(saved.projectionStyles) projectionStyles = {...projectionStyles, ...saved.projectionStyles};
+
+                    // Restaurar elementos de Interfaz Visual que dependen del estado
+                    document.getElementById('style-font').value = projectionStyles.font;
+                    document.getElementById('style-size').value = projectionStyles.size;
+                    document.getElementById('val-font-size').innerText = projectionStyles.size + "vw";
+                    document.getElementById('style-overlay-opacity').value = projectionStyles.bgOpacity;
+                    document.getElementById('val-overlay-opacity').innerText = projectionStyles.bgOpacity + "%";
+                    document.getElementById('style-bgcolor').value = projectionStyles.bgcolor;
+                    document.getElementById('style-textcolor').value = projectionStyles.textcolor;
+                    
+                    if(projectionStyles.logoUrl) {
+                        document.getElementById('logo-thumbnail-img').src = projectionStyles.logoUrl;
+                        document.getElementById('logo-thumbnail-img').classList.remove('hidden');
+                        document.getElementById('logo-placeholder-icon').classList.add('hidden');
+                        document.getElementById('btn-remove-logo').classList.remove('hidden');
+                        document.getElementById('logo-options-box').classList.remove('hidden');
+                    }
+                    document.getElementById('toggle-logo-corner').checked = projectionStyles.showLogoCorner;
+
+                    // Actualizar botones de Apagar y Ocultar texto según memoria
+                    if(isBlackout) {
+                        document.getElementById('btn-blackout').className = "bg-red-600 hover:bg-red-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-red-950/50";
+                    }
+                    if(isClearText) {
+                        document.getElementById('btn-cleartext').className = "bg-amber-600 hover:bg-amber-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-amber-950/50";
+                    }
+
+                    updateBgTypeUI(projectionStyles.bgType);
+                }
+            } catch(e) {
+                console.error("Error cargando el estado de memoria", e);
+            }
+        }
+
         function getYouTubeEmbedUrl(url) {
             if (!url) return '';
             let videoId = '';
@@ -787,6 +857,7 @@
                     renderBooks();
                     renderChapters();
                     renderVerses();
+                    saveOperatorState();
                 };
                 container.appendChild(btn);
             });
@@ -812,6 +883,7 @@
                     selectedVerseIdx = null;
                     renderChapters();
                     renderVerses();
+                    saveOperatorState();
                 };
                 container.appendChild(btn);
             });
@@ -874,7 +946,9 @@
         function projectVerse(text, citation, idx = null) {
             currentText = text;
             currentCitation = citation;
-            selectedVerseIdx = idx;
+            if (idx !== null) {
+                selectedVerseIdx = idx;
+            }
             isBlackout = false;
             isClearText = false;
 
@@ -893,6 +967,7 @@
                 citation: citation
             });
             renderCultoList();
+            saveOperatorState();
             showToast("Agregado a la lista de culto", "info");
         }
 
@@ -925,11 +1000,12 @@
                     </div>
                 `;
 
-                card.querySelector('.flex-1').onclick = () => projectVerse(item.text, item.citation);
-                card.querySelector('.text-emerald-400').onclick = () => projectVerse(item.text, item.citation);
+                card.querySelector('.flex-1').onclick = () => projectVerse(item.text, item.citation, null);
+                card.querySelector('.text-emerald-400').onclick = () => projectVerse(item.text, item.citation, null);
                 card.querySelector('.btn-del-item').onclick = () => {
                     cultoList.splice(index, 1);
                     renderCultoList();
+                    saveOperatorState();
                 };
 
                 container.appendChild(card);
@@ -969,6 +1045,9 @@
 
             // Actualizar Simulador Local Modal
             updateProjectorDOM(document, payload, true);
+            
+            // Guardar siempre el estado general tras cualquier cambio en vivo
+            saveOperatorState();
         }
 
         function updateProjectorDOM(docObj, data, isLocalFs = false) {
@@ -1210,6 +1289,7 @@
                     selectedVerseIdx = null;
                     renderChapters();
                     renderVerses();
+                    saveOperatorState();
                 }
             };
 
@@ -1221,6 +1301,7 @@
                     selectedVerseIdx = null;
                     renderChapters();
                     renderVerses();
+                    saveOperatorState();
                 }
             };
 
@@ -1239,6 +1320,7 @@
                         renderBooks();
                         renderChapters();
                         renderVerses();
+                        saveOperatorState();
                         showToast("Biblia JSON cargada correctamente", "success");
                     } catch (err) {
                         showToast("El archivo JSON no tiene un formato válido", "error");
@@ -1267,7 +1349,6 @@
                             <\/head>
                             <body class="h-screen w-screen relative flex flex-col justify-between overflow-hidden">
                                 <div id="proj-backdrop" class="absolute inset-0 z-0 bg-slate-950 bg-cover bg-center transition-all duration-300"></div>
-                                <!-- Añadido muted para que se pueda reproducir (autoplay) un video automáticamente sin ser bloqueado -->
                                 <video id="proj-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay muted></video>
                                 <iframe id="proj-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
                                 <div id="proj-overlay" class="absolute inset-0 z-20 bg-black/40"></div>
@@ -1336,7 +1417,6 @@
 
                                         if (videoEl) {
                                             if (data.mediaMode === 'screen') {
-                                                // Accediendo de manera correcta a la variable que ahora vive en el scope global del opener
                                                 var stream = (window.opener && window.opener.screenStream) ? window.opener.screenStream : null;
                                                 if (stream) {
                                                     if (videoEl.srcObject !== stream) videoEl.srcObject = stream;
@@ -1478,11 +1558,6 @@
                 showToast("Proyección limpiada", "info");
             };
 
-            // Pestañas
-            document.getElementById('btn-tab-culto').onclick = () => switchTab('tab-culto');
-            document.getElementById('btn-tab-video').onclick = () => switchTab('tab-video');
-            document.getElementById('btn-tab-estilos').onclick = () => switchTab('tab-estilos');
-
             // Canto Custom
             document.getElementById('btn-add-custom-culto').onclick = () => {
                 const val = document.getElementById('custom-culto-text').value.trim();
@@ -1495,35 +1570,20 @@
             document.getElementById('btn-clear-culto-list').onclick = () => {
                 cultoList = [];
                 renderCultoList();
+                saveOperatorState();
                 showToast("Lista vaciada", "info");
             };
 
             // Estilos de Fuente y Formato
-            document.getElementById('style-font').onchange = (e) => {
-                projectionStyles.font = e.target.value;
-                syncToProjector();
-            };
-
-            document.getElementById('style-size').oninput = (e) => {
-                projectionStyles.size = e.target.value;
+            document.getElementById('style-font').onchange = (e) => { projectionStyles.font = e.target.value; syncToProjector(); };
+            document.getElementById('style-size').oninput = (e) => { 
+                projectionStyles.size = e.target.value; 
                 document.getElementById('val-font-size').innerText = e.target.value + "vw";
-                syncToProjector();
+                syncToProjector(); 
             };
-
-            document.getElementById('btn-format-bold').onclick = () => {
-                projectionStyles.isBold = !projectionStyles.isBold;
-                syncToProjector();
-            };
-
-            document.getElementById('btn-format-italic').onclick = () => {
-                projectionStyles.isItalic = !projectionStyles.isItalic;
-                syncToProjector();
-            };
-
-            document.getElementById('btn-format-shadow').onclick = () => {
-                projectionStyles.hasShadow = !projectionStyles.hasShadow;
-                syncToProjector();
-            };
+            document.getElementById('btn-format-bold').onclick = () => { projectionStyles.isBold = !projectionStyles.isBold; syncToProjector(); };
+            document.getElementById('btn-format-italic').onclick = () => { projectionStyles.isItalic = !projectionStyles.isItalic; syncToProjector(); };
+            document.getElementById('btn-format-shadow').onclick = () => { projectionStyles.hasShadow = !projectionStyles.hasShadow; syncToProjector(); };
 
             // Alineación
             document.getElementById('btn-align-left').onclick = () => { projectionStyles.align = 'left'; syncToProjector(); };
@@ -1531,14 +1591,11 @@
             document.getElementById('btn-align-right').onclick = () => { projectionStyles.align = 'right'; syncToProjector(); };
 
             // Selección Tipo de Fondo
-            document.getElementById('btn-bg-color').onclick = () => updateBgType('color');
-            document.getElementById('btn-bg-grad').onclick = () => updateBgType('gradient');
-            document.getElementById('btn-bg-img').onclick = () => updateBgType('image');
+            document.getElementById('btn-bg-color').onclick = () => updateBgTypeUI('color');
+            document.getElementById('btn-bg-grad').onclick = () => updateBgTypeUI('gradient');
+            document.getElementById('btn-bg-img').onclick = () => updateBgTypeUI('image');
 
-            document.getElementById('style-bgcolor').oninput = (e) => {
-                projectionStyles.bgcolor = e.target.value;
-                syncToProjector();
-            };
+            document.getElementById('style-bgcolor').oninput = (e) => { projectionStyles.bgcolor = e.target.value; syncToProjector(); };
 
             document.querySelectorAll('[data-color]').forEach(btn => {
                 btn.onclick = () => {
@@ -1549,10 +1606,7 @@
             });
 
             document.querySelectorAll('.btn-grad-preset').forEach(btn => {
-                btn.onclick = () => {
-                    projectionStyles.gradient = btn.getAttribute('data-grad');
-                    syncToProjector();
-                };
+                btn.onclick = () => { projectionStyles.gradient = btn.getAttribute('data-grad'); syncToProjector(); };
             });
 
             document.getElementById('style-overlay-opacity').oninput = (e) => {
@@ -1561,10 +1615,7 @@
                 syncToProjector();
             };
 
-            document.getElementById('style-textcolor').oninput = (e) => {
-                projectionStyles.textcolor = e.target.value;
-                syncToProjector();
-            };
+            document.getElementById('style-textcolor').oninput = (e) => { projectionStyles.textcolor = e.target.value; syncToProjector(); };
 
             document.querySelectorAll('[data-textcolor]').forEach(btn => {
                 btn.onclick = () => {
@@ -1616,92 +1667,99 @@
                 syncToProjector();
             };
 
+            // CÓDIGO RESTAURADO Y CORREGIDO
             document.getElementById('toggle-logo-corner').onchange = (e) => {
                 projectionStyles.showLogoCorner = e.target.checked;
                 syncToProjector();
             };
 
+            // Posicionamiento de logo en esquina
             document.getElementById('btn-logo-tl').onclick = () => { projectionStyles.logoPosition = 'top-left'; syncToProjector(); };
             document.getElementById('btn-logo-tr').onclick = () => { projectionStyles.logoPosition = 'top-right'; syncToProjector(); };
             document.getElementById('btn-logo-bl').onclick = () => { projectionStyles.logoPosition = 'bottom-left'; syncToProjector(); };
             document.getElementById('btn-logo-br').onclick = () => { projectionStyles.logoPosition = 'bottom-right'; syncToProjector(); };
 
-            // Atajos de Teclado
-            window.addEventListener('keydown', (e) => {
-                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+            // Pestañas
+            document.getElementById('btn-tab-culto').onclick = () => switchTab('tab-culto');
+            document.getElementById('btn-tab-video').onclick = () => switchTab('tab-video');
+            document.getElementById('btn-tab-estilos').onclick = () => switchTab('tab-estilos');
 
-                if (e.key === 'b' || e.key === 'B') {
-                    document.getElementById('btn-blackout').click();
-                } else if (e.key === 'c' || e.key === 'C') {
-                    document.getElementById('btn-cleartext').click();
-                } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-                    const verses = bibleData[selectedBook]?.[selectedChapter] || [];
-                    if (selectedVerseIdx !== null && selectedVerseIdx < verses.length - 1) {
-                        projectVerse(verses[selectedVerseIdx + 1], `${selectedBook} ${selectedChapter}:${selectedVerseIdx + 2}`, selectedVerseIdx + 1);
-                    }
-                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-                    const verses = bibleData[selectedBook]?.[selectedChapter] || [];
-                    if (selectedVerseIdx !== null && selectedVerseIdx > 0) {
-                        projectVerse(verses[selectedVerseIdx - 1], `${selectedBook} ${selectedChapter}:${selectedVerseIdx}`, selectedVerseIdx - 1);
-                    }
-                } else if (e.key === 'Escape') {
-                    document.getElementById('local-fullscreen-container').classList.add('hidden');
-                }
-            });
-        }
+            // Renderizar Imágenes Predeterminadas (Faltaba poblar en HTML inicial)
+            const bgContainer = document.getElementById('preset-hd-backgrounds');
+            if (bgContainer) {
+                PRESET_HD_IMAGES.forEach(img => {
+                    const btn = document.createElement('button');
+                    btn.className = "relative h-16 rounded-lg overflow-hidden border border-gray-800 hover:border-blue-500 transition group";
+                    btn.innerHTML = `
+                        <img src="${img.url}" class="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition">
+                        <span class="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[8px] font-bold p-1 truncate">${img.title}</span>
+                    `;
+                    btn.onclick = () => {
+                        projectionStyles.bgImage = img.url;
+                        updateBgTypeUI('image');
+                    };
+                    bgContainer.appendChild(btn);
+                });
+            }
+        } // Fin de setupEventListeners
 
         function switchTab(tabId) {
-            ['tab-culto', 'tab-video', 'tab-estilos'].forEach(id => {
-                document.getElementById(id).classList.add('hidden');
-            });
+            ['tab-culto', 'tab-video', 'tab-estilos'].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
 
-            ['btn-tab-culto', 'btn-tab-video', 'btn-tab-estilos'].forEach(btnId => {
-                const btn = document.getElementById(btnId);
-                btn.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-white transition";
+            ['btn-tab-culto', 'btn-tab-video', 'btn-tab-estilos'].forEach(id => {
+                document.getElementById(id).className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-white transition";
             });
-
-            const activeBtn = document.getElementById('btn-' + tabId);
-            activeBtn.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-blue-500 text-blue-400 transition";
+            
+            const activeBtn = 'btn-' + tabId;
+            if (document.getElementById(activeBtn)) {
+                 document.getElementById(activeBtn).className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-blue-500 text-blue-400 transition";
+            }
         }
 
-        function updateBgType(type) {
+        function updateBgTypeUI(type) {
             projectionStyles.bgType = type;
-            document.getElementById('palette-color-container').classList.toggle('hidden', type !== 'color');
-            document.getElementById('palette-gradient-container').classList.toggle('hidden', type !== 'gradient');
-            document.getElementById('palette-image-container').classList.toggle('hidden', type !== 'image');
-            document.getElementById('overlay-opacity-container').classList.toggle('hidden', type !== 'image');
+            document.getElementById('palette-color-container').classList.add('hidden');
+            document.getElementById('palette-gradient-container').classList.add('hidden');
+            document.getElementById('palette-image-container').classList.add('hidden');
+            document.getElementById('overlay-opacity-container').classList.add('hidden');
+            
+            document.getElementById('btn-bg-color').classList.remove('text-blue-400', 'border-blue-500');
+            document.getElementById('btn-bg-grad').classList.remove('text-blue-400', 'border-blue-500');
+            document.getElementById('btn-bg-img').classList.remove('text-blue-400', 'border-blue-500');
+            
+            if (type === 'color') {
+                document.getElementById('palette-color-container').classList.remove('hidden');
+                document.getElementById('btn-bg-color').classList.add('text-blue-400', 'border-blue-500');
+            } else if (type === 'gradient') {
+                document.getElementById('palette-gradient-container').classList.remove('hidden');
+                document.getElementById('btn-bg-grad').classList.add('text-blue-400', 'border-blue-500');
+            } else if (type === 'image') {
+                document.getElementById('palette-image-container').classList.remove('hidden');
+                document.getElementById('overlay-opacity-container').classList.remove('hidden');
+                document.getElementById('btn-bg-img').classList.add('text-blue-400', 'border-blue-500');
+            }
             syncToProjector();
         }
 
-        function renderPresetBackgrounds() {
-            const container = document.getElementById('preset-hd-backgrounds');
-            container.innerHTML = '';
-            PRESET_HD_IMAGES.forEach(img => {
-                const btn = document.createElement('button');
-                btn.className = "h-16 rounded-lg overflow-hidden relative border border-white/10 group cursor-pointer";
-                btn.innerHTML = `
-                    <img src="${img.url}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="${img.title}" />
-                    <span class="absolute inset-0 bg-black/40 flex items-end p-1 text-[9px] font-bold text-white truncate">${img.title}</span>
-                `;
-                btn.onclick = () => {
-                    projectionStyles.bgImage = img.url;
-                    syncToProjector();
-                    showToast(`Fondo aplicado: ${img.title}`, "info");
-                };
-                container.appendChild(btn);
-            });
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
+        // CARGA INICIAL (Entry point)
+        window.onload = () => {
+            // 1. Cargamos el estado memorizado primero
+            loadOperatorState();
+            
+            // 2. Activamos listeners (eventos)
+            setupEventListeners();
+            
+            // 3. Renderizamos según la memoria cargada
             renderBooks();
             renderChapters();
             renderVerses();
             renderCultoList();
-            renderPresetBackgrounds();
-            setupEventListeners();
+            
+            // 4. Sincronizamos proyección
             syncToProjector();
-        });
+        };
+
     </script>
 </body>
 </html>
