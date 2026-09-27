@@ -45,15 +45,6 @@
         .text-projection-shadow {
             text-shadow: 0 2px 12px rgba(0, 0, 0, 0.95), 0 4px 24px rgba(0, 0, 0, 0.85);
         }
-
-        .pulse-red {
-            animation: pulse-red-anim 1.8s infinite;
-        }
-        @keyframes pulse-red-anim {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
-            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
     </style>
 </head>
 <body class="bg-gray-950 text-gray-100 h-screen overflow-hidden flex flex-col font-['Inter'] antialiased select-none">
@@ -70,7 +61,7 @@
                 <div>
                     <h1 class="font-black text-base md:text-lg leading-none tracking-wide text-white flex items-center gap-2">
                         PROYECTOR BÍBLICO
-                        <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-bold">PRO v3.0</span>
+                        <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-bold">PRO iPadOS v3.2</span>
                     </h1>
                     <span class="text-[10px] text-gray-400 font-semibold tracking-wider uppercase hidden sm:inline-block">Consola de Control Multi-Pantalla & OBS Stream</span>
                 </div>
@@ -95,7 +86,7 @@
                 <!-- Botón de Captura Rápida estilo OBS -->
                 <button id="btn-quick-screen-share" class="bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg shadow-red-950/40">
                     <i class="fa-solid fa-display text-xs"></i>
-                    <span class="hidden md:inline">Capturar Pantalla / Ventana</span>
+                    <span class="hidden md:inline">Capturar Pantalla</span>
                 </button>
 
                 <!-- Cargar Biblia JSON -->
@@ -112,7 +103,7 @@
                 </button>
 
                 <!-- Simulador de Pantalla Completa Local -->
-                <button id="btn-toggle-local-fs" class="bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition">
+                <button id="btn-toggle-local-fs" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg shadow-emerald-950/40">
                     <i class="fa-solid fa-expand text-xs"></i>
                     <span class="hidden md:inline">Simular Pantalla</span>
                 </button>
@@ -177,7 +168,7 @@
                 </div>
             </section>
 
-            <!-- COLUMNA 3: PREVIEW EN VIVO Y PESTAÑAS (LISTA DE CULTO / MULTIMEDIA / ESTILOS) -->
+            <!-- COLUMNA 3: PREVIEW EN VIVO Y PESTAÑAS -->
             <section class="w-full lg:w-96 h-auto lg:h-full flex flex-col gap-4 shrink-0 overflow-hidden">
                 
                 <!-- PREVIEW EN VIVO -->
@@ -196,19 +187,19 @@
                         <div id="preview-backdrop" class="absolute inset-0 z-0 bg-slate-950 bg-cover bg-center transition-all duration-300"></div>
                         
                         <!-- Video Elements (Local & Screen Stream) -->
-                        <video id="preview-video" class="absolute inset-0 w-full h-full object-contain bg-black z-5 hidden" playsinline muted autoplay></video>
-                        <iframe id="preview-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-5 hidden" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+                        <video id="preview-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline muted autoplay></video>
+                        <iframe id="preview-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
 
-                        <div id="preview-overlay" class="absolute inset-0 bg-black/40 z-10 transition-all duration-300"></div>
+                        <div id="preview-overlay" class="absolute inset-0 bg-black/40 z-20 transition-all duration-300"></div>
                         
                         <!-- Standby Logo -->
-                        <img id="preview-logo-standby" class="absolute max-w-[35%] max-h-[50%] object-contain z-20 hidden transition-all" alt="Standby Logo Preview" />
+                        <img id="preview-logo-standby" class="absolute max-w-[35%] max-h-[50%] object-contain z-30 hidden transition-all" alt="Standby Logo Preview" />
                         
                         <!-- Corner Logo -->
-                        <img id="preview-logo-corner" class="absolute max-w-[12%] max-h-[18%] object-contain z-20 hidden transition-all" alt="Corner Logo Preview" />
+                        <img id="preview-logo-corner" class="absolute max-w-[12%] max-h-[18%] object-contain z-30 hidden transition-all" alt="Corner Logo Preview" />
 
                         <!-- Texto en Vista Previa -->
-                        <div class="z-20 text-center w-full flex flex-col justify-between h-full pointer-events-none select-none">
+                        <div class="z-30 text-center w-full flex flex-col justify-between h-full pointer-events-none select-none">
                             <p id="preview-text" class="text-white text-xs my-auto line-clamp-4 leading-relaxed transition-all text-projection-shadow"></p>
                             <p id="preview-citation" class="text-[9px] text-gray-300 uppercase font-black tracking-widest mt-1 text-projection-shadow"></p>
                         </div>
@@ -245,7 +236,7 @@
                     <!-- CONTENIDO DE PESTAÑAS -->
                     <div class="flex-1 min-h-0 overflow-y-auto p-4 bg-gray-950">
                         
-                        <!-- TAB 1: LISTA DE CULTO (ORDEN DE SERVICIO) -->
+                        <!-- TAB 1: LISTA DE CULTO -->
                         <div id="tab-culto" class="space-y-3 h-full flex flex-col min-h-0">
                             <div class="flex items-center justify-between text-xs text-gray-400 shrink-0">
                                 <span>Pasajes y elementos agregados:</span>
@@ -274,21 +265,39 @@
                         <!-- TAB 2: VIDEOS Y MULTIMEDIA -->
                         <div id="tab-video" class="hidden space-y-4">
                             
-                            <!-- Opción 1: Captura de Pantalla estilo OBS -->
-                            <div class="bg-gradient-to-br from-blue-950/60 to-purple-950/60 border border-blue-500/30 p-3.5 rounded-xl space-y-2.5">
+                            <!-- Opción 1: YouTube Solución Integrada -->
+                            <div class="bg-gray-900 border border-gray-800 p-3 rounded-xl space-y-2.5">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-xs font-extrabold text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
-                                        <i class="fa-solid fa-circle-dot text-red-500 animate-pulse"></i> Captura de Pantalla / Ventana (OBS Mode)
+                                    <span class="text-xs font-extrabold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+                                        <i class="fa-brands fa-youtube text-red-500 text-base"></i> Video de YouTube
                                     </span>
-                                    <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold">100% Solución YouTube</span>
+                                    <span class="text-[9px] bg-red-500/20 text-red-300 px-2 py-0.5 rounded-full font-bold">100% Compatible iPadOS</span>
                                 </div>
                                 <p class="text-[11px] text-gray-300 leading-snug">
-                                    Si YouTube no permite reproducciones incrustadas, abre el video en otra pestaña o ventana y transmítelo en vivo seleccionándolo aquí:
+                                    Pega cualquier enlace de YouTube (`watch`, `shorts` o `youtu.be`) para transmitirlo directo al proyector:
                                 </p>
-                                <div class="flex gap-2">
-                                    <button id="btn-start-screen-capture" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-blue-900/40">
-                                        <i class="fa-solid fa-desktop"></i>
-                                        <span>Transmitir Pestaña / Ventana</span>
+                                <div class="flex gap-1.5">
+                                    <input type="text" id="video-url-input" placeholder="Ej: https://www.youtube.com/watch?v=..." class="flex-1 bg-gray-950 border border-gray-800 rounded-xl px-2.5 py-2 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500">
+                                    <button id="btn-load-youtube" class="bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center">
+                                        <i class="fa-solid fa-play mr-1"></i> Cargar
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Opción 2: Captura de Pantalla iPadOS / Desktop -->
+                            <div class="bg-gradient-to-br from-blue-950/60 to-purple-950/60 border border-blue-500/30 p-3.5 rounded-xl space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-extrabold text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
+                                        <i class="fa-solid fa-desktop"></i> Captura de Pantalla
+                                    </span>
+                                </div>
+                                <p class="text-[10px] text-gray-300 leading-relaxed">
+                                    <strong class="text-amber-400">Nota para iPadOS:</strong> En Safari de iPad Pro, Apple permite transmitir únicamente la pantalla completa del sistema.
+                                </p>
+                                <div class="flex gap-2 pt-1">
+                                    <button id="btn-start-screen-capture" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-blue-900/40">
+                                        <i class="fa-solid fa-display"></i>
+                                        <span>Iniciar Transmisión</span>
                                     </button>
                                     <button id="btn-stop-screen-capture" class="bg-red-950 hover:bg-red-900 border border-red-800 text-red-300 py-2 px-3 rounded-xl text-xs font-bold transition hidden">
                                         <i class="fa-solid fa-square"></i> Detener
@@ -296,37 +305,26 @@
                                 </div>
                             </div>
 
-                            <!-- Opción 2: Archivo de Video Local -->
+                            <!-- Opción 3: Archivo de Video Local -->
                             <div class="space-y-2">
                                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Subir Archivo de Video Local</label>
                                 <label class="w-full bg-gray-900 hover:bg-gray-850 border border-dashed border-gray-700 p-3 rounded-xl flex flex-col items-center justify-center cursor-pointer transition">
                                     <i class="fa-solid fa-file-video text-emerald-400 text-xl mb-1"></i>
-                                    <span class="text-xs font-bold text-gray-200">Seleccionar video de la PC</span>
-                                    <span class="text-[10px] text-gray-500">MP4, WEBM, MOV, MKV</span>
+                                    <span class="text-xs font-bold text-gray-200">Seleccionar video del iPad / PC</span>
+                                    <span class="text-[10px] text-gray-500">MP4, WEBM, MOV</span>
                                     <input type="file" id="video-file-input" accept="video/*" class="hidden">
                                 </label>
                             </div>
 
-                            <!-- Opción 3: Link de YouTube Directo -->
-                            <div class="space-y-1.5">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Enlace directo de YouTube</label>
-                                <div class="flex gap-1.5">
-                                    <input type="text" id="video-url-input" placeholder="Ej: https://www.youtube.com/watch?v=..." class="flex-1 bg-gray-900 border border-gray-800 rounded-xl px-2.5 py-2 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500">
-                                    <button id="btn-load-youtube" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center">
-                                        <i class="fa-solid fa-play mr-1"></i> Cargar
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Consola de Control de Reproducción de Video -->
+                            <!-- Consola de Control de Reproducción -->
                             <div id="video-control-panel" class="bg-gray-900/90 border border-gray-800 rounded-xl p-3 space-y-3 hidden">
                                 <div class="flex items-center justify-between border-b border-gray-800/80 pb-2">
                                     <div class="flex items-center gap-2 overflow-hidden">
                                         <i class="fa-solid fa-circle-play text-emerald-400 text-sm"></i>
-                                        <span id="video-title-lbl" class="text-xs font-bold text-blue-400 truncate max-w-[170px]">Video activo</span>
+                                        <span id="video-title-lbl" class="text-xs font-bold text-blue-400 truncate max-w-[170px]">Media activo</span>
                                     </div>
                                     <button id="btn-stop-video" class="text-[10px] bg-red-950/80 text-red-400 hover:bg-red-900 px-2 py-1 rounded-lg border border-red-900/50 font-bold transition">
-                                        <i class="fa-solid fa-square mr-1"></i> Detener
+                                        <i class="fa-solid fa-square mr-1"></i> Detener Media
                                     </button>
                                 </div>
                             </div>
@@ -526,22 +524,22 @@
     <div id="local-fullscreen-container" class="fixed inset-0 z-50 hidden flex flex-col justify-between p-12 transition-all duration-300 bg-slate-950">
         <div id="local-fs-backdrop" class="absolute inset-0 z-0 bg-slate-950 bg-cover bg-center"></div>
         
-        <video id="local-fs-video" class="absolute inset-0 w-full h-full object-contain bg-black z-5 hidden" playsinline autoplay></video>
-        <iframe id="local-fs-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-5 hidden" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+        <video id="local-fs-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay></video>
+        <iframe id="local-fs-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
 
-        <div id="local-fs-overlay" class="absolute inset-0 z-10 bg-black/40"></div>
+        <div id="local-fs-overlay" class="absolute inset-0 z-20 bg-black/40"></div>
 
-        <img id="local-fs-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-20 hidden" alt="Standby Logo Sim" />
-        <img id="local-fs-logo-corner" class="absolute max-w-[12%] max-h-[15%] object-contain z-20 hidden" alt="Corner Logo Sim" />
+        <img id="local-fs-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-30 hidden" alt="Standby Logo Sim" />
+        <img id="local-fs-logo-corner" class="absolute max-w-[12%] max-h-[15%] object-contain z-30 hidden" alt="Corner Logo Sim" />
 
-        <button id="btn-close-local-fs" class="absolute top-6 right-6 z-30 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full transition border border-white/20 backdrop-blur" title="Salir (Esc)">
+        <button id="btn-close-local-fs" class="absolute top-6 right-6 z-40 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full transition border border-white/20 backdrop-blur" title="Salir (Esc)">
             <i class="fa-solid fa-xmark text-xl"></i>
         </button>
 
-        <div class="z-20 text-center w-full my-auto px-12 select-none">
+        <div class="z-30 text-center w-full my-auto px-12 select-none">
             <p id="local-fs-text" class="text-white leading-relaxed text-projection-shadow"></p>
         </div>
-        <div class="z-20 text-center w-full select-none pb-6">
+        <div class="z-30 text-center w-full select-none pb-6">
             <p id="local-fs-citation" class="text-white/80 tracking-widest font-black uppercase text-lg text-projection-shadow"></p>
         </div>
     </div>
@@ -555,7 +553,6 @@
     </div>
 
     <script>
-        // BASE DE DATOS BÍBLICA DE PRUEBA COMPLETA Y FUNCIONAL EN ESPAÑOL
         let bibleData = {
             "Génesis": {
                 "1": [
@@ -667,7 +664,6 @@
             }
         };
 
-        // FONDOS HD PREDEFINIDOS
         const PRESET_HD_IMAGES = [
             { title: "Montañas Soleadas", url: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80" },
             { title: "Cielo Nubes Soft", url: "https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?auto=format&fit=crop&w=1920&q=80" },
@@ -675,7 +671,6 @@
             { title: "Bosque Místico", url: "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920&q=80" }
         ];
 
-        // ESTADO GLOBAL DE LA APLICACIÓN
         let selectedBook = "Salmos";
         let selectedChapter = "23";
         let selectedVerseIdx = null;
@@ -692,7 +687,7 @@
             isItalic: false,
             hasShadow: true,
             align: 'center',
-            bgType: 'color', // 'color', 'gradient', 'image'
+            bgType: 'color',
             bgcolor: '#0f172a',
             gradient: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
             bgImage: '',
@@ -706,8 +701,6 @@
         let mediaMode = 'none'; // 'none', 'video', 'youtube', 'screen'
         let activeVideoUrl = '';
         let isVideoPlaying = false;
-        let isVideoMuted = false;
-        let isVideoLooping = false;
 
         let cultoList = [];
         let roomId = "GEN-777";
@@ -715,7 +708,31 @@
         let broadcastChannel = new BroadcastChannel('biblical-projector-channel');
         let screenStream = null;
 
-        // Muestra notificación tostada
+        function getYouTubeEmbedUrl(url) {
+            if (!url) return '';
+            let videoId = '';
+            
+            try {
+                if (url.includes('youtu.be/')) {
+                    videoId = url.split('youtu.be/')[1].split('?')[0].split('&')[0];
+                } else if (url.includes('youtube.com/watch')) {
+                    const urlParams = new URLSearchParams(url.split('?')[1]);
+                    videoId = urlParams.get('v');
+                } else if (url.includes('youtube.com/shorts/')) {
+                    videoId = url.split('youtube.com/shorts/')[1].split('?')[0].split('&')[0];
+                } else if (url.includes('youtube.com/embed/')) {
+                    videoId = url.split('youtube.com/embed/')[1].split('?')[0].split('&')[0];
+                }
+            } catch (e) {
+                console.error("Error al extraer ID de YouTube", e);
+            }
+
+            if (videoId) {
+                return `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&rel=0`;
+            }
+            return '';
+        }
+
         function showToast(msg, type = "info") {
             const toast = document.getElementById('toast');
             const icon = document.getElementById('toast-icon');
@@ -739,7 +756,6 @@
             }, 3000);
         }
 
-        // Renderiza lista de libros
         function renderBooks() {
             const container = document.getElementById('books-container');
             const filter = document.getElementById('search-book').value.toLowerCase().trim();
@@ -773,7 +789,6 @@
             });
         }
 
-        // Renderiza selector de capítulos
         function renderChapters() {
             const container = document.getElementById('chapters-container');
             document.getElementById('selected-book-label').innerText = selectedBook;
@@ -799,7 +814,6 @@
             });
         }
 
-        // Renderiza listado de versículos
         function renderVerses() {
             const container = document.getElementById('verses-container');
             const titleEl = document.getElementById('current-title');
@@ -854,7 +868,6 @@
             });
         }
 
-        // Proyecta un versículo o texto directamente
         function projectVerse(text, citation, idx = null) {
             currentText = text;
             currentCitation = citation;
@@ -870,7 +883,6 @@
             showToast(`Proyectando: ${citation}`, "success");
         }
 
-        // Agrega elemento a la orden del culto
         function addToCultoList(text, citation) {
             cultoList.push({
                 id: Date.now(),
@@ -881,7 +893,6 @@
             showToast("Agregado a la lista de culto", "info");
         }
 
-        // Renderiza lista de culto
         function renderCultoList() {
             const container = document.getElementById('culto-list-items');
             container.innerHTML = '';
@@ -922,7 +933,6 @@
             });
         }
 
-        // Sincroniza estado con la ventana emergente, vista previa y BroadcastChannel
         function syncToProjector() {
             const payload = {
                 text: isClearText ? "" : currentText,
@@ -936,31 +946,28 @@
                 timestamp: Date.now()
             };
 
-            // Transmitir en canal local (BroadcastChannel)
             try {
                 broadcastChannel.postMessage(payload);
             } catch (e) {}
 
-            // Almacenar en localStorage para sincronización inter-ventana en caso de arrastre/separación
             try {
                 localStorage.setItem('biblical_projector_data', JSON.stringify(payload));
             } catch (e) {}
 
-            // Actualizar vista previa del operador
+            // Actualizar Previo del Operador
             updateProjectorDOM(document, payload, false);
 
-            // Actualizar ventana externa si mantiene referencia DOM directa
+            // Actualizar Ventana Externa si está activa
             if (externalWindow && !externalWindow.closed) {
                 try {
                     updateProjectorDOM(externalWindow.document, payload);
                 } catch (e) {}
             }
 
-            // Actualizar simulador modal local
+            // Actualizar Simulador Local Modal
             updateProjectorDOM(document, payload, true);
         }
 
-        // Actualiza el DOM objetivo (Previo, Ventana Externa o Simulador Local)
         function updateProjectorDOM(docObj, data, isLocalFs = false) {
             const prefix = isLocalFs ? 'local-fs-' : (docObj === document ? 'preview-' : 'proj-');
 
@@ -975,7 +982,7 @@
 
             if (!textEl) return;
 
-            // Blackout
+            // Apagado de pantalla (Blackout)
             if (data.isBlackout) {
                 if (backdropEl) backdropEl.style.background = '#000000';
                 if (textEl) textEl.innerText = '';
@@ -987,7 +994,20 @@
                 return;
             }
 
-            // Manejo de Video y Captura de Pantalla Transmitida
+            // Reproductor de YouTube
+            if (youtubeEl) {
+                if (data.mediaMode === 'youtube' && data.videoUrl) {
+                    if (youtubeEl.src !== data.videoUrl) {
+                        youtubeEl.src = data.videoUrl;
+                    }
+                    youtubeEl.classList.remove('hidden');
+                } else {
+                    youtubeEl.classList.add('hidden');
+                    if (youtubeEl.src) youtubeEl.src = '';
+                }
+            }
+
+            // Reproductor de Video Local / Captura de Pantalla
             if (videoEl) {
                 if (data.mediaMode === 'screen' && screenStream) {
                     if (videoEl.srcObject !== screenStream) {
@@ -1009,7 +1029,7 @@
                 }
             }
 
-            // Aplicar Texto y Citación
+            // Aplicar Texto y Cita Bibliográfica
             if (textEl) {
                 textEl.innerText = data.text;
                 textEl.style.fontFamily = data.styles.font;
@@ -1040,7 +1060,7 @@
                 }
             }
 
-            // Filtro Oscuro Overlay
+            // Filtro Oscuro
             if (overlayEl) {
                 overlayEl.style.backgroundColor = `rgba(0, 0, 0, ${data.styles.bgOpacity / 100})`;
             }
@@ -1061,8 +1081,7 @@
                     logoCornerEl.src = data.styles.logoUrl;
                     logoCornerEl.classList.remove('hidden');
                     
-                    // Posicionamiento de esquina
-                    logoCornerEl.className = "absolute max-w-[12%] max-h-[15%] object-contain z-20 transition-all ";
+                    logoCornerEl.className = "absolute max-w-[12%] max-h-[15%] object-contain z-30 transition-all ";
                     if (data.styles.logoPosition === 'top-left') logoCornerEl.classList.add('top-4', 'left-4');
                     else if (data.styles.logoPosition === 'top-right') logoCornerEl.classList.add('top-4', 'right-4');
                     else if (data.styles.logoPosition === 'bottom-left') logoCornerEl.classList.add('bottom-4', 'left-4');
@@ -1073,7 +1092,6 @@
             }
         }
 
-        // Captura de Pantalla / Ventana estilo OBS
         async function startScreenCapture() {
             try {
                 screenStream = await navigator.mediaDevices.getDisplayMedia({
@@ -1106,11 +1124,10 @@
             document.getElementById('btn-stop-screen-capture').classList.add('hidden');
             mediaMode = 'none';
             syncToProjector();
-            showToast("Captura de pantalla detenida", "info");
+            showToast("Transmisión detenida", "info");
         }
 
         function setupEventListeners() {
-            // Sincronización de Sala
             document.getElementById('room-id-input').onchange = (e) => {
                 roomId = e.target.value.toUpperCase().trim() || "GEN-777";
                 showToast(`Sala de red: ${roomId}`, "info");
@@ -1125,10 +1142,56 @@
                 });
             };
 
-            // Captura OBS
+            // Captura OBS / iPadOS
             document.getElementById('btn-quick-screen-share').onclick = startScreenCapture;
             document.getElementById('btn-start-screen-capture').onclick = startScreenCapture;
             document.getElementById('btn-stop-screen-capture').onclick = stopScreenCapture;
+
+            // YouTube Integrado
+            document.getElementById('btn-load-youtube').onclick = () => {
+                const inputUrl = document.getElementById('video-url-input').value.trim();
+                const embedUrl = getYouTubeEmbedUrl(inputUrl);
+
+                if (embedUrl) {
+                    activeVideoUrl = embedUrl;
+                    mediaMode = 'youtube';
+                    isVideoPlaying = true;
+                    
+                    document.getElementById('video-control-panel').classList.remove('hidden');
+                    document.getElementById('video-title-lbl').innerText = "YouTube Video Activo";
+                    
+                    syncToProjector();
+                    showToast("Video de YouTube cargado", "success");
+                } else {
+                    showToast("Enlace de YouTube no válido", "error");
+                }
+            };
+
+            // Cargar Video Local
+            document.getElementById('video-file-input').onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const videoObjUrl = URL.createObjectURL(file);
+                    activeVideoUrl = videoObjUrl;
+                    mediaMode = 'video';
+                    isVideoPlaying = true;
+
+                    document.getElementById('video-control-panel').classList.remove('hidden');
+                    document.getElementById('video-title-lbl').innerText = file.name;
+
+                    syncToProjector();
+                    showToast("Video local cargado", "success");
+                }
+            };
+
+            document.getElementById('btn-stop-video').onclick = () => {
+                mediaMode = 'none';
+                activeVideoUrl = '';
+                isVideoPlaying = false;
+                document.getElementById('video-control-panel').classList.add('hidden');
+                syncToProjector();
+                showToast("Reproducción detenida", "info");
+            };
 
             // Búsqueda de Libros
             document.getElementById('search-book').oninput = renderBooks;
@@ -1199,21 +1262,20 @@
                             <\/head>
                             <body class="h-screen w-screen relative flex flex-col justify-between overflow-hidden">
                                 <div id="proj-backdrop" class="absolute inset-0 z-0 bg-slate-950 bg-cover bg-center transition-all duration-300"></div>
-                                <video id="proj-video" class="absolute inset-0 w-full h-full object-contain bg-black z-5 hidden" playsinline autoplay></video>
-                                <iframe id="proj-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-5 hidden" frameborder="0" allow="autoplay; encrypted-media"></iframe>
-                                <div id="proj-overlay" class="absolute inset-0 z-10 bg-black/40"></div>
-                                <img id="proj-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-20 hidden" />
-                                <img id="proj-logo-corner" class="absolute max-w-[12%] max-h-[15%] object-contain z-20 hidden" />
+                                <video id="proj-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay></video>
+                                <iframe id="proj-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+                                <div id="proj-overlay" class="absolute inset-0 z-20 bg-black/40"></div>
+                                <img id="proj-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-30 hidden" />
+                                <img id="proj-logo-corner" class="absolute max-w-[12%] max-h-[15%] object-contain z-30 hidden" />
                                 
-                                <div class="z-20 text-center w-full my-auto px-12 md:px-24">
+                                <div class="z-30 text-center w-full my-auto px-12 md:px-24">
                                     <p id="proj-text" class="text-white leading-relaxed text-projection-shadow"></p>
                                 </div>
-                                <div class="z-20 text-center w-full pb-10">
+                                <div class="z-30 text-center w-full pb-10">
                                     <p id="proj-citation" class="text-white/90 tracking-widest font-black uppercase text-xl text-projection-shadow"></p>
                                 </div>
 
                                 <script>
-                                    // Receptor Autónomo para sincronización aunque la pestaña se arrastre fuera
                                     const bc = new BroadcastChannel('biblical-projector-channel');
                                     bc.onmessage = function(event) {
                                         if (event.data) applyData(event.data);
@@ -1239,6 +1301,7 @@
                                         const backdropEl = document.getElementById(prefix + 'backdrop');
                                         const overlayEl = document.getElementById(prefix + 'overlay');
                                         const videoEl = document.getElementById(prefix + 'video');
+                                        const youtubeEl = document.getElementById(prefix + 'youtube');
                                         const logoStandbyEl = document.getElementById(prefix + 'logo-standby');
                                         const logoCornerEl = document.getElementById(prefix + 'logo-corner');
 
@@ -1251,7 +1314,18 @@
                                             if (logoStandbyEl) logoStandbyEl.classList.add('hidden');
                                             if (logoCornerEl) logoCornerEl.classList.add('hidden');
                                             if (videoEl) videoEl.classList.add('hidden');
+                                            if (youtubeEl) youtubeEl.classList.add('hidden');
                                             return;
+                                        }
+
+                                        if (youtubeEl) {
+                                            if (data.mediaMode === 'youtube' && data.videoUrl) {
+                                                if (youtubeEl.src !== data.videoUrl) youtubeEl.src = data.videoUrl;
+                                                youtubeEl.classList.remove('hidden');
+                                            } else {
+                                                youtubeEl.classList.add('hidden');
+                                                if (youtubeEl.src) youtubeEl.src = '';
+                                            }
                                         }
 
                                         if (videoEl) {
@@ -1327,7 +1401,7 @@
                                             if (hasText && data.styles.logoUrl && data.styles.showLogoCorner) {
                                                 logoCornerEl.src = data.styles.logoUrl;
                                                 logoCornerEl.classList.remove('hidden');
-                                                logoCornerEl.className = "absolute max-w-[12%] max-h-[15%] object-contain z-20 transition-all ";
+                                                logoCornerEl.className = "absolute max-w-[12%] max-h-[15%] object-contain z-30 transition-all ";
                                                 if (data.styles.logoPosition === 'top-left') logoCornerEl.classList.add('top-4', 'left-4');
                                                 else if (data.styles.logoPosition === 'top-right') logoCornerEl.classList.add('top-4', 'right-4');
                                                 else if (data.styles.logoPosition === 'bottom-left') logoCornerEl.classList.add('bottom-4', 'left-4');
@@ -1361,7 +1435,7 @@
                 document.getElementById('local-fullscreen-container').classList.add('hidden');
             };
 
-            // Apagar Pantalla (Blackout) & Ocultar Texto
+            // Blackout & Ocultar Texto
             document.getElementById('btn-blackout').onclick = () => {
                 isBlackout = !isBlackout;
                 const btn = document.getElementById('btn-blackout');
@@ -1545,7 +1619,7 @@
             document.getElementById('btn-logo-bl').onclick = () => { projectionStyles.logoPosition = 'bottom-left'; syncToProjector(); };
             document.getElementById('btn-logo-br').onclick = () => { projectionStyles.logoPosition = 'bottom-right'; syncToProjector(); };
 
-            // Atajos Teclado
+            // Atajos de Teclado
             window.addEventListener('keydown', (e) => {
                 if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
 
