@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts para tipografías de proyección (Se agregaron nuevas fuentes sin eliminar ninguna anterior) -->
+    <!-- Google Fonts para tipografías de proyección -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Merriweather:wght@300;400;700&family=Montserrat:wght@400;600;800&family=Open+Sans:wght@300;400;600;700&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Poppins:wght@300;400;600;700&family=Quicksand:wght@400;600;700&family=Raleway:wght@300;400;600;700&family=Roboto+Slab:wght@400;700&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
@@ -60,7 +60,7 @@
                 <div>
                     <h1 class="font-black text-base md:text-lg leading-none tracking-wide text-white flex items-center gap-2">
                         PROYECTOR BÍBLICO
-                        <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-bold">PRO v3.4</span>
+                        <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-bold">PRO v3.5</span>
                     </h1>
                     <span class="text-[10px] text-gray-400 font-semibold tracking-wider uppercase hidden sm:inline-block">Consola de Control Multi-Pantalla & OBS Stream</span>
                 </div>
@@ -191,7 +191,7 @@
                         <!-- Standby Logo -->
                         <img id="preview-logo-standby" class="absolute max-w-[35%] max-h-[50%] object-contain z-30 hidden transition-all" alt="Standby Logo Preview" />
                         
-                        <!-- Corner Logo -->
+                        <!-- Corner / Edge Logo -->
                         <img id="preview-logo-corner" class="absolute max-w-[12%] max-h-[18%] object-contain z-30 hidden transition-all" alt="Corner Logo Preview" />
 
                         <!-- Texto en Vista Previa -->
@@ -327,7 +327,7 @@
 
                         <div id="tab-estilos" class="hidden space-y-4">
                             
-                            <!-- Fuente Tipográfica (Se conservan todas las originales y se añaden nuevas opciones profesionales) -->
+                            <!-- Fuente Tipográfica -->
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Fuente Tipográfica</label>
                                 <select id="style-font" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-blue-500 font-medium">
@@ -473,7 +473,7 @@
                                 </div>
                             </div>
 
-                            <!-- Gestión del Logo Institucional -->
+                            <!-- Gestión del Logo Institucional (INCLUYE OPCIONES BORDES SUPERIOR MEDIO E INFERIOR MEDIO) -->
                             <div class="border-t border-gray-800 pt-3 space-y-2.5">
                                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block flex items-center gap-1.5">
                                     <i class="fa-solid fa-church text-amber-500"></i> Logo de la Iglesia
@@ -498,7 +498,7 @@
                                 <!-- Opciones del Logo -->
                                 <div id="logo-options-box" class="space-y-2.5 hidden bg-gray-900/30 p-2.5 rounded-xl border border-gray-800">
                                     <div class="flex items-center justify-between">
-                                        <label class="text-xs text-gray-300 font-medium">Mostrar en esquina al proyectar</label>
+                                        <label class="text-xs text-gray-300 font-medium">Mostrar en pantalla al proyectar</label>
                                         <label class="relative inline-flex items-center cursor-pointer">
                                             <input type="checkbox" id="toggle-logo-corner" class="sr-only peer" checked>
                                             <div class="w-8 h-4.5 bg-gray-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-300 after:border-gray-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-blue-600"></div>
@@ -506,12 +506,15 @@
                                     </div>
 
                                     <div class="space-y-1">
-                                        <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">Ubicación de Esquina</label>
-                                        <div class="grid grid-cols-2 gap-1 text-[10px]">
-                                            <button id="btn-logo-tl" class="py-1 px-2 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition">Sup. Izquierda</button>
-                                            <button id="btn-logo-tr" class="py-1 px-2 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition">Sup. Derecha</button>
-                                            <button id="btn-logo-bl" class="py-1 px-2 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition">Inf. Izquierda</button>
-                                            <button id="btn-logo-br" class="py-1 px-2 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition">Inf. Derecha</button>
+                                        <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">Ubicación del Logo</label>
+                                        <!-- Matriz de 6 opciones: Incluyendo Borde Superior Medio e Inferior Medio -->
+                                        <div class="grid grid-cols-3 gap-1 text-[10px]">
+                                            <button id="btn-logo-tl" class="py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition truncate" title="Superior Izquierda">Sup. Izq.</button>
+                                            <button id="btn-logo-tc" class="py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition truncate" title="Superior Medio / Centro">Sup. Centro</button>
+                                            <button id="btn-logo-tr" class="py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition truncate" title="Superior Derecha">Sup. Der.</button>
+                                            <button id="btn-logo-bl" class="py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition truncate" title="Inferior Izquierda">Inf. Izq.</button>
+                                            <button id="btn-logo-bc" class="py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition truncate" title="Inferior Medio / Centro">Inf. Centro</button>
+                                            <button id="btn-logo-br" class="py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition truncate" title="Inferior Derecha">Inf. Der.</button>
                                         </div>
                                     </div>
                                 </div>
@@ -524,7 +527,6 @@
         </main>
     </div>
 
-    <!-- SIMULADOR LOCAL EN PANTALLA COMPLETA MODAL -->
     <div id="local-fullscreen-container" class="fixed inset-0 z-50 hidden flex flex-col justify-between p-12 transition-all duration-300 bg-slate-950">
         <div id="local-fs-backdrop" class="absolute inset-0 z-0 bg-slate-950 bg-cover bg-center"></div>
         
@@ -699,7 +701,7 @@
             textcolor: '#ffffff',
             logoUrl: '',
             showLogoCorner: true,
-            logoPosition: 'top-left'
+            logoPosition: 'top-left' // Options: 'top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-center', 'bottom-right'
         };
 
         let mediaMode = 'none';
@@ -782,6 +784,7 @@
                     }
 
                     updateBgTypeUI(projectionStyles.bgType);
+                    updateLogoPositionUI();
                 }
             } catch(e) {
                 console.error("Error cargando el estado de memoria", e);
@@ -1164,16 +1167,28 @@
                 }
             }
 
+            // POSITIONING LOGIC FOR LOGO (Includes top-center & bottom-center)
             if (logoCornerEl) {
                 if (hasText && data.styles.logoUrl && data.styles.showLogoCorner) {
                     logoCornerEl.src = data.styles.logoUrl;
                     logoCornerEl.classList.remove('hidden');
                     
                     logoCornerEl.className = "absolute max-w-[12%] max-h-[15%] object-contain z-30 transition-all ";
-                    if (data.styles.logoPosition === 'top-left') logoCornerEl.classList.add('top-4', 'left-4');
-                    else if (data.styles.logoPosition === 'top-right') logoCornerEl.classList.add('top-4', 'right-4');
-                    else if (data.styles.logoPosition === 'bottom-left') logoCornerEl.classList.add('bottom-4', 'left-4');
-                    else logoCornerEl.classList.add('bottom-4', 'right-4');
+                    const pos = data.styles.logoPosition || 'top-left';
+                    
+                    if (pos === 'top-left') {
+                        logoCornerEl.classList.add('top-4', 'left-4');
+                    } else if (pos === 'top-center') {
+                        logoCornerEl.classList.add('top-4', 'left-1/2', '-translate-x-1/2');
+                    } else if (pos === 'top-right') {
+                        logoCornerEl.classList.add('top-4', 'right-4');
+                    } else if (pos === 'bottom-left') {
+                        logoCornerEl.classList.add('bottom-4', 'left-4');
+                    } else if (pos === 'bottom-center') {
+                        logoCornerEl.classList.add('bottom-4', 'left-1/2', '-translate-x-1/2');
+                    } else { // bottom-right
+                        logoCornerEl.classList.add('bottom-4', 'right-4');
+                    }
                 } else {
                     logoCornerEl.classList.add('hidden');
                 }
@@ -1215,6 +1230,85 @@
             showToast("Transmisión detenida", "info");
         }
 
+        function updateBgTypeUI(type) {
+            projectionStyles.bgType = type;
+            const btnColor = document.getElementById('btn-bg-color');
+            const btnGrad = document.getElementById('btn-bg-grad');
+            const btnImg = document.getElementById('btn-bg-img');
+
+            const palColor = document.getElementById('palette-color-container');
+            const palGrad = document.getElementById('palette-gradient-container');
+            const palImg = document.getElementById('palette-image-container');
+            const overlayOp = document.getElementById('overlay-opacity-container');
+
+            const activeClass = "bg-blue-600 text-white border-blue-500";
+            const inactiveClass = "border-gray-800 text-gray-300 hover:bg-gray-800";
+
+            btnColor.className = `transition py-2 rounded-xl border text-xs font-bold ${type === 'color' ? activeClass : inactiveClass}`;
+            btnGrad.className = `transition py-2 rounded-xl border text-xs font-bold ${type === 'gradient' ? activeClass : inactiveClass}`;
+            btnImg.className = `transition py-2 rounded-xl border text-xs font-bold ${type === 'image' ? activeClass : inactiveClass}`;
+
+            if (type === 'color') {
+                palColor.classList.remove('hidden');
+                palGrad.classList.add('hidden');
+                palImg.classList.add('hidden');
+                overlayOp.classList.add('hidden');
+            } else if (type === 'gradient') {
+                palColor.classList.add('hidden');
+                palGrad.classList.remove('hidden');
+                palImg.classList.add('hidden');
+                overlayOp.classList.add('hidden');
+            } else if (type === 'image') {
+                palColor.classList.add('hidden');
+                palGrad.classList.add('hidden');
+                palImg.classList.remove('hidden');
+                overlayOp.classList.remove('hidden');
+            }
+            syncToProjector();
+        }
+
+        function updateLogoPositionUI() {
+            const pos = projectionStyles.logoPosition || 'top-left';
+            const buttons = {
+                'top-left': 'btn-logo-tl',
+                'top-center': 'btn-logo-tc',
+                'top-right': 'btn-logo-tr',
+                'bottom-left': 'btn-logo-bl',
+                'bottom-center': 'btn-logo-bc',
+                'bottom-right': 'btn-logo-br'
+            };
+
+            const activeStyle = "py-1 px-1.5 rounded-lg bg-blue-600 border border-blue-500 text-white font-bold transition text-[10px] truncate";
+            const inactiveStyle = "py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition text-[10px] truncate";
+
+            Object.keys(buttons).forEach(key => {
+                const btn = document.getElementById(buttons[key]);
+                if (btn) {
+                    btn.className = (key === pos) ? activeStyle : inactiveStyle;
+                }
+            });
+        }
+
+        function renderHDBackgrounds() {
+            const container = document.getElementById('preset-hd-backgrounds');
+            if (!container) return;
+            container.innerHTML = '';
+            PRESET_HD_IMAGES.forEach((img) => {
+                const btn = document.createElement('button');
+                btn.className = "h-14 rounded-xl border border-white/10 overflow-hidden relative group transition hover:border-blue-500";
+                btn.innerHTML = `
+                    <img src="${img.url}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="${img.title}" />
+                    <span class="absolute inset-0 bg-black/40 group-hover:bg-black/20 flex items-center justify-center text-[10px] font-bold text-white p-1 text-center leading-tight">${img.title}</span>
+                `;
+                btn.onclick = () => {
+                    projectionStyles.bgImage = img.url;
+                    syncToProjector();
+                    showToast(`Fondo seleccionado: ${img.title}`, "info");
+                };
+                container.appendChild(btn);
+            });
+        }
+
         function setupEventListeners() {
             document.getElementById('room-id-input').onchange = (e) => {
                 roomId = e.target.value.toUpperCase().trim() || "GEN-777";
@@ -1233,6 +1327,29 @@
             document.getElementById('btn-quick-screen-share').onclick = startScreenCapture;
             document.getElementById('btn-start-screen-capture').onclick = startScreenCapture;
             document.getElementById('btn-stop-screen-capture').onclick = stopScreenCapture;
+
+            // Tab Navigation listeners
+            const tabCulto = document.getElementById('tab-culto');
+            const tabVideo = document.getElementById('tab-video');
+            const tabEstilos = document.getElementById('tab-estilos');
+
+            const btnTabCulto = document.getElementById('btn-tab-culto');
+            const btnTabVideo = document.getElementById('btn-tab-video');
+            const btnTabEstilos = document.getElementById('btn-tab-estilos');
+
+            function switchTab(activeBtn, activeTab) {
+                [btnTabCulto, btnTabVideo, btnTabEstilos].forEach(btn => {
+                    btn.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-white transition";
+                });
+                [tabCulto, tabVideo, tabEstilos].forEach(tab => tab.classList.add('hidden'));
+
+                activeBtn.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-blue-500 text-blue-400 transition";
+                activeTab.classList.remove('hidden');
+            }
+
+            btnTabCulto.onclick = () => switchTab(btnTabCulto, tabCulto);
+            btnTabVideo.onclick = () => switchTab(btnTabVideo, tabVideo);
+            btnTabEstilos.onclick = () => switchTab(btnTabEstilos, tabEstilos);
 
             document.getElementById('btn-load-youtube').onclick = () => {
                 const inputUrl = document.getElementById('video-url-input').value.trim();
@@ -1502,9 +1619,13 @@
                                                 logoCornerEl.src = data.styles.logoUrl;
                                                 logoCornerEl.classList.remove('hidden');
                                                 logoCornerEl.className = "absolute max-w-[12%] max-h-[15%] object-contain z-30 transition-all ";
-                                                if (data.styles.logoPosition === 'top-left') logoCornerEl.classList.add('top-4', 'left-4');
-                                                else if (data.styles.logoPosition === 'top-right') logoCornerEl.classList.add('top-4', 'right-4');
-                                                else if (data.styles.logoPosition === 'bottom-left') logoCornerEl.classList.add('bottom-4', 'left-4');
+                                                
+                                                var pos = data.styles.logoPosition || 'top-left';
+                                                if (pos === 'top-left') logoCornerEl.classList.add('top-4', 'left-4');
+                                                else if (pos === 'top-center') logoCornerEl.classList.add('top-4', 'left-1/2', '-translate-x-1/2');
+                                                else if (pos === 'top-right') logoCornerEl.classList.add('top-4', 'right-4');
+                                                else if (pos === 'bottom-left') logoCornerEl.classList.add('bottom-4', 'left-4');
+                                                else if (pos === 'bottom-center') logoCornerEl.classList.add('bottom-4', 'left-1/2', '-translate-x-1/2');
                                                 else logoCornerEl.classList.add('bottom-4', 'right-4');
                                             } else {
                                                 logoCornerEl.classList.add('hidden');
@@ -1694,19 +1815,21 @@
                         document.getElementById('btn-remove-logo').classList.remove('hidden');
                         document.getElementById('logo-options-box').classList.remove('hidden');
                         syncToProjector();
-                        showToast("Logo institucional cargado", "success");
+                        showToast("Logo cargado", "success");
                     };
                     reader.readAsDataURL(file);
                 }
             };
 
             document.getElementById('btn-remove-logo').onclick = () => {
-                projectionStyles.logoUrl = "";
+                projectionStyles.logoUrl = '';
+                document.getElementById('logo-thumbnail-img').src = '';
                 document.getElementById('logo-thumbnail-img').classList.add('hidden');
                 document.getElementById('logo-placeholder-icon').classList.remove('hidden');
                 document.getElementById('btn-remove-logo').classList.add('hidden');
                 document.getElementById('logo-options-box').classList.add('hidden');
                 syncToProjector();
+                showToast("Logo eliminado", "info");
             };
 
             document.getElementById('toggle-logo-corner').onchange = (e) => {
@@ -1714,76 +1837,37 @@
                 syncToProjector();
             };
 
-            document.getElementById('btn-logo-tl').onclick = () => { projectionStyles.logoPosition = 'top-left'; syncToProjector(); };
-            document.getElementById('btn-logo-tr').onclick = () => { projectionStyles.logoPosition = 'top-right'; syncToProjector(); };
-            document.getElementById('btn-logo-bl').onclick = () => { projectionStyles.logoPosition = 'bottom-left'; syncToProjector(); };
-            document.getElementById('btn-logo-br').onclick = () => { projectionStyles.logoPosition = 'bottom-right'; syncToProjector(); };
+            const logoPosButtons = {
+                'btn-logo-tl': 'top-left',
+                'btn-logo-tc': 'top-center',
+                'btn-logo-tr': 'top-right',
+                'btn-logo-bl': 'bottom-left',
+                'btn-logo-bc': 'bottom-center',
+                'btn-logo-br': 'bottom-right'
+            };
 
-            // Pestañas
-            document.getElementById('btn-tab-culto').onclick = () => switchTab('culto');
-            document.getElementById('btn-tab-video').onclick = () => switchTab('video');
-            document.getElementById('btn-tab-estilos').onclick = () => switchTab('estilos');
-        }
-
-        function updateBgTypeUI(type) {
-            projectionStyles.bgType = type;
-            const btnColor = document.getElementById('btn-bg-color');
-            const btnGrad = document.getElementById('btn-bg-grad');
-            const btnImg = document.getElementById('btn-bg-img');
-
-            const contColor = document.getElementById('palette-color-container');
-            const contGrad = document.getElementById('palette-gradient-container');
-            const contImg = document.getElementById('palette-image-container');
-            const contOverlay = document.getElementById('overlay-opacity-container');
-
-            btnColor.className = "transition py-2 rounded-xl border text-xs font-semibold " + (type === 'color' ? 'bg-blue-600 text-white border-blue-500 shadow-md' : 'bg-gray-900 border-gray-800 text-gray-300');
-            btnGrad.className = "transition py-2 rounded-xl border text-xs font-semibold " + (type === 'gradient' ? 'bg-blue-600 text-white border-blue-500 shadow-md' : 'bg-gray-900 border-gray-800 text-gray-300');
-            btnImg.className = "transition py-2 rounded-xl border text-xs font-semibold " + (type === 'image' ? 'bg-blue-600 text-white border-blue-500 shadow-md' : 'bg-gray-900 border-gray-800 text-gray-300');
-
-            contColor.classList.toggle('hidden', type !== 'color');
-            contGrad.classList.toggle('hidden', type !== 'gradient');
-            contImg.classList.toggle('hidden', type !== 'image');
-            contOverlay.classList.toggle('hidden', type !== 'image');
-
-            syncToProjector();
-        }
-
-        function switchTab(tabName) {
-            const btnCulto = document.getElementById('btn-tab-culto');
-            const btnVideo = document.getElementById('btn-tab-video');
-            const btnEstilos = document.getElementById('btn-tab-estilos');
-
-            const tabCulto = document.getElementById('tab-culto');
-            const tabVideo = document.getElementById('tab-video');
-            const tabEstilos = document.getElementById('tab-estilos');
-
-            btnCulto.className = "flex-1 py-2.5 text-xs font-bold border-b-2 transition " + (tabName === 'culto' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-400 hover:text-white');
-            btnVideo.className = "flex-1 py-2.5 text-xs font-bold border-b-2 transition " + (tabName === 'video' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-400 hover:text-white');
-            btnEstilos.className = "flex-1 py-2.5 text-xs font-bold border-b-2 transition " + (tabName === 'estilos' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-400 hover:text-white');
-
-            tabCulto.classList.toggle('hidden', tabName !== 'culto');
-            tabVideo.classList.toggle('hidden', tabName !== 'video');
-            tabEstilos.classList.toggle('hidden', tabName !== 'estilos');
-        }
-
-        function populatePresetHdBackgrounds() {
-            const container = document.getElementById('preset-hd-backgrounds');
-            container.innerHTML = '';
-            PRESET_HD_IMAGES.forEach(img => {
-                const card = document.createElement('button');
-                card.className = "relative h-16 rounded-xl overflow-hidden border border-gray-800 group hover:border-blue-500 transition text-left p-2 flex flex-col justify-end bg-cover bg-center";
-                card.style.backgroundImage = `url("${img.url}")`;
-                card.innerHTML = `
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
-                    <span class="relative z-10 text-[10px] font-bold text-white truncate">${img.title}</span>
-                `;
-                card.onclick = () => {
-                    projectionStyles.bgImage = img.url;
-                    syncToProjector();
-                    showToast(`Fondo "${img.title}" seleccionado`, "success");
-                };
-                container.appendChild(card);
+            Object.keys(logoPosButtons).forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) {
+                    btn.onclick = () => {
+                        projectionStyles.logoPosition = logoPosButtons[btnId];
+                        updateLogoPositionUI();
+                        syncToProjector();
+                    };
+                }
             });
+
+            // Keyboard Shortcuts
+            window.onkeydown = (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+                if (e.key === 'b' || e.key === 'B') {
+                    document.getElementById('btn-blackout').click();
+                } else if (e.key === 'c' || e.key === 'C') {
+                    document.getElementById('btn-cleartext').click();
+                } else if (e.key === 'Escape') {
+                    document.getElementById('local-fullscreen-container').classList.add('hidden');
+                }
+            };
         }
 
         window.onload = () => {
@@ -1792,20 +1876,10 @@
             renderChapters();
             renderVerses();
             renderCultoList();
-            populatePresetHdBackgrounds();
+            renderHDBackgrounds();
             setupEventListeners();
             syncToProjector();
         };
-
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'KeyB') {
-                document.getElementById('btn-blackout').click();
-            } else if (e.code === 'KeyC') {
-                document.getElementById('btn-cleartext').click();
-            } else if (e.code === 'Escape') {
-                document.getElementById('local-fullscreen-container').classList.add('hidden');
-            }
-        });
     </script>
 </body>
 </html>
