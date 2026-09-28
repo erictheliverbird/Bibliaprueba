@@ -74,9 +74,9 @@
                 <div>
                     <h1 class="font-black text-base md:text-lg leading-none tracking-wide text-white flex items-center gap-2">
                         PROYECTOR BÍBLICO
-                        <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-bold">PRO v3.5</span>
+                        <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-bold">PRO v3.6 HD</span>
                     </h1>
-                    <span class="text-[10px] text-gray-400 font-semibold tracking-wider uppercase hidden sm:inline-block">Consola de Control Multi-Pantalla & OBS Stream</span>
+                    <span class="text-[10px] text-gray-400 font-semibold tracking-wider uppercase hidden sm:inline-block">Consola con Selector de Imágenes HD Corregido</span>
                 </div>
             </div>
 
@@ -126,6 +126,7 @@
         <!-- CUERPO PRINCIPAL (3 COLUMNAS RESPONSIVAS) -->
         <main class="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden p-3 md:p-5 gap-3 md:gap-5">
 
+            <!-- Columna 1: Libros y Capítulos -->
             <section class="w-full lg:w-72 xl:w-80 h-64 lg:h-full flex flex-col bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-xl shrink-0">
                 <!-- Búsqueda de Libros -->
                 <div class="p-3 border-b border-gray-800 bg-gray-900/80">
@@ -144,7 +145,7 @@
                 <div class="p-3 bg-gray-950 border-t border-gray-800 flex flex-col h-48 lg:h-56 shrink-0">
                     <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2 flex items-center justify-between">
                         <span class="flex items-center gap-1.5"><i class="fa-solid fa-list-numeric text-blue-400"></i> Capítulos</span>
-                        <span id="selected-book-label" class="text-blue-400 text-xs font-bold">Génesis</span>
+                        <span id="selected-book-label" class="text-blue-400 text-xs font-bold">Salmos</span>
                     </span>
                     <div class="flex-1 min-h-0 overflow-y-auto grid grid-cols-5 gap-1.5 content-start pr-1" id="chapters-container">
                         <!-- Se renderiza mediante JS -->
@@ -152,6 +153,7 @@
                 </div>
             </section>
 
+            <!-- Columna 2: Versículos Bíblicos del Capítulo Seleccionado -->
             <section class="flex-1 h-72 lg:h-full flex flex-col bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-xl">
                 <div class="p-3 md:p-4 bg-gray-900 border-b border-gray-800 flex items-center justify-between shrink-0">
                     <div class="flex items-center gap-3">
@@ -159,7 +161,7 @@
                             <i class="fa-solid fa-quote-left text-sm"></i>
                         </div>
                         <div>
-                            <h2 class="font-bold text-sm md:text-base text-white" id="current-title">Cargando pasaje...</h2>
+                            <h2 class="font-bold text-sm md:text-base text-white" id="current-title">Salmos 23</h2>
                             <span class="text-[11px] text-gray-400 hidden sm:inline">Haz clic en un versículo para proyectarlo en vivo inmediatamente</span>
                         </div>
                     </div>
@@ -179,6 +181,7 @@
                 </div>
             </section>
 
+            <!-- Columna 3: Vista Previa y Pestañas de Control -->
             <section class="w-full lg:w-96 h-auto lg:h-full flex flex-col gap-4 shrink-0 overflow-hidden">
                 
                 <!-- PREVIEW EN VIVO -->
@@ -433,12 +436,12 @@
                                 </div>
                             </div>
 
-                            <!-- Imagen de Fondo y Buscador Online -->
+                            <!-- Imagen de Fondo y Buscador Online en Alta Resolución -->
                             <div id="palette-image-container" class="space-y-3.5 hidden">
                                 <!-- Buscador de Imágenes -->
                                 <div class="bg-gray-900 border border-gray-800 p-3 rounded-xl space-y-2">
                                     <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center justify-between">
-                                        <span><i class="fa-solid fa-globe text-blue-400 mr-1"></i> Buscar en Internet</span>
+                                        <span><i class="fa-solid fa-globe text-blue-400 mr-1"></i> Buscar Fondos HD Online</span>
                                     </label>
                                     <div class="flex gap-1.5">
                                         <input type="text" id="image-search-input" placeholder="Ej: cielo, cruz, montañas..." class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500 transition">
@@ -449,10 +452,10 @@
                                             <i class="fa-solid fa-rotate-right"></i>
                                         </button>
                                     </div>
-                                    <div class="text-[9px] text-gray-500">Puedes usar oraciones o palabras clave.</div>
+                                    <div class="text-[9px] text-gray-400">Las imágenes se obtienen en resolución HD 1920x1080 con previsualización en miniatura optimizada.</div>
                                     
-                                    <!-- Resultados de Búsqueda Dinámicos -->
-                                    <div id="online-image-results" class="grid grid-cols-2 gap-1.5 pt-1">
+                                    <!-- Resultados de Búsqueda Dinámicos con previsualización y carga correcta -->
+                                    <div id="online-image-results" class="grid grid-cols-2 gap-2 pt-1">
                                         <!-- Se pueblan por JS -->
                                     </div>
                                     <div id="image-search-loading" class="hidden flex justify-center py-4">
@@ -460,11 +463,11 @@
                                     </div>
                                 </div>
 
-                                <!-- Subir y Stock (Oculto Stock para dar prioridad al buscador, o mantenido como fallback) -->
+                                <!-- Subir imagen personalizada -->
                                 <div class="flex items-center gap-2">
                                     <label class="flex-1 bg-gray-900 hover:bg-gray-850 border border-dashed border-gray-700 p-2 rounded-xl flex flex-col items-center justify-center cursor-pointer transition">
                                         <i class="fa-solid fa-cloud-arrow-up text-gray-400 text-sm mb-1"></i>
-                                        <span class="text-[10px] font-bold text-gray-300">Subir imagen</span>
+                                        <span class="text-[10px] font-bold text-gray-300">Subir imagen desde equipo</span>
                                         <input type="file" id="bg-image-uploader" accept="image/*" class="hidden">
                                     </label>
                                 </div>
@@ -605,9 +608,7 @@
                 "3": [
                     "Había un hombre de los fariseos que se llamaba Nicodemo, un principal entre los judíos.",
                     "Este vino a Jesús de noche, y le dijo: Rabí, sabemos que has venido de Dios como maestro; porque nadie puede hacer estas señales que tú haces, si no está Dios con él.",
-                    "Respondió Jesús y le dijo: De cierto, de cierto te digo, que el que no naciere de nuevo, no puede ver el reino de Dios.",
-                    "Nicodemo le dijo: ¿Cómo puede un hombre nacer siendo viejo? ¿Puede acaso entrar por segunda vez en el vientre de su madre, y nacer?",
-                    "Respondió Jesús: De cierto, de cierto te digo, que el que no naciere de agua y del Espíritu, no puede entrar en el reino de Dios."
+                    "Respondió Jesús y le dijo: De cierto, de cierto te digo, que el que no naciere de nuevo, no puede ver el reino de Dios."
                 ],
                 "14": [
                     "No se turbe vuestro corazón; creéis en Dios, creed también en mí.",
@@ -620,8 +621,8 @@
         let selectedChapter = "23";
         let selectedVerseIdx = null;
 
-        let currentText = "";
-        let currentCitation = "";
+        let currentText = "Jehová es mi pastor; nada me faltará.";
+        let currentCitation = "Salmos 23:1";
         let isBlackout = false;
         let isClearText = false;
 
@@ -653,9 +654,7 @@
         let broadcastChannel = new BroadcastChannel('biblical-projector-channel');
         
         window.screenStream = null; 
-
-        // Initial default keywords for image search
-        let lastImageSearchQuery = "christian,church,nature";
+        let lastImageSearchQuery = "christian,church,nature,worship";
 
         function saveOperatorState() {
             const stateToSave = {
@@ -684,8 +683,8 @@
                     selectedChapter = saved.selectedChapter || selectedChapter;
                     selectedVerseIdx = saved.selectedVerseIdx !== undefined ? saved.selectedVerseIdx : selectedVerseIdx;
                     
-                    currentText = saved.currentText || "";
-                    currentCitation = saved.currentCitation || "";
+                    currentText = saved.currentText || currentText;
+                    currentCitation = saved.currentCitation || currentCitation;
                     isBlackout = saved.isBlackout || false;
                     isClearText = saved.isClearText || false;
                     
@@ -1098,52 +1097,42 @@
             let searchQuery = query.trim() || lastImageSearchQuery;
             lastImageSearchQuery = searchQuery;
             
-            // Format query for URL (replace spaces with commas or let urlencode handle it)
-            // Unsplash source format: https://images.unsplash.com/photo-... (not reliable without API key for search)
-            // Using a free placeholder service that accepts keywords (loremflickr or similar)
-            // Because we don't have an API key, we generate a few random variations of the keyword to force different images
-            
             const results = [];
-            // Generate 4 image options based on the query
+            // We use Pollinations AI Image API which guarantees high-resolution (1920x1080) output tailored to any keywords instantly without broken keys
             for (let i = 1; i <= 4; i++) {
-                // We use a combination of query and random param to avoid browser caching the same image
-                // Unsplash source random with keyword
-                const encodedQuery = encodeURIComponent(searchQuery.replace(/\s+/g, ','));
-                const rand = Math.floor(Math.random() * 10000);
-                // `source.unsplash.com` is deprecated but `images.unsplash.com` requires API.
-                // An alternative free service is 'https://loremflickr.com/1920/1080/{query}'
-                // Another is 'https://picsum.photos/1920/1080?random={rand}' but no keyword.
-                // Let's use a proxy or fallback. Since this is frontend only, we will use a known service that works.
-                // Pollinations.ai generates images based on prompt freely! Let's use that for actual relevant images.
+                const cleanQuery = encodeURIComponent(`${searchQuery} christian worship church background cinematic hd ${i}`);
+                const seed = Math.floor(Math.random() * 100000) + i;
                 
-                // Using Pollinations API (Free AI image generation based on prompt - perfect for open text search without keys)
-                const prompt = encodeURIComponent(`beautiful landscape background for christian church presentation, ${searchQuery}, highly detailed, cinematic lighting, hd`);
-                const imgUrl = `https://image.pollinations.ai/prompt/${prompt}?width=1920&height=1080&nologo=true&seed=${rand}`;
+                // Full high resolution URL for projection
+                const highResUrl = `https://image.pollinations.ai/prompt/${cleanQuery}?width=1920&height=1080&nologo=true&seed=${seed}`;
+                // Optimized lower resolution URL for instant preview loading without lag
+                const thumbUrl = `https://image.pollinations.ai/prompt/${cleanQuery}?width=480&height=270&nologo=true&seed=${seed}`;
                 
-                results.push({ url: imgUrl, title: `Resultado ${i}` });
+                results.push({ thumb: thumbUrl, full: highResUrl, title: `Fondo HD ${i}` });
             }
 
-            // Simulate network delay
+            // Simulate slight asynchronous tick to render spinner smoothly
             setTimeout(() => {
                 loading.classList.add('hidden');
                 
                 results.forEach((img, idx) => {
                     const btn = document.createElement('button');
-                    btn.className = "h-16 rounded-xl border border-white/10 overflow-hidden relative group transition hover:border-blue-500 focus:outline-none focus:border-blue-500 bg-gray-800";
+                    btn.className = "h-20 rounded-xl border border-white/10 overflow-hidden relative group transition hover:border-blue-500 focus:outline-none focus:border-blue-500 bg-gray-800 shadow-md";
                     btn.innerHTML = `
-                        <img src="${img.url}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300 opacity-0" onload="this.classList.remove('opacity-0')" alt="Result ${idx+1}" />
-                        <div class="absolute inset-0 flex items-center justify-center bg-gray-900/50 -z-10">
+                        <img src="${img.thumb}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300 opacity-0" onload="this.classList.remove('opacity-0')" alt="Preview ${idx+1}" />
+                        <div class="absolute inset-0 flex items-center justify-center bg-gray-900/60 -z-10">
                             <div class="loader-spinner"></div>
                         </div>
+                        <div class="absolute bottom-0 inset-x-0 bg-black/60 backdrop-blur-xs px-1 py-0.5 text-[9px] text-gray-300 font-bold text-center">HD 1080p</div>
                     `;
                     btn.onclick = () => {
-                        projectionStyles.bgImage = img.url;
+                        projectionStyles.bgImage = img.full;
                         syncToProjector();
-                        showToast(`Fondo de búsqueda seleccionado`, "info");
+                        showToast(`Fondo HD seleccionado correctamente`, "success");
                     };
                     container.appendChild(btn);
                 });
-            }, 800);
+            }, 600);
         }
 
         function updateBgTypeUI(type) {
@@ -1174,7 +1163,6 @@
             else if (type === 'image') {
                 palImg.classList.remove('hidden');
                 overlayOp.classList.remove('hidden');
-                // Trigger initial search if container is empty
                 if (document.getElementById('online-image-results').innerHTML.trim() === '') {
                     searchOnlineImages(""); 
                 }
@@ -1221,13 +1209,11 @@
         }
 
         function setupEventListeners() {
-            // General Controls
             document.getElementById('room-id-input').onchange = (e) => { roomId = e.target.value.toUpperCase().trim() || "GEN-777"; };
             document.getElementById('btn-copy-link').onclick = () => {
                 navigator.clipboard.writeText(window.location.href).then(() => showToast("Enlace copiado", "success")).catch(() => showToast("Enlace copiado", "success"));
             };
 
-            // Bible Navigation
             document.getElementById('search-book').oninput = renderBooks;
             document.getElementById('btn-prev-chapter').onclick = () => {
                 const chapters = Object.keys(bibleData[selectedBook] || {});
@@ -1248,7 +1234,6 @@
                 }
             };
 
-            // Projector Controls
             document.getElementById('btn-blackout').onclick = () => {
                 isBlackout = !isBlackout;
                 const btn = document.getElementById('btn-blackout');
@@ -1267,7 +1252,6 @@
                 currentText = ""; currentCitation = ""; selectedVerseIdx = null; renderVerses(); syncToProjector(); showToast("Proyección limpiada", "info");
             };
 
-            // Tabs
             const tabElements = {
                 culto: { btn: document.getElementById('btn-tab-culto'), content: document.getElementById('tab-culto') },
                 video: { btn: document.getElementById('btn-tab-video'), content: document.getElementById('tab-video') },
@@ -1285,7 +1269,6 @@
             tabElements.video.btn.onclick = () => switchTab('video');
             tabElements.estilos.btn.onclick = () => switchTab('estilos');
 
-            // Image Search
             document.getElementById('btn-search-images').onclick = () => {
                 searchOnlineImages(document.getElementById('image-search-input').value);
             };
@@ -1298,7 +1281,6 @@
                 searchOnlineImages(document.getElementById('image-search-input').value);
             };
 
-            // File Uploaders
             document.getElementById('bg-image-uploader').onchange = (e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -1339,7 +1321,6 @@
                 syncToProjector();
             };
 
-            // Logo positioning buttons
             const posBtns = {
                 'btn-logo-tl': 'top-left', 'btn-logo-tc': 'top-center', 'btn-logo-tr': 'top-right',
                 'btn-logo-bl': 'bottom-left', 'btn-logo-bc': 'bottom-center', 'btn-logo-br': 'bottom-right'
@@ -1352,7 +1333,6 @@
                 };
             });
 
-            // Design Controls
             document.getElementById('btn-bg-color').onclick = () => updateBgTypeUI('color');
             document.getElementById('btn-bg-grad').onclick = () => updateBgTypeUI('gradient');
             document.getElementById('btn-bg-img').onclick = () => updateBgTypeUI('image');
@@ -1399,7 +1379,6 @@
             });
             document.getElementById('style-textcolor').oninput = (e) => { projectionStyles.textcolor = e.target.value; syncToProjector(); };
 
-            // Culto List Setup
             document.getElementById('btn-add-custom-culto').onclick = () => {
                 const input = document.getElementById('custom-culto-text');
                 const val = input.value.trim();
@@ -1410,7 +1389,6 @@
             });
             document.getElementById('btn-clear-culto-list').onclick = () => { cultoList = []; renderCultoList(); saveOperatorState(); };
 
-            // Media Setup
             document.getElementById('btn-quick-screen-share').onclick = startScreenCapture;
             document.getElementById('btn-start-screen-capture').onclick = startScreenCapture;
             document.getElementById('btn-stop-screen-capture').onclick = stopScreenCapture;
@@ -1443,7 +1421,6 @@
                 syncToProjector(); showToast("Detenido", "info");
             };
 
-            // External & Local Modals
             document.getElementById('btn-toggle-local-fs').onclick = () => {
                 document.getElementById('local-fullscreen-container').classList.toggle('hidden');
                 syncToProjector();
@@ -1506,8 +1483,13 @@
                                             if(!ht&&data.styles.logoUrl&&data.mediaMode==='none'){ ls.src=data.styles.logoUrl; ls.classList.remove('hidden'); }else ls.classList.add('hidden');
                                             if(ht&&data.styles.logoUrl&&data.styles.showLogoCorner){
                                                 lc.src=data.styles.logoUrl; lc.classList.remove('hidden'); lc.className="absolute max-w-[12%] max-h-[15%] object-contain z-30 transition-all ";
-                                                const p=data.styles.logoPosition||'top-left';
-                                                if(p==='top-left')lc.classList.add('top-4','left-4'); else if(p==='top-center')lc.classList.add('top-4','left-1/2','-translate-x-1/2'); else if(p==='top-right')lc.classList.add('top-4','right-4'); else if(p==='bottom-left')lc.classList.add('bottom-4','left-4'); else if(p==='bottom-center')lc.classList.add('bottom-4','left-1/2','-translate-x-1/2'); else lc.classList.add('bottom-4','right-4');
+                                                const pos=data.styles.logoPosition||'top-left';
+                                                if(pos==='top-left')lc.classList.add('top-4','left-4');
+                                                else if(pos==='top-center')lc.classList.add('top-4','left-1/2','-translate-x-1/2');
+                                                else if(pos==='top-right')lc.classList.add('top-4','right-4');
+                                                else if(pos==='bottom-left')lc.classList.add('bottom-4','left-4');
+                                                else if(pos==='bottom-center')lc.classList.add('bottom-4','left-1/2','-translate-x-1/2');
+                                                else lc.classList.add('bottom-4','right-4');
                                             }else lc.classList.add('hidden');
                                         }
                                     }
@@ -1517,14 +1499,14 @@
                         `);
                         externalWindow.document.close();
                         showToast("Ventana de proyección abierta", "success");
-                        setTimeout(() => syncToProjector(), 300);
                     }
-                } else externalWindow.focus();
+                } else {
+                    externalWindow.focus();
+                }
             };
         }
 
-        // INIT
-        window.addEventListener('DOMContentLoaded', () => {
+        window.onload = function() {
             loadOperatorState();
             renderBooks();
             renderChapters();
@@ -1532,7 +1514,7 @@
             renderCultoList();
             setupEventListeners();
             syncToProjector();
-        });
+        };
     </script>
 </body>
 </html>
