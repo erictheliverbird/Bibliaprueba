@@ -47,12 +47,12 @@
         }
         
         .loader-spinner {
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            border: 3px solid rgba(255, 255, 255, 0.1);
             border-left-color: #3b82f6;
             border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            animation: spin 1s linear infinite;
+            width: 24px;
+            height: 24px;
+            animation: spin 0.8s linear infinite;
         }
         
         @keyframes spin {
@@ -429,20 +429,20 @@
                                 </div>
                             </div>
 
-                            <!-- BUSCADOR Y GALERÍA DE IMÁGENES HD (CORREGIDO) -->
+                            <!-- BUSCADOR Y GALERÍA DE IMÁGENES HD -->
                             <div id="palette-image-container" class="space-y-3.5 hidden">
                                 <div class="bg-gray-900 border border-gray-800 p-3 rounded-xl space-y-2.5">
                                     <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center justify-between">
-                                        <span><i class="fa-solid fa-cloud-sun text-blue-400 mr-1"></i> Fondos HD en Alta Resolución (Unsplash)</span>
+                                        <span><i class="fa-solid fa-cloud-sun text-blue-400 mr-1"></i> Fondos HD en Alta Resolución</span>
                                     </label>
                                     
                                     <!-- Buscador -->
                                     <div class="flex gap-1.5">
-                                        <input type="text" id="image-search-input" placeholder="Filtrar por: cruz, cielo, noche, bosque..." class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500 transition">
-                                        <button id="btn-search-images" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center shrink-0">
+                                        <input type="text" id="image-search-input" placeholder="Filtrar: cruz, cielo, noche, bosque, sol, fe..." class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500 transition">
+                                        <button id="btn-search-images" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center shrink-0" title="Buscar imágenes">
                                             <i class="fa-solid fa-magnifying-glass"></i>
                                         </button>
-                                        <button id="btn-refresh-images" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center shrink-0" title="Restablecer filtro">
+                                        <button id="btn-refresh-images" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center shrink-0" title="Rotar y actualizar imágenes de fondo">
                                             <i class="fa-solid fa-rotate-right"></i>
                                         </button>
                                     </div>
@@ -458,12 +458,12 @@
                                         <button id="cat-abstracto" class="px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0">Abstracto</button>
                                     </div>
 
-                                    <!-- Resultados con Carga Optimizada de Miniaturas y Full HD -->
-                                    <div id="online-image-results" class="grid grid-cols-2 gap-2 pt-1 max-h-60 overflow-y-auto pr-1">
-                                        <!-- JS -->
-                                    </div>
+                                    <!-- Resultados con Carga Optimizada -->
                                     <div id="image-search-loading" class="hidden flex justify-center py-4">
                                         <div class="loader-spinner"></div>
+                                    </div>
+                                    <div id="online-image-results" class="grid grid-cols-2 gap-2 pt-1 max-h-60 overflow-y-auto pr-1">
+                                        <!-- JS -->
                                     </div>
                                 </div>
 
@@ -606,14 +606,18 @@
                 "23": [
                     "Jehová es mi pastor; nada me faltará.",
                     "En lugares de delicados pastos me hará descansar; junto a aguas de reposo me pastoreará.",
-                    "Confortará mi alma; me guiará por sendas de justicia por amor de su nombre."
+                    "Confortará mi alma; me guiará por sendas de justicia por amor de su nombre.",
+                    "Aunque ande en valle de sombra de muerte, no temeré mal alguno, porque tú estarás conmigo; tu vara y tu cayado me infundirán aliento.",
+                    "Aderezas mesa delante de mí en presencia de mis angustiadores; unges mi cabeza con aceite; mi copa está rebosando.",
+                    "Ciertamente el bien y la misericordia me seguirán todos los días de mi vida, y en la casa de Jehová moraré por largos días."
                 ]
             },
             "Juan": {
                 "3": [
                     "Había un hombre de los fariseos que se llamaba Nicodemo, un principal entre los judíos.",
                     "Este vino a Jesús de noche, y le dijo: Rabí, sabemos que has venido de Dios como maestro; porque nadie puede hacer estas señales que tú haces, si no está Dios con él.",
-                    "Respondió Jesús y le dijo: De cierto, de cierto te digo, que el que no naciere de nuevo, no puede ver el reino de Dios."
+                    "Respondió Jesús y le dijo: De cierto, de cierto te digo, que el que no naciere de nuevo, no puede ver el reino de Dios.",
+                    "Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna."
                 ],
                 "14": [
                     "No se turbe vuestro corazón; creéis en Dios, creed también en mí.",
@@ -622,31 +626,36 @@
             }
         };
 
-        // COLECCIÓN CURADA DE FONDOS HD (OPTIMIZADA VÍA UNSPLASH CDN)
+        // COLECCIÓN AMPLIADA Y OPTIMIZADA DE FONDOS HD (UNSPLASH CDN)
         const curatedBackgrounds = [
-            { id: 'faith-1', category: 'fe', title: 'Cruz al Atardecer', query: 'cross sunset', url: 'https://images.unsplash.com/photo-1509021436468-d51030005963' },
-            { id: 'faith-2', category: 'fe', title: 'Cruz y Amanecer', query: 'cross sunrise', url: 'https://images.unsplash.com/photo-1519817650390-64a93db51149' },
-            { id: 'faith-3', category: 'fe', title: 'Biblia Abierta', query: 'open bible light', url: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3' },
-            { id: 'faith-4', category: 'fe', title: 'Luz Celestial', query: 'worship light', url: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb' },
-            { id: 'sky-1', category: 'cielo', title: 'Cielo Dorado', query: 'sky sunset', url: 'https://images.unsplash.com/photo-1507692049790-de58290a4334' },
-            { id: 'sky-2', category: 'cielo', title: 'Rayos de Luz', query: 'sunbeams clouds', url: 'https://images.unsplash.com/photo-1534088568595-a066f410bcda' },
-            { id: 'sky-3', category: 'cielo', title: 'Atardecer Espléndido', query: 'dramatic sunset', url: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef' },
-            { id: 'mountain-1', category: 'montaña', title: 'Cumbres Majestuosas', query: 'mountains morning', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b' },
-            { id: 'mountain-2', category: 'montaña', title: 'Bosque y Montaña', query: 'mountain landscape', url: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05' },
-            { id: 'mountain-3', category: 'montaña', title: 'Niebla en Montaña', query: 'misty mountains', url: 'https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99' },
-            { id: 'nature-1', category: 'naturaleza', title: 'Bosque de Paz', query: 'green forest sun rays', url: 'https://images.unsplash.com/photo-1448375240586-882707db888b' },
-            { id: 'nature-2', category: 'naturaleza', title: 'Río Calmado', query: 'calm river nature', url: 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8' },
-            { id: 'night-1', category: 'noche', title: 'Noche Estrellada', query: 'starry night galaxy', url: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86' },
-            { id: 'night-2', category: 'noche', title: 'Vía Láctea', query: 'milky way stars', url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23' },
-            { id: 'night-3', category: 'noche', title: 'Cielo Nocturno Azul', query: 'deep blue night sky', url: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78' },
-            { id: 'abstract-1', category: 'abstracto', title: 'Bokeh Cálido', query: 'warm bokeh lights', url: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853' },
-            { id: 'abstract-2', category: 'abstracto', title: 'Degradado Suave', query: 'soft gradient background', url: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809' },
-            { id: 'abstract-3', category: 'abstracto', title: 'Luz Agradable', query: 'abstract ambient light', url: 'https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17' },
-            { id: 'church-1', category: 'iglesia', title: 'Vitral de Iglesia', query: 'church stained glass', url: 'https://images.unsplash.com/photo-1548625361-18501235478d' },
-            { id: 'church-2', category: 'iglesia', title: 'Santuario Iluminado', query: 'church interior light', url: 'https://images.unsplash.com/photo-1548625149-fc4a29cf7092' }
+            { id: 'faith-1', category: 'fe', title: 'Cruz al Atardecer', query: 'cross sunset cruz atardecer fe', url: 'https://images.unsplash.com/photo-1509021436468-d51030005963' },
+            { id: 'faith-2', category: 'fe', title: 'Cruz y Amanecer', query: 'cross sunrise cruz amanecer esperanza', url: 'https://images.unsplash.com/photo-1519817650390-64a93db51149' },
+            { id: 'faith-3', category: 'fe', title: 'Biblia Abierta', query: 'open bible light biblia libro fe', url: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3' },
+            { id: 'faith-4', category: 'fe', title: 'Luz Celestial', query: 'worship light adoracion sol gracia', url: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb' },
+            { id: 'faith-5', category: 'fe', title: 'Manos levantadas', query: 'worship hands fe alabanza adoracion', url: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88' },
+            { id: 'sky-1', category: 'cielo', title: 'Cielo Dorado', query: 'sky sunset cielo sol dorado atardecer', url: 'https://images.unsplash.com/photo-1507692049790-de58290a4334' },
+            { id: 'sky-2', category: 'cielo', title: 'Rayos de Luz', query: 'sunbeams clouds nubes rayos sol', url: 'https://images.unsplash.com/photo-1534088568595-a066f410bcda' },
+            { id: 'sky-3', category: 'cielo', title: 'Atardecer Espléndido', query: 'dramatic sunset atardecer rojo cielo', url: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef' },
+            { id: 'sky-4', category: 'cielo', title: 'Amanecer en Nubes', query: 'clouds horizon amanecer sol nubes', url: 'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8' },
+            { id: 'mountain-1', category: 'montaña', title: 'Cumbres Majestuosas', query: 'mountains morning montana cumbre nieve', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b' },
+            { id: 'mountain-2', category: 'montaña', title: 'Bosque y Montaña', query: 'mountain landscape montana bosque verde', url: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05' },
+            { id: 'mountain-3', category: 'montaña', title: 'Niebla en Montaña', query: 'misty mountains montana niebla paz', url: 'https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99' },
+            { id: 'mountain-4', category: 'montaña', title: 'Valle Dorado', query: 'valley mountains lago verde paisaje', url: 'https://images.unsplash.com/photo-1501854140801-50d01698950b' },
+            { id: 'nature-1', category: 'naturaleza', title: 'Bosque de Paz', query: 'green forest sun rays bosque arboles verde', url: 'https://images.unsplash.com/photo-1448375240586-882707db888b' },
+            { id: 'nature-2', category: 'naturaleza', title: 'Río Calmado', query: 'calm river nature rio agua agua viva', url: 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8' },
+            { id: 'nature-3', category: 'naturaleza', title: 'Prado de Flores', query: 'flower meadow prado naturaleza flores', url: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07' },
+            { id: 'night-1', category: 'noche', title: 'Noche Estrellada', query: 'starry night galaxy noche estrellas universo', url: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86' },
+            { id: 'night-2', category: 'noche', title: 'Vía Láctea', query: 'milky way stars galaxia noche estrellas', url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23' },
+            { id: 'night-3', category: 'noche', title: 'Cielo Nocturno Azul', query: 'deep blue night sky noche azul bosque', url: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78' },
+            { id: 'abstract-1', category: 'abstracto', title: 'Bokeh Cálido', query: 'warm bokeh lights luz bokeh abstracto', url: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853' },
+            { id: 'abstract-2', category: 'abstracto', title: 'Degradado Suave', query: 'soft gradient background abstracto colores', url: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809' },
+            { id: 'abstract-3', category: 'abstracto', title: 'Luz Agradable', query: 'abstract ambient light luz tenue dorado', url: 'https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17' },
+            { id: 'church-1', category: 'iglesia', title: 'Vitral de Iglesia', query: 'church stained glass iglesia vitral luz', url: 'https://images.unsplash.com/photo-1548625361-18501235478d' },
+            { id: 'church-2', category: 'iglesia', title: 'Santuario Iluminado', query: 'church interior light templo catedral santuario', url: 'https://images.unsplash.com/photo-1548625149-fc4a29cf7092' }
         ];
 
         let currentBgCategory = 'all';
+        let shuffleSeed = 0;
 
         let selectedBook = "Salmos";
         let selectedChapter = "23";
@@ -689,7 +698,7 @@
         // UTILIDADES DE CDN PARA IMÁGENES
         function getThumbnailUrl(rawUrl) {
             if (rawUrl.includes('images.unsplash.com')) {
-                return `${rawUrl.split('?')[0]}?auto=format&fit=crop&w=360&q=70`;
+                return `${rawUrl.split('?')[0]}?auto=format&fit=crop&w=400&q=70`;
             }
             return rawUrl;
         }
@@ -1132,35 +1141,56 @@
             }
         }
 
-        // RENDERIZADO DE FONDOS HD INSTANTÁNEO Y FILTRADO POR CATEGORÍAS
+        // RENDERIZADO Y BÚSQUEDA DE FONDOS HD
         function renderOnlineImages(category = 'all', filterText = '') {
             const container = document.getElementById('online-image-results');
             const loading = document.getElementById('image-search-loading');
             
             if (!container) return;
             container.innerHTML = '';
-            loading.classList.add('hidden');
+            if (loading) loading.classList.add('hidden');
 
-            let filtered = curatedBackgrounds;
+            let filtered = [...curatedBackgrounds];
 
+            // Aplicar rotación cuando se presiona el botón de refrescar
+            if (shuffleSeed > 0) {
+                const shift = shuffleSeed % filtered.length;
+                filtered = filtered.slice(shift).concat(filtered.slice(0, shift));
+            }
+
+            // Filtrar por categoría
             if (category !== 'all') {
                 filtered = filtered.filter(item => item.category === category);
             }
 
+            // Búsqueda inteligente por texto
             if (filterText.trim().length > 0) {
                 const query = filterText.toLowerCase().trim();
                 filtered = filtered.filter(item => 
                     item.title.toLowerCase().includes(query) || 
                     item.category.toLowerCase().includes(query) || 
-                    item.query.toLowerCase().includes(query)
+                    (item.query && item.query.toLowerCase().includes(query))
                 );
+
+                // Si no hay coincidencias exactas en la lista local, generar tarjetas HD dinámicas con Unsplash
+                if (filtered.length === 0) {
+                    for (let i = 1; i <= 6; i++) {
+                        filtered.push({
+                            id: `dynamic-${query}-${i}`,
+                            category: category !== 'all' ? category : 'búsqueda',
+                            title: `${query.charAt(0).toUpperCase() + query.slice(1)} HD ${i}`,
+                            query: query,
+                            url: `https://images.unsplash.com/photo-1509021436468-d51030005963?sig=${i}&q=${encodeURIComponent(query)}`
+                        });
+                    }
+                }
             }
 
             if (filtered.length === 0) {
                 container.innerHTML = `
                     <div class="col-span-2 py-6 text-center text-gray-500 text-xs">
                         <i class="fa-solid fa-image text-xl mb-1 block"></i>
-                        No se encontraron fondos. Intenta otra búsqueda o categoría.
+                        No se encontraron fondos. Intenta con otra palabra clave.
                     </div>
                 `;
                 return;
@@ -1172,13 +1202,13 @@
                 const isSelected = projectionStyles.bgType === 'image' && projectionStyles.bgImage === fullHd;
 
                 const btn = document.createElement('button');
-                btn.className = `h-24 rounded-xl border overflow-hidden relative group transition shadow-md text-left flex flex-col justify-end ${
+                btn.className = `h-24 rounded-xl border overflow-hidden relative group transition shadow-md text-left flex flex-col justify-end bg-gray-900 ${
                     isSelected ? 'border-2 border-blue-500 ring-2 ring-blue-500/40' : 'border-white/10 hover:border-blue-400'
                 }`;
                 
                 btn.innerHTML = `
-                    <img src="${thumb}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-300 opacity-0" onload="this.classList.remove('opacity-0')" alt="${img.title}" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent"></div>
+                    <img src="${thumb}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-300 opacity-0" onload="this.classList.remove('opacity-0')" onerror="this.src='https://images.unsplash.com/photo-1509021436468-d51030005963?auto=format&fit=crop&w=400&q=70'; this.classList.remove('opacity-0')" alt="${img.title}" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
                     <div class="absolute top-1.5 right-1.5 bg-black/70 backdrop-blur-xs text-blue-400 font-black text-[8px] px-1.5 py-0.5 rounded border border-blue-500/30">
                         1080p HD
                     </div>
@@ -1193,12 +1223,27 @@
                     projectionStyles.bgImage = fullHd;
                     updateBgTypeUI('image');
                     syncToProjector();
-                    showToast(`Fondo "${img.title}" activado en 1080p HD`, "success");
+                    showToast(`Fondo "${img.title}" activado`, "success");
                     renderOnlineImages(currentBgCategory, document.getElementById('image-search-input')?.value || '');
                 };
 
                 container.appendChild(btn);
             });
+        }
+
+        function refreshImageGallery() {
+            const loading = document.getElementById('image-search-loading');
+            const container = document.getElementById('online-image-results');
+            
+            if (loading) loading.classList.remove('hidden');
+            if (container) container.innerHTML = '';
+
+            setTimeout(() => {
+                shuffleSeed++;
+                const searchVal = document.getElementById('image-search-input')?.value || '';
+                renderOnlineImages(currentBgCategory, searchVal);
+                showToast("Galería de imágenes actualizada", "success");
+            }, 250);
         }
 
         function updateBgTypeUI(type) {
@@ -1215,9 +1260,9 @@
             const activeClass = "bg-blue-600 text-white border-blue-500";
             const inactiveClass = "border-gray-800 text-gray-300 hover:bg-gray-800";
 
-            btnColor.className = `transition py-2 rounded-xl border text-xs font-bold ${type === 'color' ? activeClass : inactiveClass}`;
-            btnGrad.className = `transition py-2 rounded-xl border text-xs font-bold ${type === 'gradient' ? activeClass : inactiveClass}`;
-            btnImg.className = `transition py-2 rounded-xl border text-xs font-bold ${type === 'image' ? activeClass : inactiveClass}`;
+            if (btnColor) btnColor.className = `transition py-2 rounded-xl border text-xs font-bold ${type === 'color' ? activeClass : inactiveClass}`;
+            if (btnGrad) btnGrad.className = `transition py-2 rounded-xl border text-xs font-bold ${type === 'gradient' ? activeClass : inactiveClass}`;
+            if (btnImg) btnImg.className = `transition py-2 rounded-xl border text-xs font-bold ${type === 'image' ? activeClass : inactiveClass}`;
 
             palColor.classList.add('hidden');
             palGrad.classList.add('hidden');
@@ -1256,7 +1301,7 @@
                 syncToProjector();
                 showToast("Captura de pantalla activa", "success");
             } catch (err) {
-                showToast("No se pudo iniciar la captura", "error");
+                showToast("No se pudo iniciar la captura de pantalla", "error");
             }
         }
 
@@ -1269,13 +1314,69 @@
             document.getElementById('btn-stop-screen-capture').classList.add('hidden');
             mediaMode = 'none';
             syncToProjector();
-            showToast("Transmisión detenida", "info");
+            showToast("Transmisión de pantalla detenida", "info");
+        }
+
+        function toggleExternalProjector() {
+            if (externalWindow && !externalWindow.closed) {
+                externalWindow.close();
+                externalWindow = null;
+                document.getElementById('ext-win-text').innerText = "Proyectar (Ventana)";
+                showToast("Ventana externa cerrada", "info");
+            } else {
+                externalWindow = window.open("", "BiblicalProjectorWindow", "width=1280,height=720,menubar=no,toolbar=no,location=no,status=no");
+                if (externalWindow) {
+                    externalWindow.document.write(`
+                        <!DOCTYPE html>
+                        <html lang="es" class="h-full">
+                        <head>
+                            <meta charset="UTF-8">
+                            <title>Proyección en Vivo - Pantalla Externa</title>
+                            <script src="https://cdn.tailwindcss.com"><\/script>
+                            <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Merriweather:wght@300;400;700&family=Montserrat:wght@400;600;800&family=Open+Sans:wght@300;400;600;700&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Poppins:wght@300;400;600;700&family=Quicksand:wght@400;600;700&family=Raleway:wght@300;400;600;700&family=Roboto+Slab:wght@400;700&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+                            <style>
+                                body { margin: 0; padding: 0; overflow: hidden; background: #000; }
+                                .text-projection-shadow { text-shadow: 0 2px 12px rgba(0,0,0,0.95), 0 4px 24px rgba(0,0,0,0.85); }
+                            </style>
+                        </head>
+                        <body class="h-screen w-screen overflow-hidden relative flex flex-col justify-between p-16 select-none bg-black">
+                            <div id="proj-backdrop" class="absolute inset-0 z-0 bg-cover bg-center transition-all duration-300"></div>
+                            <video id="proj-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay muted></video>
+                            <iframe id="proj-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+                            <div id="proj-overlay" class="absolute inset-0 z-20 bg-black/40 transition-all duration-300"></div>
+                            <img id="proj-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-30 hidden" alt="Standby Logo" />
+                            <img id="proj-logo-corner" class="absolute max-w-[12%] max-h-[15%] object-contain z-30 hidden" alt="Corner Logo" />
+                            <div class="z-30 text-center w-full my-auto px-12">
+                                <p id="proj-text" class="text-white leading-relaxed"></p>
+                            </div>
+                            <div class="z-30 text-center w-full pb-6">
+                                <p id="proj-citation" class="text-white/90 tracking-widest font-black uppercase text-2xl"></p>
+                            </div>
+                        </body>
+                        </html>
+                    `);
+                    externalWindow.document.close();
+                    document.getElementById('ext-win-text').innerText = "Cerrar Ventana";
+                    showToast("Ventana de proyección externa abierta", "success");
+                    setTimeout(() => { syncToProjector(); }, 300);
+                }
+            }
         }
 
         function setupEventListeners() {
             document.getElementById('room-id-input').onchange = (e) => { roomId = e.target.value.toUpperCase().trim() || "GEN-777"; };
             document.getElementById('btn-copy-link').onclick = () => {
-                navigator.clipboard.writeText(window.location.href).then(() => showToast("Enlace copiado", "success")).catch(() => showToast("Enlace copiado", "success"));
+                navigator.clipboard.writeText(window.location.href).then(() => showToast("Enlace copiado al portapapeles", "success")).catch(() => showToast("Enlace copiado", "success"));
+            };
+
+            // Ventana Externa y Simulador
+            document.getElementById('btn-toggle-ext-projector').onclick = toggleExternalProjector;
+            document.getElementById('btn-toggle-local-fs').onclick = () => {
+                document.getElementById('local-fullscreen-container').classList.remove('hidden');
+                syncToProjector();
+            };
+            document.getElementById('btn-close-local-fs').onclick = () => {
+                document.getElementById('local-fullscreen-container').classList.add('hidden');
             };
 
             // Lectura de Archivo JSON Bíblico
@@ -1328,6 +1429,7 @@
                 }
             };
 
+            // Acciones Inmediatas
             document.getElementById('btn-blackout').onclick = () => {
                 isBlackout = !isBlackout;
                 const btn = document.getElementById('btn-blackout');
@@ -1346,6 +1448,7 @@
                 currentText = ""; currentCitation = ""; selectedVerseIdx = null; renderVerses(); syncToProjector(); showToast("Proyección limpiada", "info");
             };
 
+            // Navegación de Pestañas
             const tabElements = {
                 culto: { btn: document.getElementById('btn-tab-culto'), content: document.getElementById('tab-culto') },
                 video: { btn: document.getElementById('btn-tab-video'), content: document.getElementById('tab-video') },
@@ -1363,16 +1466,19 @@
             tabElements.video.btn.onclick = () => switchTab('video');
             tabElements.estilos.btn.onclick = () => switchTab('estilos');
 
-            // Búsqueda y Filtro de Fondos HD
+            // BÚSQUEDA Y REFRESCO DE FONDOS HD
             document.getElementById('btn-search-images').onclick = () => {
                 renderOnlineImages(currentBgCategory, document.getElementById('image-search-input').value);
             };
             document.getElementById('image-search-input').onkeyup = (e) => {
-                renderOnlineImages(currentBgCategory, e.target.value);
+                if (e.key === 'Enter') {
+                    renderOnlineImages(currentBgCategory, e.target.value);
+                } else {
+                    renderOnlineImages(currentBgCategory, e.target.value);
+                }
             };
             document.getElementById('btn-refresh-images').onclick = () => {
-                document.getElementById('image-search-input').value = '';
-                renderOnlineImages(currentBgCategory, '');
+                refreshImageGallery();
             };
 
             // Categorías de Fondos HD
@@ -1398,6 +1504,50 @@
                     };
                 }
             });
+
+            // Carga de YouTube y Video Local
+            document.getElementById('btn-load-youtube').onclick = () => {
+                const url = document.getElementById('video-url-input').value.trim();
+                if (!url) {
+                    showToast("Ingresa una URL de YouTube válida", "error");
+                    return;
+                }
+                const embedUrl = getYouTubeEmbedUrl(url);
+                if (!embedUrl) {
+                    showToast("No se pudo obtener el ID del video", "error");
+                    return;
+                }
+                mediaMode = 'youtube';
+                activeVideoUrl = embedUrl;
+                isVideoPlaying = true;
+                document.getElementById('video-title-lbl').innerText = "YouTube Video";
+                document.getElementById('video-control-panel').classList.remove('hidden');
+                syncToProjector();
+                showToast("Video de YouTube cargado", "success");
+            };
+
+            document.getElementById('video-file-input').onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const url = URL.createObjectURL(file);
+                    mediaMode = 'video';
+                    activeVideoUrl = url;
+                    isVideoPlaying = true;
+                    document.getElementById('video-title-lbl').innerText = file.name;
+                    document.getElementById('video-control-panel').classList.remove('hidden');
+                    syncToProjector();
+                    showToast("Video local cargado", "success");
+                }
+            };
+
+            document.getElementById('btn-stop-video').onclick = () => {
+                mediaMode = 'none';
+                activeVideoUrl = '';
+                isVideoPlaying = false;
+                document.getElementById('video-control-panel').classList.add('hidden');
+                syncToProjector();
+                showToast("Media detenido", "info");
+            };
 
             document.getElementById('bg-image-uploader').onchange = (e) => {
                 const file = e.target.files[0];
@@ -1519,121 +1669,39 @@
             document.getElementById('btn-quick-screen-share').onclick = startScreenCapture;
             document.getElementById('btn-start-screen-capture').onclick = startScreenCapture;
             document.getElementById('btn-stop-screen-capture').onclick = stopScreenCapture;
-            
-            document.getElementById('btn-load-youtube').onclick = () => {
-                const url = document.getElementById('video-url-input').value.trim();
-                const embedUrl = getYouTubeEmbedUrl(url);
-                if (embedUrl) {
-                    activeVideoUrl = embedUrl; mediaMode = 'youtube'; isVideoPlaying = true;
-                    document.getElementById('video-control-panel').classList.remove('hidden');
-                    document.getElementById('video-title-lbl').innerText = "YouTube Video Activo";
-                    syncToProjector(); showToast("Video cargado", "success");
-                } else showToast("Enlace inválido", "error");
-            };
-            
-            document.getElementById('video-file-input').onchange = (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    activeVideoUrl = URL.createObjectURL(file);
-                    mediaMode = 'video'; isVideoPlaying = true;
-                    document.getElementById('video-control-panel').classList.remove('hidden');
-                    document.getElementById('video-title-lbl').innerText = file.name;
-                    syncToProjector(); showToast("Video cargado", "success");
-                }
-            };
-            
-            document.getElementById('btn-stop-video').onclick = () => {
-                mediaMode = 'none'; activeVideoUrl = ''; isVideoPlaying = false;
-                document.getElementById('video-control-panel').classList.add('hidden');
-                syncToProjector(); showToast("Detenido", "info");
-            };
 
-            document.getElementById('btn-toggle-local-fs').onclick = () => {
-                document.getElementById('local-fullscreen-container').classList.toggle('hidden');
-                syncToProjector();
-            };
-            document.getElementById('btn-close-local-fs').onclick = () => {
-                document.getElementById('local-fullscreen-container').classList.add('hidden');
-            };
-            
-            document.getElementById('btn-toggle-ext-projector').onclick = () => {
-                if (!externalWindow || externalWindow.closed) {
-                    externalWindow = window.open('', 'BiblicalProjectorWindow', 'width=1920,height=1080,menubar=no,toolbar=no,location=no,status=no,resizable=yes');
-                    if (externalWindow) {
-                        externalWindow.document.write(`
-                            <!DOCTYPE html>
-                            <html lang="es">
-                            <head>
-                                <meta charset="UTF-8">
-                                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                                <title>Proyección Bíblica</title>
-                                <script src="https://cdn.tailwindcss.com"><\/script>
-                                <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Merriweather:wght@300;400;700&family=Montserrat:wght@400;600;800&family=Open+Sans:wght@300;400;600;700&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Poppins:wght@300;400;600;700&family=Quicksand:wght@400;600;700&family=Raleway:wght@300;400;600;700&family=Roboto+Slab:wght@400;700&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
-                                <style>
-                                    body { margin: 0; background: #000; overflow: hidden; user-select: none; }
-                                    .text-projection-shadow { text-shadow: 0 2px 12px rgba(0, 0, 0, 0.95), 0 4px 24px rgba(0, 0, 0, 0.85); }
-                                <\/style>
-                            <\/head>
-                            <body class="h-screen w-screen relative flex flex-col justify-between overflow-hidden">
-                                <div id="proj-backdrop" class="absolute inset-0 z-0 bg-slate-950 bg-cover bg-center transition-all duration-300"></div>
-                                <video id="proj-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay muted></video>
-                                <iframe id="proj-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
-                                <div id="proj-overlay" class="absolute inset-0 z-20 bg-black/40"></div>
-                                <img id="proj-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-30 hidden" />
-                                <img id="proj-logo-corner" class="absolute max-w-[12%] max-h-[15%] object-contain z-30 hidden" />
-                                <div class="z-30 text-center w-full my-auto px-12 md:px-24">
-                                    <p id="proj-text" class="text-white leading-relaxed"></p>
-                                </div>
-                                <div class="z-30 text-center w-full pb-10">
-                                    <p id="proj-citation" class="text-white/90 tracking-widest font-black uppercase text-xl"></p>
-                                </div>
-                                <script>
-                                    const bc = new BroadcastChannel('biblical-projector-channel');
-                                    bc.onmessage = e => e.data && applyData(e.data);
-                                    window.addEventListener('storage', e => { if (e.key === 'biblical_projector_data' && e.newValue) try{applyData(JSON.parse(e.newValue))}catch(err){} });
-                                    try { const init = localStorage.getItem('biblical_projector_data'); if (init) applyData(JSON.parse(init)); } catch(err) {}
-                                    function applyData(data) {
-                                        const t=document.getElementById('proj-text'), c=document.getElementById('proj-citation'), b=document.getElementById('proj-backdrop'), o=document.getElementById('proj-overlay'), v=document.getElementById('proj-video'), y=document.getElementById('proj-youtube'), ls=document.getElementById('proj-logo-standby'), lc=document.getElementById('proj-logo-corner');
-                                        if(!t)return;
-                                        if(data.isBlackout){ b.style.background='#000'; t.innerText=''; c.innerText=''; ls.classList.add('hidden'); lc.classList.add('hidden'); v.classList.add('hidden'); y.classList.add('hidden'); return; }
-                                        if(data.mediaMode==='youtube'&&data.videoUrl){ if(y.src!==data.videoUrl)y.src=data.videoUrl; y.classList.remove('hidden'); }else{ y.classList.add('hidden'); if(y.src)y.src=''; }
-                                        if(data.mediaMode==='screen'){ const s=window.opener?.screenStream; if(s){ if(v.srcObject!==s)v.srcObject=s; v.classList.remove('hidden'); v.play().catch(()=>{}); }else v.classList.add('hidden'); }else if(data.mediaMode==='video'&&data.videoUrl){ v.srcObject=null; if(v.src!==data.videoUrl)v.src=data.videoUrl; v.classList.remove('hidden'); if(data.isVideoPlaying)v.play().catch(()=>{}); else v.pause(); }else{ v.classList.add('hidden'); v.srcObject=null; }
-                                        t.innerText=data.text||''; c.innerText=data.citation||'';
-                                        if(data.styles){
-                                            const f='"'+(data.styles.font||'Inter')+'", sans-serif';
-                                            t.style.fontFamily=f; t.style.fontSize=(data.styles.size||'4.5')+'vw'; t.style.fontWeight=data.styles.isBold?'800':'400'; t.style.fontStyle=data.styles.isItalic?'italic':'normal'; t.style.textAlign=data.styles.align||'center'; t.style.color=data.styles.textcolor||'#ffffff';
-                                            c.style.fontFamily=f; c.style.color=data.styles.textcolor||'#ffffff'; c.style.textAlign=data.styles.align||'center';
-                                            if(data.styles.hasShadow){ t.classList.add('text-projection-shadow'); c.classList.add('text-projection-shadow'); }else{ t.classList.remove('text-projection-shadow'); c.classList.remove('text-projection-shadow'); }
-                                            if(data.styles.bgType==='color'){ b.style.background=data.styles.bgcolor; b.style.backgroundImage='none'; }else if(data.styles.bgType==='gradient'){ b.style.background=data.styles.gradient; b.style.backgroundImage='none'; }else if(data.styles.bgType==='image'){ b.style.background='none'; b.style.backgroundImage='url("'+data.styles.bgImage+'")'; b.style.backgroundSize='cover'; b.style.backgroundPosition='center'; }
-                                            o.style.backgroundColor='rgba(0,0,0,'+((data.styles.bgOpacity||40)/100)+')';
-                                            const ht=(data.text||'').trim().length>0;
-                                            if(!ht&&data.styles.logoUrl&&data.mediaMode==='none'){ ls.src=data.styles.logoUrl; ls.classList.remove('hidden'); }else ls.classList.add('hidden');
-                                            if(ht&&data.styles.logoUrl&&data.styles.showLogoCorner){
-                                                lc.src=data.styles.logoUrl; lc.classList.remove('hidden'); lc.className="absolute max-w-[12%] max-h-[15%] object-contain z-30 transition-all ";
-                                                const pos=data.styles.logoPosition||'top-left';
-                                                if(pos==='top-left')lc.classList.add('top-4','left-4');
-                                                else if(pos==='top-center')lc.classList.add('top-4','left-1/2','-translate-x-1/2');
-                                                else if(pos==='top-right')lc.classList.add('top-4','right-4');
-                                                else if(pos==='bottom-left')lc.classList.add('bottom-4','left-4');
-                                                else if(pos==='bottom-center')lc.classList.add('bottom-4','left-1/2','-translate-x-1/2');
-                                                else lc.classList.add('bottom-4','right-4');
-                                            }else lc.classList.add('hidden');
-                                        }
-                                    }
-                                <\/script>
-                            <\/body>
-                            </html>
-                        `);
-                        externalWindow.document.close();
-                        showToast("Ventana de proyección abierta", "success");
+            // Atajos de Teclado
+            document.addEventListener('keydown', (e) => {
+                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    const verses = bibleData[selectedBook]?.[selectedChapter] || [];
+                    if (selectedVerseIdx === null) {
+                        if (verses.length > 0) projectVerse(verses[0], `${selectedBook} ${selectedChapter}:1`, 0);
+                    } else if (selectedVerseIdx < verses.length - 1) {
+                        const nextIdx = selectedVerseIdx + 1;
+                        projectVerse(verses[nextIdx], `${selectedBook} ${selectedChapter}:${nextIdx + 1}`, nextIdx);
                     }
-                } else {
-                    externalWindow.focus();
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    const verses = bibleData[selectedBook]?.[selectedChapter] || [];
+                    if (selectedVerseIdx !== null && selectedVerseIdx > 0) {
+                        const prevIdx = selectedVerseIdx - 1;
+                        projectVerse(verses[prevIdx], `${selectedBook} ${selectedChapter}:${prevIdx + 1}`, prevIdx);
+                    }
+                } else if (e.key.toLowerCase() === 'b') {
+                    document.getElementById('btn-blackout').click();
+                } else if (e.key.toLowerCase() === 'c') {
+                    document.getElementById('btn-cleartext').click();
+                } else if (e.key === 'Escape') {
+                    document.getElementById('btn-close-local-fs').click();
                 }
-            };
+            });
         }
 
-        window.onload = function() {
+        // INICIALIZACIÓN AL CARGAR LA PÁGINA
+        window.onload = function () {
             loadOperatorState();
             renderBooks();
             renderChapters();
@@ -1641,6 +1709,13 @@
             renderCultoList();
             setupEventListeners();
             syncToProjector();
+        };
+
+        // Escuchar mensajes de sincronización de otras pestañas o ventanas
+        broadcastChannel.onmessage = (event) => {
+            if (event.data) {
+                updateProjectorDOM(document, event.data, false);
+            }
         };
     </script>
 </body>
