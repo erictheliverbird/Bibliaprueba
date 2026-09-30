@@ -76,7 +76,7 @@
                         PROYECTOR BÍBLICO
                         <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-bold">PRO v3.6 HD</span>
                     </h1>
-                    <span class="text-[10px] text-gray-400 font-semibold tracking-wider uppercase hidden sm:inline-block">Consola con Selector de Imágenes HD Corregido</span>
+                    <span class="text-[10px] text-gray-400 font-semibold tracking-wider uppercase hidden sm:inline-block">Consola con Selector de Imágenes HD Ultrarrápido</span>
                 </div>
             </div>
 
@@ -123,7 +123,7 @@
             </div>
         </header>
 
-        <!-- CUERPO PRINCIPAL (3 COLUMNAS RESPONSIVAS) -->
+        <!-- CUERPO PRINCIPAL -->
         <main class="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden p-3 md:p-5 gap-3 md:gap-5">
 
             <!-- Columna 1: Libros y Capítulos -->
@@ -138,7 +138,7 @@
 
                 <!-- Lista de Libros -->
                 <div class="flex-1 min-h-0 overflow-y-auto p-3 space-y-1" id="books-container">
-                    <!-- Se renderiza mediante JS -->
+                    <!-- JS -->
                 </div>
 
                 <!-- Selector de Capítulos -->
@@ -148,7 +148,7 @@
                         <span id="selected-book-label" class="text-blue-400 text-xs font-bold">Salmos</span>
                     </span>
                     <div class="flex-1 min-h-0 overflow-y-auto grid grid-cols-5 gap-1.5 content-start pr-1" id="chapters-container">
-                        <!-- Se renderiza mediante JS -->
+                        <!-- JS -->
                     </div>
                 </div>
             </section>
@@ -177,7 +177,7 @@
 
                 <!-- Contenedor de Versículos -->
                 <div class="flex-1 min-h-0 overflow-y-auto p-4 space-y-2.5 bg-gray-950" id="verses-container">
-                    <!-- Se inyecta dinámicamente -->
+                    <!-- JS -->
                 </div>
             </section>
 
@@ -199,16 +199,12 @@
                     <div id="projector-preview-container" class="w-full aspect-video rounded-xl relative overflow-hidden flex flex-col items-center justify-center p-3 border border-gray-800 shadow-inner bg-slate-950">
                         <div id="preview-backdrop" class="absolute inset-0 z-0 bg-slate-950 bg-cover bg-center transition-all duration-300"></div>
                         
-                        <!-- Video Elements (Local & Screen Stream) -->
                         <video id="preview-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline muted autoplay></video>
                         <iframe id="preview-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
 
                         <div id="preview-overlay" class="absolute inset-0 bg-black/40 z-20 transition-all duration-300"></div>
                         
-                        <!-- Standby Logo -->
                         <img id="preview-logo-standby" class="absolute max-w-[35%] max-h-[50%] object-contain z-30 hidden transition-all" alt="Standby Logo Preview" />
-                        
-                        <!-- Corner / Edge Logo -->
                         <img id="preview-logo-corner" class="absolute max-w-[12%] max-h-[18%] object-contain z-30 hidden transition-all" alt="Corner Logo Preview" />
 
                         <!-- Texto en Vista Previa -->
@@ -218,7 +214,7 @@
                         </div>
                     </div>
 
-                    <!-- Botones de Acción Inmediata (Operador) -->
+                    <!-- Botones de Acción Inmediata -->
                     <div class="grid grid-cols-2 gap-2 mt-3">
                         <button id="btn-blackout" class="bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-eye-slash"></i>
@@ -232,7 +228,7 @@
                 </div>
 
                 <div class="flex-1 min-h-0 bg-gray-900 border border-gray-800 rounded-2xl flex flex-col overflow-hidden shadow-xl">
-                    <!-- Selector de Pestaña -->
+                    <!-- Selector de Pestañas -->
                     <div class="flex border-b border-gray-800 bg-gray-900/80 shrink-0 text-center">
                         <button id="btn-tab-culto" class="flex-1 py-2.5 text-xs font-bold border-b-2 border-blue-500 text-blue-400 transition">
                             <i class="fa-solid fa-list-check mr-1"></i>Culto
@@ -257,7 +253,6 @@
                                 </button>
                             </div>
 
-                            <!-- Agregar texto o canto libre -->
                             <div class="space-y-1.5 shrink-0 bg-gray-900 p-2.5 rounded-xl border border-gray-800">
                                 <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Agregar Canto o Nota</span>
                                 <div class="flex gap-1.5">
@@ -268,16 +263,15 @@
                                 </div>
                             </div>
 
-                            <!-- Contenedor scrollable -->
                             <div id="culto-list-items" class="flex-1 min-h-0 overflow-y-auto space-y-2 pr-1">
-                                <!-- Se inyecta dinámicamente -->
+                                <!-- JS -->
                             </div>
                         </div>
 
                         <!-- TAB 2: VIDEOS Y MULTIMEDIA -->
                         <div id="tab-video" class="hidden space-y-4">
                             
-                            <!-- Opción 1: YouTube Solución Integrada -->
+                            <!-- YouTube -->
                             <div class="bg-gray-900 border border-gray-800 p-3 rounded-xl space-y-2.5">
                                 <div class="flex items-center justify-between">
                                     <span class="text-xs font-extrabold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -292,7 +286,7 @@
                                 </div>
                             </div>
 
-                            <!-- Opción 2: Captura de Pantalla iPadOS / Desktop -->
+                            <!-- Captura de Pantalla -->
                             <div class="bg-gradient-to-br from-blue-950/60 to-purple-950/60 border border-blue-500/30 p-3.5 rounded-xl space-y-2">
                                 <div class="flex items-center justify-between">
                                     <span class="text-xs font-extrabold text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
@@ -310,7 +304,7 @@
                                 </div>
                             </div>
 
-                            <!-- Opción 3: Archivo de Video Local -->
+                            <!-- Archivo Local -->
                             <div class="space-y-2">
                                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Subir Archivo Local</label>
                                 <label class="w-full bg-gray-900 hover:bg-gray-850 border border-dashed border-gray-700 p-3 rounded-xl flex flex-col items-center justify-center cursor-pointer transition">
@@ -320,7 +314,7 @@
                                 </label>
                             </div>
 
-                            <!-- Consola de Control de Reproducción -->
+                            <!-- Control Panel -->
                             <div id="video-control-panel" class="bg-gray-900/90 border border-gray-800 rounded-xl p-3 space-y-3 hidden">
                                 <div class="flex items-center justify-between border-b border-gray-800/80 pb-2">
                                     <div class="flex items-center gap-2 overflow-hidden">
@@ -334,13 +328,14 @@
                             </div>
                         </div>
 
+                        <!-- TAB 3: DISEÑO Y ESTILOS -->
                         <div id="tab-estilos" class="hidden space-y-4">
                             
-                            <!-- Fuente Tipográfica -->
+                            <!-- Tipografía -->
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Fuente Tipográfica</label>
                                 <select id="style-font" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-blue-500 font-medium">
-                                    <optgroup label="Fuentes Originales">
+                                    <optgroup label="Fuentes Clásicas & Modernas">
                                         <option value="Inter">Inter (Moderna y Limpia)</option>
                                         <option value="Montserrat">Montserrat (Geométrica)</option>
                                         <option value="Cinzel">Cinzel (Clásica y Solemne)</option>
@@ -350,19 +345,17 @@
                                         <option value="Merriweather">Merriweather (Lectura Clara)</option>
                                         <option value="Oswald">Oswald (Imponente Titular)</option>
                                         <option value="EB Garamond">EB Garamond (Tradicional)</option>
-                                    </optgroup>
-                                    <optgroup label="Nuevas Fuentes Agregadas">
-                                        <option value="Poppins">Poppins (Moderna y Redondeada)</option>
+                                        <option value="Poppins">Poppins (Redondeada)</option>
                                         <option value="Open Sans">Open Sans (Alta Legibilidad)</option>
                                         <option value="Raleway">Raleway (Elegante y Delgada)</option>
-                                        <option value="Quicksand">Quicksand (Amigable y Suave)</option>
-                                        <option value="Ubuntu">Ubuntu (Moderna y Distintiva)</option>
-                                        <option value="Amatic SC">Amatic SC (Estilo Manuscrito)</option>
+                                        <option value="Quicksand">Quicksand (Suave)</option>
+                                        <option value="Ubuntu">Ubuntu (Distintiva)</option>
+                                        <option value="Amatic SC">Amatic SC (Manuscrito)</option>
                                     </optgroup>
                                 </select>
                             </div>
 
-                            <!-- Formato de Texto -->
+                            <!-- Formato -->
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Formato de Texto</label>
                                 <div class="grid grid-cols-3 gap-1.5">
@@ -388,7 +381,7 @@
                                 </div>
                             </div>
 
-                            <!-- Tamaño de Letra Proyector -->
+                            <!-- Tamaño -->
                             <div class="space-y-1.5">
                                 <div class="flex justify-between items-center">
                                     <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Tamaño del Texto (Pantalla)</label>
@@ -403,7 +396,7 @@
                                 <div class="grid grid-cols-3 gap-1.5 text-xs font-semibold" id="bg-type-selection-container">
                                     <button id="btn-bg-color" class="transition py-2 rounded-xl border border-gray-800 text-gray-300">Sólido</button>
                                     <button id="btn-bg-grad" class="transition py-2 rounded-xl border border-gray-800 text-gray-300">Degradado</button>
-                                    <button id="btn-bg-img" class="transition py-2 rounded-xl border border-gray-800 text-gray-300">Imagen</button>
+                                    <button id="btn-bg-img" class="transition py-2 rounded-xl border border-gray-800 text-gray-300">Imagen HD</button>
                                 </div>
                             </div>
 
@@ -436,27 +429,38 @@
                                 </div>
                             </div>
 
-                            <!-- Imagen de Fondo y Buscador Online en Alta Resolución -->
+                            <!-- BUSCADOR Y GALERÍA DE IMÁGENES HD (CORREGIDO) -->
                             <div id="palette-image-container" class="space-y-3.5 hidden">
-                                <!-- Buscador de Imágenes -->
-                                <div class="bg-gray-900 border border-gray-800 p-3 rounded-xl space-y-2">
+                                <div class="bg-gray-900 border border-gray-800 p-3 rounded-xl space-y-2.5">
                                     <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center justify-between">
-                                        <span><i class="fa-solid fa-globe text-blue-400 mr-1"></i> Buscar Fondos HD Online</span>
+                                        <span><i class="fa-solid fa-cloud-sun text-blue-400 mr-1"></i> Fondos HD en Alta Resolución (Unsplash)</span>
                                     </label>
+                                    
+                                    <!-- Buscador -->
                                     <div class="flex gap-1.5">
-                                        <input type="text" id="image-search-input" placeholder="Ej: cielo, cruz, montañas..." class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500 transition">
+                                        <input type="text" id="image-search-input" placeholder="Filtrar por: cruz, cielo, noche, bosque..." class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500 transition">
                                         <button id="btn-search-images" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center shrink-0">
                                             <i class="fa-solid fa-magnifying-glass"></i>
                                         </button>
-                                        <button id="btn-refresh-images" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center shrink-0" title="Refrescar resultados">
+                                        <button id="btn-refresh-images" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center shrink-0" title="Restablecer filtro">
                                             <i class="fa-solid fa-rotate-right"></i>
                                         </button>
                                     </div>
-                                    <div class="text-[9px] text-gray-400">Las imágenes se obtienen en resolución HD 1920x1080 con previsualización en miniatura optimizada.</div>
-                                    
-                                    <!-- Resultados de Búsqueda Dinámicos con previsualización y carga correcta -->
-                                    <div id="online-image-results" class="grid grid-cols-2 gap-2 pt-1">
-                                        <!-- Se pueblan por JS -->
+
+                                    <!-- Categorías Temáticas en Pills -->
+                                    <div class="flex items-center gap-1 overflow-x-auto pb-1 no-scrollbar text-[10px]">
+                                        <button id="cat-all" class="px-2.5 py-1 rounded-lg font-bold bg-blue-600 text-white shrink-0">Todas</button>
+                                        <button id="cat-fe" class="px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0">Cruz & Fe</button>
+                                        <button id="cat-cielo" class="px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0">Cielos</button>
+                                        <button id="cat-montana" class="px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0">Montañas</button>
+                                        <button id="cat-naturaleza" class="px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0">Naturaleza</button>
+                                        <button id="cat-noche" class="px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0">Noche</button>
+                                        <button id="cat-abstracto" class="px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0">Abstracto</button>
+                                    </div>
+
+                                    <!-- Resultados con Carga Optimizada de Miniaturas y Full HD -->
+                                    <div id="online-image-results" class="grid grid-cols-2 gap-2 pt-1 max-h-60 overflow-y-auto pr-1">
+                                        <!-- JS -->
                                     </div>
                                     <div id="image-search-loading" class="hidden flex justify-center py-4">
                                         <div class="loader-spinner"></div>
@@ -473,7 +477,7 @@
                                 </div>
                             </div>
 
-                            <!-- Filtro Oscuro para Fondo -->
+                            <!-- Filtro Oscuro de Imagen -->
                             <div id="overlay-opacity-container" class="space-y-1.5 hidden">
                                 <div class="flex justify-between items-center">
                                     <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Filtro Oscuro de Imagen</label>
@@ -498,7 +502,7 @@
                                 </div>
                             </div>
 
-                            <!-- Gestión del Logo Institucional -->
+                            <!-- Logo Institucional -->
                             <div class="border-t border-gray-800 pt-3 space-y-2.5">
                                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block flex items-center gap-1.5">
                                     <i class="fa-solid fa-church text-amber-500"></i> Logo de la Iglesia
@@ -520,7 +524,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Opciones del Logo -->
                                 <div id="logo-options-box" class="space-y-2.5 hidden bg-gray-900/30 p-2.5 rounded-xl border border-gray-800">
                                     <div class="flex items-center justify-between">
                                         <label class="text-xs text-gray-300 font-medium">Mostrar en pantalla</label>
@@ -551,6 +554,7 @@
         </main>
     </div>
 
+    <!-- Modal Pantalla Completa Local -->
     <div id="local-fullscreen-container" class="fixed inset-0 z-50 hidden flex flex-col justify-between p-12 transition-all duration-300 bg-slate-950">
         <div id="local-fs-backdrop" class="absolute inset-0 z-0 bg-slate-950 bg-cover bg-center"></div>
         
@@ -583,6 +587,7 @@
     </div>
 
     <script>
+        // BIBLIOTECA BÍBLICA POR DEFECTO
         let bibleData = {
             "Génesis": {
                 "1": [
@@ -617,6 +622,32 @@
             }
         };
 
+        // COLECCIÓN CURADA DE FONDOS HD (OPTIMIZADA VÍA UNSPLASH CDN)
+        const curatedBackgrounds = [
+            { id: 'faith-1', category: 'fe', title: 'Cruz al Atardecer', query: 'cross sunset', url: 'https://images.unsplash.com/photo-1509021436468-d51030005963' },
+            { id: 'faith-2', category: 'fe', title: 'Cruz y Amanecer', query: 'cross sunrise', url: 'https://images.unsplash.com/photo-1519817650390-64a93db51149' },
+            { id: 'faith-3', category: 'fe', title: 'Biblia Abierta', query: 'open bible light', url: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3' },
+            { id: 'faith-4', category: 'fe', title: 'Luz Celestial', query: 'worship light', url: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb' },
+            { id: 'sky-1', category: 'cielo', title: 'Cielo Dorado', query: 'sky sunset', url: 'https://images.unsplash.com/photo-1507692049790-de58290a4334' },
+            { id: 'sky-2', category: 'cielo', title: 'Rayos de Luz', query: 'sunbeams clouds', url: 'https://images.unsplash.com/photo-1534088568595-a066f410bcda' },
+            { id: 'sky-3', category: 'cielo', title: 'Atardecer Espléndido', query: 'dramatic sunset', url: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef' },
+            { id: 'mountain-1', category: 'montaña', title: 'Cumbres Majestuosas', query: 'mountains morning', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b' },
+            { id: 'mountain-2', category: 'montaña', title: 'Bosque y Montaña', query: 'mountain landscape', url: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05' },
+            { id: 'mountain-3', category: 'montaña', title: 'Niebla en Montaña', query: 'misty mountains', url: 'https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99' },
+            { id: 'nature-1', category: 'naturaleza', title: 'Bosque de Paz', query: 'green forest sun rays', url: 'https://images.unsplash.com/photo-1448375240586-882707db888b' },
+            { id: 'nature-2', category: 'naturaleza', title: 'Río Calmado', query: 'calm river nature', url: 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8' },
+            { id: 'night-1', category: 'noche', title: 'Noche Estrellada', query: 'starry night galaxy', url: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86' },
+            { id: 'night-2', category: 'noche', title: 'Vía Láctea', query: 'milky way stars', url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23' },
+            { id: 'night-3', category: 'noche', title: 'Cielo Nocturno Azul', query: 'deep blue night sky', url: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78' },
+            { id: 'abstract-1', category: 'abstracto', title: 'Bokeh Cálido', query: 'warm bokeh lights', url: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853' },
+            { id: 'abstract-2', category: 'abstracto', title: 'Degradado Suave', query: 'soft gradient background', url: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809' },
+            { id: 'abstract-3', category: 'abstracto', title: 'Luz Agradable', query: 'abstract ambient light', url: 'https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17' },
+            { id: 'church-1', category: 'iglesia', title: 'Vitral de Iglesia', query: 'church stained glass', url: 'https://images.unsplash.com/photo-1548625361-18501235478d' },
+            { id: 'church-2', category: 'iglesia', title: 'Santuario Iluminado', query: 'church interior light', url: 'https://images.unsplash.com/photo-1548625149-fc4a29cf7092' }
+        ];
+
+        let currentBgCategory = 'all';
+
         let selectedBook = "Salmos";
         let selectedChapter = "23";
         let selectedVerseIdx = null;
@@ -636,7 +667,7 @@
             bgType: 'color',
             bgcolor: '#0f172a',
             gradient: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
-            bgImage: '',
+            bgImage: 'https://images.unsplash.com/photo-1509021436468-d51030005963?auto=format&fit=crop&w=1920&q=85',
             bgOpacity: '40',
             textcolor: '#ffffff',
             logoUrl: '',
@@ -654,7 +685,21 @@
         let broadcastChannel = new BroadcastChannel('biblical-projector-channel');
         
         window.screenStream = null; 
-        let lastImageSearchQuery = "christian,church,nature,worship";
+
+        // UTILIDADES DE CDN PARA IMÁGENES
+        function getThumbnailUrl(rawUrl) {
+            if (rawUrl.includes('images.unsplash.com')) {
+                return `${rawUrl.split('?')[0]}?auto=format&fit=crop&w=360&q=70`;
+            }
+            return rawUrl;
+        }
+
+        function getFullHdUrl(rawUrl) {
+            if (rawUrl.includes('images.unsplash.com')) {
+                return `${rawUrl.split('?')[0]}?auto=format&fit=crop&w=1920&q=85`;
+            }
+            return rawUrl;
+        }
 
         function saveOperatorState() {
             const stateToSave = {
@@ -1047,7 +1092,7 @@
                     backdropEl.style.backgroundImage = 'none';
                 } else if (data.styles.bgType === 'image') {
                     backdropEl.style.background = 'none';
-                    backdropEl.style.backgroundImage = `url("${data.styles.bgImage}")`;
+                    backdropEl.style.backgroundImage = `url("${getFullHdUrl(data.styles.bgImage)}")`;
                     backdropEl.style.backgroundSize = 'cover';
                     backdropEl.style.backgroundPosition = 'center';
                 }
@@ -1087,52 +1132,73 @@
             }
         }
 
-        function searchOnlineImages(query = "") {
+        // RENDERIZADO DE FONDOS HD INSTANTÁNEO Y FILTRADO POR CATEGORÍAS
+        function renderOnlineImages(category = 'all', filterText = '') {
             const container = document.getElementById('online-image-results');
             const loading = document.getElementById('image-search-loading');
             
+            if (!container) return;
             container.innerHTML = '';
-            loading.classList.remove('hidden');
-            
-            let searchQuery = query.trim() || lastImageSearchQuery;
-            lastImageSearchQuery = searchQuery;
-            
-            const results = [];
-            // We use Pollinations AI Image API which guarantees high-resolution (1920x1080) output tailored to any keywords instantly without broken keys
-            for (let i = 1; i <= 4; i++) {
-                const cleanQuery = encodeURIComponent(`${searchQuery} christian worship church background cinematic hd ${i}`);
-                const seed = Math.floor(Math.random() * 100000) + i;
-                
-                // Full high resolution URL for projection
-                const highResUrl = `https://image.pollinations.ai/prompt/${cleanQuery}?width=1920&height=1080&nologo=true&seed=${seed}`;
-                // Optimized lower resolution URL for instant preview loading without lag
-                const thumbUrl = `https://image.pollinations.ai/prompt/${cleanQuery}?width=480&height=270&nologo=true&seed=${seed}`;
-                
-                results.push({ thumb: thumbUrl, full: highResUrl, title: `Fondo HD ${i}` });
+            loading.classList.add('hidden');
+
+            let filtered = curatedBackgrounds;
+
+            if (category !== 'all') {
+                filtered = filtered.filter(item => item.category === category);
             }
 
-            // Simulate slight asynchronous tick to render spinner smoothly
-            setTimeout(() => {
-                loading.classList.add('hidden');
+            if (filterText.trim().length > 0) {
+                const query = filterText.toLowerCase().trim();
+                filtered = filtered.filter(item => 
+                    item.title.toLowerCase().includes(query) || 
+                    item.category.toLowerCase().includes(query) || 
+                    item.query.toLowerCase().includes(query)
+                );
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-2 py-6 text-center text-gray-500 text-xs">
+                        <i class="fa-solid fa-image text-xl mb-1 block"></i>
+                        No se encontraron fondos. Intenta otra búsqueda o categoría.
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach((img) => {
+                const thumb = getThumbnailUrl(img.url);
+                const fullHd = getFullHdUrl(img.url);
+                const isSelected = projectionStyles.bgType === 'image' && projectionStyles.bgImage === fullHd;
+
+                const btn = document.createElement('button');
+                btn.className = `h-24 rounded-xl border overflow-hidden relative group transition shadow-md text-left flex flex-col justify-end ${
+                    isSelected ? 'border-2 border-blue-500 ring-2 ring-blue-500/40' : 'border-white/10 hover:border-blue-400'
+                }`;
                 
-                results.forEach((img, idx) => {
-                    const btn = document.createElement('button');
-                    btn.className = "h-20 rounded-xl border border-white/10 overflow-hidden relative group transition hover:border-blue-500 focus:outline-none focus:border-blue-500 bg-gray-800 shadow-md";
-                    btn.innerHTML = `
-                        <img src="${img.thumb}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300 opacity-0" onload="this.classList.remove('opacity-0')" alt="Preview ${idx+1}" />
-                        <div class="absolute inset-0 flex items-center justify-center bg-gray-900/60 -z-10">
-                            <div class="loader-spinner"></div>
-                        </div>
-                        <div class="absolute bottom-0 inset-x-0 bg-black/60 backdrop-blur-xs px-1 py-0.5 text-[9px] text-gray-300 font-bold text-center">HD 1080p</div>
-                    `;
-                    btn.onclick = () => {
-                        projectionStyles.bgImage = img.full;
-                        syncToProjector();
-                        showToast(`Fondo HD seleccionado correctamente`, "success");
-                    };
-                    container.appendChild(btn);
-                });
-            }, 600);
+                btn.innerHTML = `
+                    <img src="${thumb}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-300 opacity-0" onload="this.classList.remove('opacity-0')" alt="${img.title}" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent"></div>
+                    <div class="absolute top-1.5 right-1.5 bg-black/70 backdrop-blur-xs text-blue-400 font-black text-[8px] px-1.5 py-0.5 rounded border border-blue-500/30">
+                        1080p HD
+                    </div>
+                    <div class="relative z-10 p-2 text-white">
+                        <span class="text-[10px] font-bold block truncate leading-tight">${img.title}</span>
+                        <span class="text-[8px] text-gray-300 capitalize opacity-80">${img.category}</span>
+                    </div>
+                `;
+
+                btn.onclick = () => {
+                    projectionStyles.bgType = 'image';
+                    projectionStyles.bgImage = fullHd;
+                    updateBgTypeUI('image');
+                    syncToProjector();
+                    showToast(`Fondo "${img.title}" activado en 1080p HD`, "success");
+                    renderOnlineImages(currentBgCategory, document.getElementById('image-search-input')?.value || '');
+                };
+
+                container.appendChild(btn);
+            });
         }
 
         function updateBgTypeUI(type) {
@@ -1163,9 +1229,7 @@
             else if (type === 'image') {
                 palImg.classList.remove('hidden');
                 overlayOp.classList.remove('hidden');
-                if (document.getElementById('online-image-results').innerHTML.trim() === '') {
-                    searchOnlineImages(""); 
-                }
+                renderOnlineImages(currentBgCategory, document.getElementById('image-search-input')?.value || '');
             }
             syncToProjector();
         }
@@ -1212,6 +1276,36 @@
             document.getElementById('room-id-input').onchange = (e) => { roomId = e.target.value.toUpperCase().trim() || "GEN-777"; };
             document.getElementById('btn-copy-link').onclick = () => {
                 navigator.clipboard.writeText(window.location.href).then(() => showToast("Enlace copiado", "success")).catch(() => showToast("Enlace copiado", "success"));
+            };
+
+            // Lectura de Archivo JSON Bíblico
+            document.getElementById('json-bible-input').onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const parsed = JSON.parse(event.target.result);
+                            if (typeof parsed === 'object' && parsed !== null) {
+                                bibleData = parsed;
+                                const firstBook = Object.keys(bibleData)[0];
+                                if (firstBook) {
+                                    selectedBook = firstBook;
+                                    selectedChapter = Object.keys(bibleData[firstBook] || {})[0] || "1";
+                                    selectedVerseIdx = null;
+                                    renderBooks();
+                                    renderChapters();
+                                    renderVerses();
+                                    saveOperatorState();
+                                    showToast("Biblia JSON cargada con éxito", "success");
+                                }
+                            }
+                        } catch (err) {
+                            showToast("Formato JSON inválido", "error");
+                        }
+                    };
+                    reader.readAsText(file);
+                }
             };
 
             document.getElementById('search-book').oninput = renderBooks;
@@ -1269,40 +1363,73 @@
             tabElements.video.btn.onclick = () => switchTab('video');
             tabElements.estilos.btn.onclick = () => switchTab('estilos');
 
+            // Búsqueda y Filtro de Fondos HD
             document.getElementById('btn-search-images').onclick = () => {
-                searchOnlineImages(document.getElementById('image-search-input').value);
+                renderOnlineImages(currentBgCategory, document.getElementById('image-search-input').value);
             };
-            document.getElementById('image-search-input').addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') {
-                    searchOnlineImages(this.value);
+            document.getElementById('image-search-input').onkeyup = (e) => {
+                renderOnlineImages(currentBgCategory, e.target.value);
+            };
+            document.getElementById('btn-refresh-images').onclick = () => {
+                document.getElementById('image-search-input').value = '';
+                renderOnlineImages(currentBgCategory, '');
+            };
+
+            // Categorías de Fondos HD
+            const catMap = {
+                'cat-all': 'all', 'cat-fe': 'fe', 'cat-cielo': 'cielo',
+                'cat-montana': 'montaña', 'cat-naturaleza': 'naturaleza',
+                'cat-noche': 'noche', 'cat-abstracto': 'abstracto'
+            };
+            Object.keys(catMap).forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.onclick = () => {
+                        currentBgCategory = catMap[id];
+                        Object.keys(catMap).forEach(k => {
+                            const b = document.getElementById(k);
+                            if (b) {
+                                b.className = (k === id) 
+                                    ? "px-2.5 py-1 rounded-lg font-bold bg-blue-600 text-white shrink-0" 
+                                    : "px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0";
+                            }
+                        });
+                        renderOnlineImages(currentBgCategory, document.getElementById('image-search-input').value);
+                    };
                 }
             });
-            document.getElementById('btn-refresh-images').onclick = () => {
-                searchOnlineImages(document.getElementById('image-search-input').value);
-            };
 
             document.getElementById('bg-image-uploader').onchange = (e) => {
                 const file = e.target.files[0];
                 if (file) {
-                    const url = URL.createObjectURL(file);
-                    projectionStyles.bgImage = url;
-                    syncToProjector();
-                    showToast("Fondo subido", "success");
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        projectionStyles.bgType = 'image';
+                        projectionStyles.bgImage = event.target.result;
+                        updateBgTypeUI('image');
+                        syncToProjector();
+                        showToast("Fondo local cargado", "success");
+                    };
+                    reader.readAsDataURL(file);
                 }
             };
             
             document.getElementById('logo-image-uploader').onchange = (e) => {
                 const file = e.target.files[0];
                 if (file) {
-                    const url = URL.createObjectURL(file);
-                    projectionStyles.logoUrl = url;
-                    document.getElementById('logo-thumbnail-img').src = url;
-                    document.getElementById('logo-thumbnail-img').classList.remove('hidden');
-                    document.getElementById('logo-placeholder-icon').classList.add('hidden');
-                    document.getElementById('btn-remove-logo').classList.remove('hidden');
-                    document.getElementById('logo-options-box').classList.remove('hidden');
-                    syncToProjector();
-                    showToast("Logo actualizado", "success");
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const url = event.target.result;
+                        projectionStyles.logoUrl = url;
+                        document.getElementById('logo-thumbnail-img').src = url;
+                        document.getElementById('logo-thumbnail-img').classList.remove('hidden');
+                        document.getElementById('logo-placeholder-icon').classList.add('hidden');
+                        document.getElementById('btn-remove-logo').classList.remove('hidden');
+                        document.getElementById('logo-options-box').classList.remove('hidden');
+                        syncToProjector();
+                        showToast("Logo actualizado", "success");
+                    };
+                    reader.readAsDataURL(file);
                 }
             };
 
@@ -1439,7 +1566,7 @@
                             <head>
                                 <meta charset="UTF-8">
                                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                                <title>Proyección</title>
+                                <title>Proyección Bíblica</title>
                                 <script src="https://cdn.tailwindcss.com"><\/script>
                                 <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Merriweather:wght@300;400;700&family=Montserrat:wght@400;600;800&family=Open+Sans:wght@300;400;600;700&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Poppins:wght@300;400;600;700&family=Quicksand:wght@400;600;700&family=Raleway:wght@300;400;600;700&family=Roboto+Slab:wght@400;700&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
                                 <style>
