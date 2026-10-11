@@ -1119,44 +1119,39 @@
             } catch (_) { return url; }
         }
 
-        // Envía comandos compatibles con la API IFrame de YouTube a los reproductores
-        // de la vista previa y de proyección. Los botones llaman esta función directamente
-        // desde una interacción del operador, lo que ayuda con las políticas de Safari.
+        // YouTube: priorizar SIEMPRE el reproductor de la ventana de proyección.
+        // La vista previa se deja congelada/oculta para evitar dos reproductores compitiendo
+        // por audio, decodificación y políticas de reproducción automática en Safari.
         function sendYouTubeCommand(command) {
-            const targets = [];
-            const addFrame = (frame) => {
-                if (frame && frame.contentWindow && frame.src && frame.src.includes('youtube.com/embed/')) {
-                    targets.push(frame);
-                }
-            };
-            const previewFrame = document.getElementById('preview-youtube');
-            if (previewFrame && !previewFrame.classList.contains('hidden')) addFrame(previewFrame);
-            const localFsContainer = document.getElementById('local-fullscreen-container');
-            const localFsFrame = document.getElementById('local-fs-youtube');
-            if (localFsFrame && localFsContainer && !localFsContainer.classList.contains('hidden')) addFrame(localFsFrame);
-            try {
-                if (externalWindow && !externalWindow.closed) {
-                    addFrame(externalWindow.document.getElementById('proj-youtube'));
-                }
-            } catch (error) {
-                console.warn('No se pudo acceder al reproductor de proyección:', error);
-            }
-            if (!targets.length) {
-                showToast('Primero carga un video de YouTube y abre la proyección.', 'warning');
+            const projection = (typeof externalWindow !== 'undefined' && externalWindow && !externalWindow.closed) ? externalWindow : null;
+            if (!projection) {
+                showToast('Abre la ventana de proyección antes de controlar YouTube.', 'warning');
                 return;
             }
-            const message = JSON.stringify({ event: 'command', func: command, args: [] });
-            const send = () => {
-                targets.forEach(frame => {
-                    try { frame.contentWindow.postMessage(message, 'https://www.youtube.com'); }
-                    catch (error) { console.warn('No se pudo enviar el comando a YouTube:', error); }
-                });
+            const sendToProjectionFrame = () => {
+                try {
+                    const frame = projection.document.getElementById('proj-youtube');
+                    if (!frame || !frame.src || !frame.src.includes('youtube.com/embed/')) return false;
+                    const message = JSON.stringify({ event: 'command', func: command, args: [] });
+                    frame.contentWindow.postMessage(message, 'https://www.youtube.com');
+                    return true;
+                } catch (error) {
+                    // Si no se puede acceder directamente al iframe, el receptor de la
+                    // ventana de proyección ejecutará el comando en su propio contexto.
+                    try { projection.postMessage({ type: '__youtube_command', command }, '*'); } catch (_) {}
+                    return false;
+                }
             };
-            // Primer envío síncrono dentro del clic del operador; reintentos por si el iframe
-            // aún está terminando de cargar. No se puede forzar el autoplay si Safari lo bloquea.
-            send();
-            [250, 700, 1400].forEach(delay => setTimeout(send, delay));
-            showToast(command === 'playVideo' ? 'Orden de reproducción enviada a YouTube.' : 'Orden de pausa enviada a YouTube.', 'info');
+            const firstSent = sendToProjectionFrame();
+            // Mensaje al receptor y reintentos cubren la carga inicial del iframe.
+            try { projection.postMessage({ type: '__youtube_command', command }, '*'); } catch (_) {}
+            [250, 700, 1400, 2200].forEach(delay => setTimeout(() => {
+                sendToProjectionFrame();
+                try { projection.postMessage({ type: '__youtube_command', command }, '*'); } catch (_) {}
+            }, delay));
+            showToast(command === 'playVideo'
+                ? 'Orden de reproducción enviada a la pantalla de proyección.'
+                : 'Orden de pausa enviada a la pantalla de proyección.', 'info');
         }
 
         function formatVideoTime(seconds) {
@@ -1446,14 +1441,10 @@
             }
 
             if (youtubeEl) {
-                // No cargar un segundo reproductor oculto en el modal de pantalla completa:
-                // en Safari podía reproducir solo el audio y dar la impresión de que el video estaba congelado.
-                const localFsContainer = isLocalFs ? document.getElementById('local-fullscreen-container') : null;
-                const localFsInactive = isLocalFs && (!localFsContainer || localFsContainer.classList.contains('hidden'));
-                if (localFsInactive) {
-                    youtubeEl.classList.add('hidden');
-                    if (youtubeEl.src) youtubeEl.src = '';
-                } else if (data.mediaMode === 'youtube' && data.videoUrl) {
+                // YouTube se reproduce únicamente en la ventana externa de proyección.
+                // La vista previa y el reproductor local quedan inactivos para que no compitan.
+                const isExternalProjection = !isLocalFs && docObj !== document;
+                if (data.mediaMode === 'youtube' && data.videoUrl && isExternalProjection) {
                     if (youtubeEl.src !== data.videoUrl) youtubeEl.src = data.videoUrl;
                     youtubeEl.classList.remove('hidden');
                 } else {
@@ -1741,8 +1732,20 @@
                                         }
                                     } catch (error) { console.warn('BroadcastChannel no disponible', error); }
 
+                                    function handleYouTubeCommand(command) {
+                                        const frame = document.getElementById('proj-youtube');
+                                        if (!frame || !frame.src || !frame.src.includes('youtube.com/embed/')) return;
+                                        const message = JSON.stringify({ event: 'command', func: command, args: [] });
+                                        try { frame.contentWindow.postMessage(message, 'https://www.youtube.com'); } catch (_) {}
+                                    }
                                     window.addEventListener('message', event => {
                                         const data = event.data;
+                                        if (data && data.type === '__youtube_command') {
+                                            handleYouTubeCommand(data.command);
+                                            // Reintentar si el iframe aún está terminando de inicializarse.
+                                            [150, 450, 900].forEach(delay => setTimeout(() => handleYouTubeCommand(data.command), delay));
+                                            return;
+                                        }
                                         if (data && data.type === '__screen_frame') {
                                             const frame = document.getElementById('proj-screen-frame');
                                             if (frame && data.frame) { frame.src = data.frame; frame.classList.remove('hidden'); }
@@ -2046,7 +2049,7 @@
                     if (location.protocol === 'file:') {
                         showToast("Aviso: YouTube puede bloquear la reproducción si abres el HTML como archivo local. Para el reproductor integrado, abre el proyector desde una dirección HTTPS o un servidor web local.", "warning");
                     } else {
-                        showToast("YouTube cargado. Pulsa Reproducir YouTube para iniciar el reproductor visible; se evita reproducir en segundo plano.", "success");
+                        showToast("YouTube cargado para la pantalla de proyección. La vista previa se desactiva para priorizar la reproducción externa; pulsa Reproducir YouTube.", "success");
                     }
                 } else {
                     showToast("Enlace de YouTube no válido", "error");
