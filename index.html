@@ -11,7 +11,7 @@
     <!-- Google Fonts para tipografías de proyección -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Merriweather:wght@300;400;700&family=Montserrat:wght@400;600;800&family=Open+Sans:wght@300;400;600;700&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Poppins:wght@300;400;600;700&family=Quicksand:wght@400;600;700&family=Raleway:wght@300;400;600;700&family=Roboto+Slab:wght@400;700&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Merriweather:wght@300;400;700&family=Montserrat:wght@400;600;800&family=Open+Sans:wght@300;400;600;700&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Poppins:wght@300;400;600;700&family=Quicksand:wght@400;600;700&family=Raleway:wght@300;400;600;700&family=Roboto+Slab:wght@400;700&family=Ubuntu:wght@400;700&family=Fira+Sans:wght@400;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=Spectral:ital,wght@0,400;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,700;1,400&family=Cardo:wght@400;700&family=Josefin+Sans:wght@400;600;700&family=Nunito+Sans:wght@400;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Archivo+Black&display=swap" rel="stylesheet">
     
     <style>
         ::-webkit-scrollbar {
@@ -279,7 +279,7 @@
                             
                             <!-- Tipografía -->
                             <div class="space-y-1.5">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Fuente Tipográfica</label>
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Fuente del versículo</label>
                                 <select id="style-font" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-blue-500 font-medium">
                                     <option value="Inter">Inter (Moderna y Limpia)</option>
                                     <option value="Montserrat">Montserrat (Geométrica)</option>
@@ -296,12 +296,22 @@
                                     <option value="Quicksand">Quicksand (Suave)</option>
                                     <option value="Ubuntu">Ubuntu (Distintiva)</option>
                                     <option value="Amatic SC">Amatic SC (Manuscrito)</option>
+                                    <option value="Fira Sans">Fira Sans (Moderna y firme)</option>
+                                    <option value="Libre Baskerville">Libre Baskerville (Clásica y legible)</option>
+                                    <option value="Source Sans 3">Source Sans 3 (Lectura cómoda)</option>
+                                    <option value="Spectral">Spectral (Literaria)</option>
+                                    <option value="Crimson Text">Crimson Text (Biblia tradicional)</option>
+                                    <option value="Cardo">Cardo (Estilo clásico)</option>
+                                    <option value="Josefin Sans">Josefin Sans (Elegante)</option>
+                                    <option value="Nunito Sans">Nunito Sans (Amable y clara)</option>
+                                    <option value="PT Serif">PT Serif (Serif equilibrada)</option>
+                                    <option value="Archivo Black">Archivo Black (Titular potente)</option>
                                 </select>
                             </div>
 
                             <!-- Formato -->
                             <div class="space-y-1.5">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Formato de Texto</label>
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Formato del versículo</label>
                                 <div class="grid grid-cols-3 gap-1.5">
                                     <button id="btn-format-bold" class="transition py-2 rounded-xl text-xs font-bold border border-gray-800 flex items-center justify-center">
                                         <i class="fa-solid fa-bold mr-1"></i> Negrita
@@ -317,7 +327,7 @@
 
                             <!-- Alineación -->
                             <div class="space-y-1.5">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Alineación del Texto</label>
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Alineación del versículo</label>
                                 <div class="grid grid-cols-3 gap-1.5">
                                     <button id="btn-align-left" class="transition py-2 rounded-xl border border-gray-800 text-xs"><i class="fa-solid fa-align-left"></i> Izq</button>
                                     <button id="btn-align-center" class="transition py-2 rounded-xl border border-gray-800 text-xs"><i class="fa-solid fa-align-center"></i> Centro</button>
@@ -328,10 +338,44 @@
                             <!-- Tamaño -->
                             <div class="space-y-1.5">
                                 <div class="flex justify-between items-center">
-                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Tamaño del Texto (Pantalla)</label>
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Tamaño del versículo (Pantalla)</label>
                                     <span id="val-font-size" class="text-xs font-extrabold text-blue-400">4.5vw</span>
                                 </div>
                                 <input type="range" id="style-size" min="2" max="8" step="0.1" value="4.5" class="w-full accent-blue-500">
+                            </div>
+
+                            <!-- Personalización independiente de la cita bíblica -->
+                            <div class="space-y-3 rounded-xl border border-amber-500/30 bg-amber-950/10 p-3">
+                                <div class="text-[10px] font-black uppercase tracking-wider text-amber-300 flex items-center gap-2"><i class="fa-solid fa-book-open"></i> Personalizar libro y cita bíblica</div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Fuente del libro/cita</label>
+                                    <select id="citation-font" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-amber-500">
+                                        <option value="Inter">Inter</option><option value="Montserrat">Montserrat</option><option value="Cinzel">Cinzel</option><option value="Playfair Display">Playfair Display</option><option value="Roboto Slab">Roboto Slab</option><option value="Lora">Lora</option><option value="Merriweather">Merriweather</option><option value="Oswald">Oswald</option><option value="EB Garamond">EB Garamond</option><option value="Poppins">Poppins</option><option value="Open Sans">Open Sans</option><option value="Raleway">Raleway</option><option value="Quicksand">Quicksand</option><option value="Ubuntu">Ubuntu</option><option value="Amatic SC">Amatic SC</option><option value="Fira Sans">Fira Sans</option><option value="Libre Baskerville">Libre Baskerville</option><option value="Source Sans 3">Source Sans 3</option><option value="Spectral">Spectral</option><option value="Crimson Text">Crimson Text</option><option value="Cardo">Cardo</option><option value="Josefin Sans">Josefin Sans</option><option value="Nunito Sans">Nunito Sans</option><option value="PT Serif">PT Serif</option><option value="Archivo Black">Archivo Black</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <div class="flex justify-between items-center"><label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Tamaño de la cita</label><span id="val-citation-size" class="text-xs font-extrabold text-amber-300">1.6vw</span></div>
+                                    <input type="range" id="citation-size" min="0.8" max="3.5" step="0.1" value="1.6" class="w-full accent-amber-500">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Color de la cita</label>
+                                    <div class="flex gap-2 items-center"><input type="color" id="citation-color" value="#ffffff" class="bg-transparent border-0 rounded cursor-pointer w-10 h-9"><span class="text-[10px] text-gray-500">Independiente del color del versículo</span></div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="flex items-center gap-2 text-xs text-gray-300 bg-gray-900 rounded-lg p-2"><input type="checkbox" id="citation-bold" checked class="accent-amber-500"> Negrita</label>
+                                    <label class="flex items-center gap-2 text-xs text-gray-300 bg-gray-900 rounded-lg p-2"><input type="checkbox" id="citation-italic" class="accent-amber-500"> Cursiva</label>
+                                    <label class="flex items-center gap-2 text-xs text-gray-300 bg-gray-900 rounded-lg p-2"><input type="checkbox" id="citation-shadow" checked class="accent-amber-500"> Sombra</label>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Alineación de la cita</label>
+                                    <div class="grid grid-cols-3 gap-1.5"><button id="citation-align-left" class="rounded-lg border border-gray-800 py-2 text-xs">Izquierda</button><button id="citation-align-center" class="rounded-lg border border-gray-800 py-2 text-xs">Centro</button><button id="citation-align-right" class="rounded-lg border border-gray-800 py-2 text-xs">Derecha</button></div>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Posición del libro/cita en la proyección</label>
+                                    <select id="citation-position" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-amber-500">
+                                        <option value="bottom-center" selected>Abajo, centro (predeterminado)</option><option value="bottom-left">Abajo, izquierda</option><option value="bottom-right">Abajo, derecha</option><option value="top-center">Arriba, centro</option><option value="top-left">Arriba, izquierda</option><option value="top-right">Arriba, derecha</option><option value="middle-center">Centro de la pantalla</option><option value="middle-left">Centro, izquierda</option><option value="middle-right">Centro, derecha</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <!-- Tipo de Fondo -->
@@ -441,7 +485,7 @@
 
                             <!-- Color de Texto -->
                             <div class="space-y-1.5">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Color del Texto</label>
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Color del versículo</label>
                                 <div class="flex gap-2">
                                     <input type="color" id="style-textcolor" value="#ffffff" class="bg-transparent border-0 rounded cursor-pointer w-10 h-9">
                                     <div class="grid grid-cols-6 gap-1 flex-1">
@@ -601,6 +645,14 @@
             bgImage: 'https://images.unsplash.com/photo-1509021436468-d51030005963?auto=format&fit=crop&w=1920&q=85',
             bgOpacity: '40',
             textcolor: '#ffffff',
+            citationFont: 'Inter',
+            citationSize: '1.6',
+            citationColor: '#ffffff',
+            citationBold: true,
+            citationItalic: false,
+            citationShadow: true,
+            citationAlign: 'center',
+            citationPosition: 'bottom-center',
             logoUrl: '',
             showLogoCorner: true,
             logoPosition: 'top-left'
@@ -907,6 +959,23 @@
                     document.getElementById('val-overlay-opacity').innerText = projectionStyles.bgOpacity + "%";
                     document.getElementById('style-bgcolor').value = projectionStyles.bgcolor;
                     document.getElementById('style-textcolor').value = projectionStyles.textcolor;
+                    projectionStyles.citationFont = projectionStyles.citationFont || projectionStyles.font || 'Inter';
+                    projectionStyles.citationSize = projectionStyles.citationSize || '1.6';
+                    projectionStyles.citationColor = projectionStyles.citationColor || projectionStyles.textcolor || '#ffffff';
+                    projectionStyles.citationBold = projectionStyles.citationBold !== undefined ? projectionStyles.citationBold : true;
+                    projectionStyles.citationItalic = projectionStyles.citationItalic || false;
+                    projectionStyles.citationShadow = projectionStyles.citationShadow !== undefined ? projectionStyles.citationShadow : true;
+                    projectionStyles.citationAlign = projectionStyles.citationAlign || 'center';
+                    projectionStyles.citationPosition = projectionStyles.citationPosition || 'bottom-center';
+                    document.getElementById('citation-font').value = projectionStyles.citationFont;
+                    document.getElementById('citation-size').value = projectionStyles.citationSize;
+                    document.getElementById('val-citation-size').innerText = projectionStyles.citationSize + 'vw';
+                    document.getElementById('citation-color').value = projectionStyles.citationColor;
+                    document.getElementById('citation-bold').checked = projectionStyles.citationBold;
+                    document.getElementById('citation-italic').checked = projectionStyles.citationItalic;
+                    document.getElementById('citation-shadow').checked = projectionStyles.citationShadow;
+                    document.getElementById('citation-position').value = projectionStyles.citationPosition;
+                    updateCitationAlignButtons();
                     
                     if(projectionStyles.logoUrl) {
                         document.getElementById('logo-thumbnail-img').src = projectionStyles.logoUrl;
@@ -955,6 +1024,17 @@
                 } else {
                     alignBtns[key].className = "transition py-2 rounded-xl border border-gray-800 text-gray-300 text-xs hover:bg-gray-800";
                 }
+            });
+        }
+
+        function updateCitationAlignButtons() {
+            const alignments = { left: 'citation-align-left', center: 'citation-align-center', right: 'citation-align-right' };
+            Object.entries(alignments).forEach(([align, id]) => {
+                const btn = document.getElementById(id);
+                if (!btn) return;
+                btn.className = align === (projectionStyles.citationAlign || 'center')
+                    ? 'rounded-lg border border-amber-500 bg-amber-600/20 py-2 text-xs text-amber-300 font-bold'
+                    : 'rounded-lg border border-gray-800 py-2 text-xs text-gray-300 hover:bg-gray-800';
             });
         }
 
@@ -1237,18 +1317,39 @@
                 textEl.style.fontStyle = data.styles.isItalic ? 'italic' : 'normal';
                 textEl.style.textAlign = data.styles.align;
                 textEl.style.color = data.styles.textcolor;
-
                 if (data.styles.hasShadow) textEl.classList.add('text-projection-shadow');
                 else textEl.classList.remove('text-projection-shadow');
             }
 
             if (citationEl) {
+                const citationFont = data.styles.citationFont || data.styles.font || 'Inter';
+                const citationSize = parseFloat(data.styles.citationSize || '1.6');
                 citationEl.innerText = data.citation;
-                citationEl.style.fontFamily = `"${data.styles.font}", sans-serif`;
-                citationEl.style.color = data.styles.textcolor;
-                citationEl.style.textAlign = data.styles.align;
-
-                if (data.styles.hasShadow) citationEl.classList.add('text-projection-shadow');
+                citationEl.style.fontFamily = `"${citationFont}", sans-serif`;
+                citationEl.style.fontSize = (docObj === document && !isLocalFs) ? Math.max(7, citationSize * 4.5) + 'px' : (isLocalFs ? (citationSize * 1.2) : citationSize) + 'vw';
+                citationEl.style.fontWeight = (data.styles.citationBold !== undefined ? data.styles.citationBold : true) ? '800' : '400';
+                citationEl.style.fontStyle = data.styles.citationItalic ? 'italic' : 'normal';
+                citationEl.style.color = data.styles.citationColor || data.styles.textcolor || '#ffffff';
+                citationEl.style.textAlign = data.styles.citationAlign || 'center';
+                citationEl.style.position = 'absolute';
+                citationEl.style.zIndex = '35';
+                citationEl.style.margin = '0';
+                citationEl.style.padding = '0.25em 0.5em';
+                citationEl.style.maxWidth = '90%';
+                citationEl.style.boxSizing = 'border-box';
+                citationEl.style.pointerEvents = 'none';
+                citationEl.style.top = 'auto'; citationEl.style.bottom = 'auto';
+                citationEl.style.left = 'auto'; citationEl.style.right = 'auto';
+                const pos = data.styles.citationPosition || 'bottom-center';
+                if (pos.startsWith('top-')) citationEl.style.top = isLocalFs ? '4%' : '4%';
+                else if (pos.startsWith('bottom-')) citationEl.style.bottom = isLocalFs ? '4%' : '4%';
+                else citationEl.style.top = '50%';
+                if (pos.endsWith('-left')) { citationEl.style.left = '4%'; citationEl.style.textAlign = 'left'; }
+                else if (pos.endsWith('-right')) { citationEl.style.right = '4%'; citationEl.style.textAlign = 'right'; }
+                else { citationEl.style.left = '50%'; citationEl.style.transform = 'translateX(-50%)'; }
+                if (pos.startsWith('middle-')) citationEl.style.transform = (pos.endsWith('-left') || pos.endsWith('-right')) ? 'translateY(-50%)' : 'translate(-50%, -50%)';
+                else if (pos.endsWith('-left') || pos.endsWith('-right')) citationEl.style.transform = 'none';
+                if (data.styles.citationShadow !== false) citationEl.classList.add('text-projection-shadow');
                 else citationEl.classList.remove('text-projection-shadow');
             }
 
@@ -1391,7 +1492,7 @@
                             <meta charset="UTF-8">
                             <title>Proyección en Vivo - Pantalla Externa</title>
                             <script src="https://cdn.tailwindcss.com"><\/script>
-                            <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Merriweather:wght@300;400;700&family=Montserrat:wght@400;600;800&family=Open+Sans:wght@300;400;600;700&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Poppins:wght@300;400;600;700&family=Quicksand:wght@400;600;700&family=Raleway:wght@300;400;600;700&family=Roboto+Slab:wght@400;700&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+                            <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Merriweather:wght@300;400;700&family=Montserrat:wght@400;600;800&family=Open+Sans:wght@300;400;600;700&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Poppins:wght@300;400;600;700&family=Quicksand:wght@400;600;700&family=Raleway:wght@300;400;600;700&family=Roboto+Slab:wght@400;700&family=Ubuntu:wght@400;700&family=Fira+Sans:wght@400;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=Spectral:ital,wght@0,400;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,700;1,400&family=Cardo:wght@400;700&family=Josefin+Sans:wght@400;600;700&family=Nunito+Sans:wght@400;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Archivo+Black&display=swap" rel="stylesheet">
                             <style>
                                 body { margin: 0; padding: 0; overflow: hidden; background: #000; }
                                 .text-projection-shadow { text-shadow: 0 2px 12px rgba(0,0,0,0.95), 0 4px 24px rgba(0,0,0,0.85); }
@@ -1600,6 +1701,17 @@
                 syncToProjector();
             };
 
+            document.getElementById('citation-font').onchange = (e) => { projectionStyles.citationFont = e.target.value; syncToProjector(); };
+            document.getElementById('citation-size').oninput = (e) => { projectionStyles.citationSize = e.target.value; document.getElementById('val-citation-size').innerText = e.target.value + 'vw'; syncToProjector(); };
+            document.getElementById('citation-color').oninput = (e) => { projectionStyles.citationColor = e.target.value; syncToProjector(); };
+            document.getElementById('citation-bold').onchange = (e) => { projectionStyles.citationBold = e.target.checked; syncToProjector(); };
+            document.getElementById('citation-italic').onchange = (e) => { projectionStyles.citationItalic = e.target.checked; syncToProjector(); };
+            document.getElementById('citation-shadow').onchange = (e) => { projectionStyles.citationShadow = e.target.checked; syncToProjector(); };
+            document.getElementById('citation-position').onchange = (e) => { projectionStyles.citationPosition = e.target.value; syncToProjector(); };
+            [['left','citation-align-left'],['center','citation-align-center'],['right','citation-align-right']].forEach(([align,id]) => {
+                document.getElementById(id).onclick = () => { projectionStyles.citationAlign = align; updateCitationAlignButtons(); syncToProjector(); };
+            });
+
             document.getElementById('btn-bg-color').onclick = () => updateBgTypeUI('color');
             document.getElementById('btn-bg-grad').onclick = () => updateBgTypeUI('gradient');
             document.getElementById('btn-bg-img').onclick = () => updateBgTypeUI('image');
@@ -1760,6 +1872,24 @@
 
         window.onload = () => {
             loadOperatorState();
+            // Sincroniza los controles nuevos incluso si el estado guardado es de una versión anterior.
+            projectionStyles.citationFont = projectionStyles.citationFont || projectionStyles.font || 'Inter';
+            projectionStyles.citationSize = projectionStyles.citationSize || '1.6';
+            projectionStyles.citationColor = projectionStyles.citationColor || projectionStyles.textcolor || '#ffffff';
+            projectionStyles.citationBold = projectionStyles.citationBold !== undefined ? projectionStyles.citationBold : true;
+            projectionStyles.citationItalic = projectionStyles.citationItalic || false;
+            projectionStyles.citationShadow = projectionStyles.citationShadow !== undefined ? projectionStyles.citationShadow : true;
+            projectionStyles.citationAlign = projectionStyles.citationAlign || 'center';
+            projectionStyles.citationPosition = projectionStyles.citationPosition || 'bottom-center';
+            document.getElementById('citation-font').value = projectionStyles.citationFont;
+            document.getElementById('citation-size').value = projectionStyles.citationSize;
+            document.getElementById('val-citation-size').innerText = projectionStyles.citationSize + 'vw';
+            document.getElementById('citation-color').value = projectionStyles.citationColor;
+            document.getElementById('citation-bold').checked = projectionStyles.citationBold;
+            document.getElementById('citation-italic').checked = projectionStyles.citationItalic;
+            document.getElementById('citation-shadow').checked = projectionStyles.citationShadow;
+            document.getElementById('citation-position').value = projectionStyles.citationPosition;
+            updateCitationAlignButtons();
             renderBooks();
             renderChapters();
             renderVerses();
