@@ -44,7 +44,7 @@
                                     let ytPendingCommand = '';
                                     let ytPlayerState = -1;
                                     let ytLoopEnabled = false;
-                                    let ytSeparateWindowMode = false;
+                                    let ytSeparateWindowMode = true; // YouTube está reservado exclusivamente para youtube.html.
                                     let ytLastStatus = '';
 
                                     function getYouTubeId(value) {
@@ -136,7 +136,7 @@
                                         script.onerror = () => sendYouTubeStatus('api-load-error', { force: true });
                                         document.head.appendChild(script);
                                     }
-                                    initializeYouTubeAPI();
+                                    // No inicializar YT.Player aquí: YouTube se reproduce únicamente en youtube.html.
                                     try {
                                         if ('BroadcastChannel' in window) {
                                             channel = new BroadcastChannel(CHANNEL_NAME);
@@ -232,7 +232,7 @@
                                     }
                                     function applyProjection(data) {
                                         if (!data) return;
-                                        ytSeparateWindowMode = !!data.youtubeSeparateWindow;
+                                        ytSeparateWindowMode = true; // La proyección bíblica nunca reproduce YouTube.
                                         const styles = data.styles;
                                         const text = document.getElementById('proj-text');
                                         const citation = document.getElementById('proj-citation');
@@ -312,15 +312,8 @@
                                             youtube.classList.add('hidden'); youtube.src = '';
                                         } else {
                                             if (screenFrame) screenFrame.classList.add('hidden');
-                                            if (data.mediaMode === 'youtube' && data.videoUrl && !data.youtubeSeparateWindow) {
-                                                youtube.classList.remove('hidden');
-                                                ytLoopEnabled = !!data.videoLoop;
-                                                const videoId = getYouTubeId(data.videoUrl);
-                                                if (videoId && videoId !== ytDesiredVideoId) cueYouTubeVideo(videoId);
-                                            } else {
-                                                youtube.classList.add('hidden');
-                                                // No destruir el player al ocultarlo: conservar su estado y evitar reinicializarlo.
-                                            }
+                                            // YouTube se muestra y reproduce solo en youtube.html. Esta página es exclusivamente para versículos y medios no-YouTube.
+                                            youtube.classList.add('hidden');
                                             if (data.mediaMode === 'video' && data.videoUrl) { if (video.getAttribute('src') !== data.videoUrl) { video.setAttribute('src', data.videoUrl); video.load(); } video.loop = !!data.videoLoop; if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null && String(video.dataset.lastSeekId || '') !== String(data.videoSeekId ?? 'legacy')) { video.dataset.lastSeekId = String(data.videoSeekId ?? 'legacy'); queueProjectionSeek(video, data.videoSeekTo); } video.classList.remove('hidden'); if (data.isVideoPlaying) video.play().catch(() => {}); else video.pause(); }
                                             else { video.classList.add('hidden'); if (video.srcObject) video.srcObject = null; }
                                         }

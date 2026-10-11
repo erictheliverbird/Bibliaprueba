@@ -1943,11 +1943,13 @@
                     videoLoop = document.getElementById('video-loop-toggle').checked;
                     activeVideoUrl = withYouTubeLoop(embedUrl, videoLoop);
                     mediaMode = 'youtube';
+                    // YouTube vive exclusivamente en youtube.html; la ventana de versículos nunca debe cargarlo.
+                    youtubeSeparateWindowMode = true;
                     syncToProjector();
                     if (location.protocol === 'file:') {
-                        showToast("Aviso: YouTube puede bloquear la reproducción si abres el HTML como archivo local. Para el reproductor integrado, abre el proyector desde una dirección HTTPS o un servidor web local.", "warning");
+                        showToast("Aviso: abre la aplicación desde GitHub Pages (HTTPS) para sincronizar la ventana independiente de YouTube.", "warning");
                     } else {
-                        showToast("YouTube cargado para la pantalla de proyección. La vista previa se desactiva para priorizar la reproducción externa; pulsa Reproducir YouTube.", "success");
+                        showToast("Enlace enviado a la ventana exclusiva de YouTube. La proyección bíblica no reproducirá este video. Abre la ventana YouTube interactiva si aún no está abierta.", "success");
                     }
                 } else {
                     showToast("Enlace de YouTube no válido", "error");
