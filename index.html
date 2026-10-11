@@ -253,6 +253,10 @@
                                         <i class="fa-solid fa-pause"></i> Pausar YouTube
                                     </button>
                                 </div>
+                                <button id="btn-open-youtube-window" type="button" class="w-full bg-red-700 hover:bg-red-600 text-white px-3 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+                                    <i class="fa-brands fa-youtube"></i> Abrir ventana YouTube interactiva
+                                </button>
+                                <p class="text-[10px] text-gray-400">Esta ventana es independiente de la proyección bíblica e incluye los controles originales de YouTube para buscar, pausar y saltar anuncios cuando YouTube lo permita.</p>
                                 <div id="projector-connection-status" class="flex items-center gap-2 text-[10px] text-amber-300" role="status" aria-live="polite">
                                     <span id="projector-connection-dot" class="inline-block w-2 h-2 rounded-full bg-amber-400"></span>
                                     <span id="projector-connection-label">Comprobando conexión con el proyector…</span>
@@ -703,20 +707,28 @@
 
         let cultoList = [];
         let externalWindow = null;
+        let youtubeWindow = null;
+        let youtubeSeparateWindowMode = false;
         let broadcastChannel = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('biblical-projector-channel') : null;
         let projectorLastHeartbeat = 0;
+        let youtubeWindowLastHeartbeat = 0;
         let projectorConnectionCheckTimer = null;
 
         function isProjectorConnected() {
             return Date.now() - projectorLastHeartbeat < 9000;
         }
 
+        function isYouTubeWindowConnected() {
+            return Date.now() - youtubeWindowLastHeartbeat < 9000;
+        }
+
         function updateProjectorConnectionStatus() {
             const dot = document.getElementById('projector-connection-dot');
             const label = document.getElementById('projector-connection-label');
             const connected = isProjectorConnected();
-            if (dot) dot.className = 'inline-block w-2 h-2 rounded-full ' + (connected ? 'bg-emerald-400' : 'bg-amber-400');
-            if (label) label.textContent = connected ? 'Proyector conectado · ventana detectada' : 'Proyector no detectado · abre “Proyectar (Ventana)”';
+            const ytConnected = isYouTubeWindowConnected();
+            if (dot) dot.className = 'inline-block w-2 h-2 rounded-full ' + ((connected || ytConnected) ? 'bg-emerald-400' : 'bg-amber-400');
+            if (label) label.textContent = connected ? 'Proyector bíblico conectado' : (ytConnected ? 'Ventana YouTube interactiva conectada' : 'Ventana de proyección no detectada');
         }
 
         if (broadcastChannel) {
@@ -725,6 +737,10 @@
                 if (!data || typeof data !== 'object') return;
                 if (data.type === '__projector_heartbeat') {
                     projectorLastHeartbeat = Date.now();
+                    updateProjectorConnectionStatus();
+                }
+                if (data.type === '__youtube_window_heartbeat') {
+                    youtubeWindowLastHeartbeat = Date.now();
                     updateProjectorConnectionStatus();
                 }
                 if (data.type === '__youtube_status') {
@@ -1168,9 +1184,9 @@
         function sendYouTubeCommand(command) {
             // Primero comprobamos el latido de la página proyector.html. No dependemos
             // de externalWindow, porque Safari puede separar la ventana y dejar obsoleta la referencia.
-            if (!isProjectorConnected()) {
+            if (!isProjectorConnected() && !isYouTubeWindowConnected()) {
                 updateProjectorConnectionStatus();
-                showToast('No detecto una ventana de proyección activa. Pulsa “Proyectar (Ventana)” una sola vez y luego vuelve a intentarlo.', 'warning');
+                showToast('Abre primero la ventana de proyección bíblica o la ventana YouTube interactiva.', 'warning');
                 return;
             }
 
@@ -1425,6 +1441,7 @@
                 videoLoop: videoLoop,
                 videoSeekTo: videoSeekTo,
                 videoSeekId: videoSeekId,
+                youtubeSeparateWindow: youtubeSeparateWindowMode,
                 timestamp: Date.now()
             };
 
@@ -1493,7 +1510,7 @@
                 // No asignar .src ni recrear el iframe desde la ventana controladora.
                 const isExternalProjection = !isLocalFs && docObj !== document;
                 const apiManagedPlayer = youtubeEl.dataset && youtubeEl.dataset.youtubeApi === '1';
-                if (data.mediaMode === 'youtube' && data.videoUrl && isExternalProjection) {
+                if (data.mediaMode === 'youtube' && data.videoUrl && isExternalProjection && !data.youtubeSeparateWindow) {
                     if (!apiManagedPlayer && youtubeEl.src !== data.videoUrl) youtubeEl.src = data.videoUrl;
                     youtubeEl.classList.remove('hidden');
                 } else {
@@ -1723,6 +1740,25 @@
             showToast("Transmisión de pantalla detenida", "info");
         }
 
+        function openInteractiveYouTubeWindow() {
+            // Abrir mediante gesto directo del usuario para que Safari no bloquee la ventana.
+            const youtubeUrl = new URL('youtube.html', window.location.href);
+            youtubeUrl.searchParams.set('youtubePlayer', '1');
+            youtubeSeparateWindowMode = true;
+            syncToProjector(); // La proyección bíblica deja de alojar YouTube para evitar reproductores duplicados.
+            if (youtubeWindow && !youtubeWindow.closed) {
+                try { youtubeWindow.focus(); } catch (_) {}
+                showToast('La ventana interactiva de YouTube ya está abierta. Puedes moverla al monitor externo.', 'info');
+                return;
+            }
+            youtubeWindow = window.open(youtubeUrl.href, 'BiblicalYouTubeWindow', 'width=1280,height=720');
+            if (!youtubeWindow) {
+                showToast('Safari bloqueó la ventana de YouTube. Permite las ventanas emergentes para este sitio y vuelve a intentarlo.', 'error');
+                return;
+            }
+            showToast('Ventana interactiva de YouTube abierta. Usa sus controles para iniciar el video y gestionar anuncios.', 'success');
+        }
+
         function toggleExternalProjector() {
             // Si la ventana fue separada manualmente y Safari perdió la referencia,
             // el heartbeat permite evitar abrir una segunda proyección duplicada.
@@ -1899,6 +1935,7 @@
             // Videos
             document.getElementById('btn-youtube-play').onclick = () => sendYouTubeCommand('playVideo');
             document.getElementById('btn-youtube-pause').onclick = () => sendYouTubeCommand('pauseVideo');
+            document.getElementById('btn-open-youtube-window').onclick = openInteractiveYouTubeWindow;
             document.getElementById('btn-load-youtube').onclick = () => {
                 const url = document.getElementById('video-url-input').value.trim();
                 const embedUrl = getYouTubeEmbedUrl(url);

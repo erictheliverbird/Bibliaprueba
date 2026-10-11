@@ -44,6 +44,7 @@
                                     let ytPendingCommand = '';
                                     let ytPlayerState = -1;
                                     let ytLoopEnabled = false;
+                                    let ytSeparateWindowMode = false;
                                     let ytLastStatus = '';
 
                                     function getYouTubeId(value) {
@@ -173,6 +174,7 @@
                                     document.addEventListener('visibilitychange', () => { if (!document.hidden) sendProjectorHeartbeat(); });
 
                                     function handleYouTubeCommand(command) {
+                                        if (ytSeparateWindowMode) return; // YouTube se reproduce en youtube.html para evitar reproductores duplicados.
                                         if (command !== 'playVideo' && command !== 'pauseVideo' && command !== 'stopVideo') return;
                                         // Si el video está cargando o esperando CUED, guardar la orden.
                                         executeYouTubeCommand(command);
@@ -230,6 +232,7 @@
                                     }
                                     function applyProjection(data) {
                                         if (!data) return;
+                                        ytSeparateWindowMode = !!data.youtubeSeparateWindow;
                                         const styles = data.styles;
                                         const text = document.getElementById('proj-text');
                                         const citation = document.getElementById('proj-citation');
@@ -309,7 +312,7 @@
                                             youtube.classList.add('hidden'); youtube.src = '';
                                         } else {
                                             if (screenFrame) screenFrame.classList.add('hidden');
-                                            if (data.mediaMode === 'youtube' && data.videoUrl) {
+                                            if (data.mediaMode === 'youtube' && data.videoUrl && !data.youtubeSeparateWindow) {
                                                 youtube.classList.remove('hidden');
                                                 ytLoopEnabled = !!data.videoLoop;
                                                 const videoId = getYouTubeId(data.videoUrl);
