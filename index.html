@@ -666,7 +666,10 @@
         let externalWindow = null;
         let broadcastChannel = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('biblical-projector-channel') : null;
         
-        window.screenStream = null; 
+        window.screenStream = null;
+        let screenFrameInterval = null;
+        let screenFrameCanvas = null;
+        let screenFrameLastSent = 0;
 
         // BUSCADOR DE IMÁGENES: resultados reales de Pixabay, consultas alternativas
         // y sin imágenes aleatorias que no correspondan con la palabra buscada.
@@ -1452,6 +1455,39 @@
             });
         }
 
+        function startScreenFrameSync() {
+            stopScreenFrameSync();
+            const sourceVideo = document.getElementById('preview-video');
+            if (!sourceVideo) return;
+            screenFrameCanvas = document.createElement('canvas');
+            screenFrameCanvas.width = 960;
+            screenFrameCanvas.height = 540;
+            const ctx = screenFrameCanvas.getContext('2d', { alpha: false });
+            screenFrameLastSent = 0;
+            // MediaStream no se puede compartir de forma fiable entre ventanas separadas en Safari.
+            // Enviamos fotogramas JPEG ligeros por BroadcastChannel como alternativa.
+            screenFrameInterval = window.setInterval(() => {
+                if (mediaMode !== 'screen' || !window.screenStream) return;
+                if (sourceVideo.readyState < 2 || !ctx) return;
+                const now = Date.now();
+                if (now - screenFrameLastSent < 180) return;
+                screenFrameLastSent = now;
+                try {
+                    ctx.drawImage(sourceVideo, 0, 0, screenFrameCanvas.width, screenFrameCanvas.height);
+                    const frame = screenFrameCanvas.toDataURL('image/jpeg', 0.55);
+                    const message = { type: '__screen_frame', frame, timestamp: now };
+                    if (broadcastChannel) broadcastChannel.postMessage(message);
+                    try { if (externalWindow && !externalWindow.closed) externalWindow.postMessage(message, '*'); } catch (_) {}
+                } catch (error) { console.warn('No se pudo sincronizar un fotograma de pantalla', error); }
+            }, 200);
+        }
+
+        function stopScreenFrameSync() {
+            if (screenFrameInterval !== null) window.clearInterval(screenFrameInterval);
+            screenFrameInterval = null;
+            screenFrameCanvas = null;
+        }
+
         async function startScreenCapture() {
             try {
                 window.screenStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: "always" }, audio: false });
@@ -1460,6 +1496,7 @@
                 document.getElementById('btn-stop-screen-capture').classList.remove('hidden');
                 window.screenStream.getVideoTracks()[0].onended = stopScreenCapture;
                 syncToProjector();
+                startScreenFrameSync();
                 showToast("Captura de pantalla activa", "success");
             } catch (err) {
                 showToast("No se pudo iniciar la captura de pantalla", "error");
@@ -1467,6 +1504,7 @@
         }
 
         function stopScreenCapture() {
+            stopScreenFrameSync();
             if (window.screenStream) {
                 window.screenStream.getTracks().forEach(track => track.stop());
                 window.screenStream = null;
@@ -1503,6 +1541,7 @@
                         <body class="h-screen w-screen overflow-hidden relative flex flex-col justify-between p-16 select-none bg-black">
                             <div id="proj-backdrop" class="absolute inset-0 z-0 bg-cover bg-center transition-all duration-300"></div>
                             <video id="proj-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay muted></video>
+                            <img id="proj-screen-frame" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" alt="Captura de pantalla en vivo" />
                             <iframe id="proj-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
                             <div id="proj-overlay" class="absolute inset-0 z-20 bg-black/40 transition-all duration-300"></div>
                             <img id="proj-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-30 hidden" alt="Standby Logo" />
@@ -1523,11 +1562,27 @@
                                     try {
                                         if ('BroadcastChannel' in window) {
                                             channel = new BroadcastChannel(CHANNEL_NAME);
-                                            channel.addEventListener('message', event => applyProjection(event.data));
+                                            channel.addEventListener('message', event => {
+                                                const data = event.data;
+                                                if (data && data.type === '__screen_frame') {
+                                                    const frame = document.getElementById('proj-screen-frame');
+                                                    if (frame && data.frame) { frame.src = data.frame; frame.classList.remove('hidden'); }
+                                                    return;
+                                                }
+                                                applyProjection(data);
+                                            });
                                         }
                                     } catch (error) { console.warn('BroadcastChannel no disponible', error); }
 
-                                    window.addEventListener('message', event => applyProjection(event.data));
+                                    window.addEventListener('message', event => {
+                                        const data = event.data;
+                                        if (data && data.type === '__screen_frame') {
+                                            const frame = document.getElementById('proj-screen-frame');
+                                            if (frame && data.frame) { frame.src = data.frame; frame.classList.remove('hidden'); }
+                                            return;
+                                        }
+                                        applyProjection(data);
+                                    });
                                     window.addEventListener('storage', event => {
                                         if (event.key === STORAGE_KEY && event.newValue) {
                                             try { applyProjection(JSON.parse(event.newValue)); } catch (_) {}
@@ -1553,6 +1608,8 @@
                                             citation.textContent = '';
                                             standby.classList.add('hidden'); corner.classList.add('hidden');
                                             video.classList.add('hidden'); youtube.classList.add('hidden');
+                                            const screenFrame = document.getElementById('proj-screen-frame');
+                                            if (screenFrame) screenFrame.classList.add('hidden');
                                             return;
                                         }
 
@@ -1605,10 +1662,19 @@
                                             corner.classList.add(...(logoClasses[logoPos] || logoClasses['top-left'])); corner.classList.remove('hidden');
                                         } else corner.classList.add('hidden');
 
-                                        if (data.mediaMode === 'youtube' && data.videoUrl) { if (youtube.src !== data.videoUrl) youtube.src = data.videoUrl; youtube.classList.remove('hidden'); }
-                                        else { youtube.classList.add('hidden'); youtube.src = ''; }
-                                        if (data.mediaMode === 'video' && data.videoUrl) { if (video.src !== data.videoUrl) video.src = data.videoUrl; video.classList.remove('hidden'); if (data.isVideoPlaying) video.play().catch(() => {}); else video.pause(); }
-                                        else { video.classList.add('hidden'); if (video.srcObject) video.srcObject = null; }
+                                        const screenFrame = document.getElementById('proj-screen-frame');
+                                        if (data.mediaMode === 'screen') {
+                                            if (screenFrame) screenFrame.classList.remove('hidden');
+                                            video.classList.add('hidden');
+                                            if (video.srcObject) video.srcObject = null;
+                                            youtube.classList.add('hidden'); youtube.src = '';
+                                        } else {
+                                            if (screenFrame) screenFrame.classList.add('hidden');
+                                            if (data.mediaMode === 'youtube' && data.videoUrl) { if (youtube.src !== data.videoUrl) youtube.src = data.videoUrl; youtube.classList.remove('hidden'); }
+                                            else { youtube.classList.add('hidden'); youtube.src = ''; }
+                                            if (data.mediaMode === 'video' && data.videoUrl) { if (video.src !== data.videoUrl) video.src = data.videoUrl; video.classList.remove('hidden'); if (data.isVideoPlaying) video.play().catch(() => {}); else video.pause(); }
+                                            else { video.classList.add('hidden'); if (video.srcObject) video.srcObject = null; }
+                                        }
                                     }
 
                                     // Recupera el último estado al abrir o recargar la ventana de proyección.
@@ -1648,13 +1714,31 @@
                     reader.onload = (event) => {
                         try {
                             const parsed = JSON.parse(event.target.result);
-                            const isValidBible = parsed && typeof parsed === 'object' && !Array.isArray(parsed)
-                                && Object.keys(parsed).length > 0
-                                && Object.values(parsed).every(chapters => chapters && typeof chapters === 'object' && !Array.isArray(chapters)
+                            const isPlainObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+                            // Algunos archivos bíblicos incluyen metadatos, por ejemplo "lang": "SPAN", además de los libros.
+                            const bookEntries = isPlainObject(parsed) ? Object.entries(parsed).filter(([name]) => name.toLowerCase() !== 'lang') : [];
+                            const isValidBible = bookEntries.length > 0
+                                && bookEntries.every(([, chapters]) => isPlainObject(chapters)
                                     && Object.keys(chapters).length > 0
-                                    && Object.values(chapters).every(verses => Array.isArray(verses) && verses.every(verse => typeof verse === 'string')));
+                                    && Object.values(chapters).every(verses =>
+                                        (Array.isArray(verses) && verses.every(verse => typeof verse === 'string'))
+                                        || (isPlainObject(verses) && Object.keys(verses).length > 0
+                                            && Object.values(verses).every(verse => typeof verse === 'string'))));
                             if (isValidBible) {
-                                bibleData = parsed;
+                                // Admite biblias con versículos en arreglo y el formato común con claves "1", "2", etc.
+                                // Se normaliza todo a arreglos para que la navegación y la cita funcionen correctamente.
+                                bibleData = Object.fromEntries(bookEntries.map(([book, chapters]) => [
+                                    book,
+                                    Object.fromEntries(Object.entries(chapters).map(([chapter, verses]) => [
+                                        chapter,
+                                        Array.isArray(verses) ? verses : Object.entries(verses)
+                                            .sort(([a], [b]) => {
+                                                const na = Number(a), nb = Number(b);
+                                                return Number.isFinite(na) && Number.isFinite(nb) ? na - nb : a.localeCompare(b, 'es');
+                                            })
+                                            .map(([, text]) => text)
+                                    ]))
+                                ]));
                                 const firstBook = Object.keys(bibleData)[0];
                                 if (firstBook) {
                                     selectedBook = firstBook;
@@ -1667,7 +1751,7 @@
                                     showToast("Biblia JSON cargada con éxito", "success");
                                 }
                             } else {
-                                showToast("Estructura bíblica inválida. Se esperaba libro > capítulo > lista de versículos de texto.", "error");
+                                showToast("Estructura bíblica inválida. Se esperaba libro > capítulo > versículos (arreglo o claves numéricas).", "error");
                             }
                         } catch (err) {
                             showToast("Formato JSON inválido", "error");
