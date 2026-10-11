@@ -1248,6 +1248,8 @@
 
             try { if (broadcastChannel) broadcastChannel.postMessage(payload); } catch (e) {}
             try { localStorage.setItem('biblical_projector_data', JSON.stringify(payload)); } catch (e) {}
+            // Canal directo adicional: útil mientras la referencia de la ventana siga disponible.
+            try { if (externalWindow && !externalWindow.closed) externalWindow.postMessage(payload, '*'); } catch (e) {}
 
             updateProjectorDOM(document, payload, false);
             if (externalWindow && !externalWindow.closed) {
@@ -1511,6 +1513,111 @@
                             <div class="z-30 text-center w-full pb-6">
                                 <p id="proj-citation" class="text-white/90 tracking-widest font-black uppercase text-2xl"></p>
                             </div>
+                            <script>
+                                // Receptor autónomo: la proyección sigue escuchando aunque Safari
+                                // separe esta pestaña y ya no podamos manipular su document desde la consola.
+                                (() => {
+                                    const CHANNEL_NAME = 'biblical-projector-channel';
+                                    const STORAGE_KEY = 'biblical_projector_data';
+                                    let channel = null;
+                                    try {
+                                        if ('BroadcastChannel' in window) {
+                                            channel = new BroadcastChannel(CHANNEL_NAME);
+                                            channel.addEventListener('message', event => applyProjection(event.data));
+                                        }
+                                    } catch (error) { console.warn('BroadcastChannel no disponible', error); }
+
+                                    window.addEventListener('message', event => applyProjection(event.data));
+                                    window.addEventListener('storage', event => {
+                                        if (event.key === STORAGE_KEY && event.newValue) {
+                                            try { applyProjection(JSON.parse(event.newValue)); } catch (_) {}
+                                        }
+                                    });
+
+                                    function applyProjection(data) {
+                                        if (!data || !data.styles) return;
+                                        const styles = data.styles;
+                                        const text = document.getElementById('proj-text');
+                                        const citation = document.getElementById('proj-citation');
+                                        const backdrop = document.getElementById('proj-backdrop');
+                                        const overlay = document.getElementById('proj-overlay');
+                                        const video = document.getElementById('proj-video');
+                                        const youtube = document.getElementById('proj-youtube');
+                                        const standby = document.getElementById('proj-logo-standby');
+                                        const corner = document.getElementById('proj-logo-corner');
+                                        if (!text || !backdrop) return;
+
+                                        if (data.isBlackout) {
+                                            backdrop.style.background = '#000';
+                                            text.textContent = '';
+                                            citation.textContent = '';
+                                            standby.classList.add('hidden'); corner.classList.add('hidden');
+                                            video.classList.add('hidden'); youtube.classList.add('hidden');
+                                            return;
+                                        }
+
+                                        text.textContent = data.text || '';
+                                        text.style.fontFamily = '"' + (styles.font || 'Inter') + '", sans-serif';
+                                        text.style.fontSize = (parseFloat(styles.size) || 4.5) + 'vw';
+                                        text.style.fontWeight = styles.isBold ? '800' : '400';
+                                        text.style.fontStyle = styles.isItalic ? 'italic' : 'normal';
+                                        text.style.textAlign = styles.align || 'center';
+                                        text.style.color = styles.textcolor || '#fff';
+                                        text.classList.toggle('text-projection-shadow', !!styles.hasShadow);
+
+                                        citation.textContent = data.citation || '';
+                                        citation.style.fontFamily = '"' + (styles.citationFont || styles.font || 'Inter') + '", sans-serif';
+                                        citation.style.fontSize = (parseFloat(styles.citationSize) || 1.6) + 'vw';
+                                        citation.style.fontWeight = styles.citationBold === false ? '400' : '800';
+                                        citation.style.fontStyle = styles.citationItalic ? 'italic' : 'normal';
+                                        citation.style.color = styles.citationColor || styles.textcolor || '#fff';
+                                        citation.style.textAlign = styles.citationAlign || 'center';
+                                        citation.style.position = 'absolute'; citation.style.zIndex = '35';
+                                        citation.style.margin = '0'; citation.style.padding = '0.25em 0.5em';
+                                        citation.style.maxWidth = '90%'; citation.style.boxSizing = 'border-box';
+                                        citation.style.pointerEvents = 'none';
+                                        citation.style.top = 'auto'; citation.style.bottom = 'auto';
+                                        citation.style.left = 'auto'; citation.style.right = 'auto';
+                                        citation.style.transform = 'none';
+                                        const pos = styles.citationPosition || 'bottom-center';
+                                        if (pos.startsWith('top-')) citation.style.top = '4%';
+                                        else if (pos.startsWith('bottom-')) citation.style.bottom = '4%';
+                                        else citation.style.top = '50%';
+                                        if (pos.endsWith('-left')) { citation.style.left = '4%'; citation.style.textAlign = 'left'; }
+                                        else if (pos.endsWith('-right')) { citation.style.right = '4%'; citation.style.textAlign = 'right'; }
+                                        else { citation.style.left = '50%'; citation.style.transform = 'translateX(-50%)'; }
+                                        if (pos.startsWith('middle-')) citation.style.transform = (pos.endsWith('-left') || pos.endsWith('-right')) ? 'translateY(-50%)' : 'translate(-50%, -50%)';
+                                        citation.classList.toggle('text-projection-shadow', styles.citationShadow !== false);
+
+                                        if (styles.bgType === 'color') { backdrop.style.background = styles.bgcolor || '#0f172a'; backdrop.style.backgroundImage = 'none'; }
+                                        else if (styles.bgType === 'gradient') { backdrop.style.background = styles.gradient || '#0f172a'; backdrop.style.backgroundImage = 'none'; }
+                                        else if (styles.bgType === 'image') { backdrop.style.background = 'none'; backdrop.style.backgroundImage = 'url("' + String(styles.bgImage || '').replace(/"/g, '%22') + '")'; backdrop.style.backgroundSize = 'cover'; backdrop.style.backgroundPosition = 'center'; }
+                                        overlay.style.backgroundColor = 'rgba(0,0,0,' + (Number(styles.bgOpacity || 0) / 100) + ')';
+
+                                        const hasText = (data.text || '').trim().length > 0;
+                                        if (styles.logoUrl && !hasText && data.mediaMode === 'none') { standby.src = styles.logoUrl; standby.classList.remove('hidden'); }
+                                        else standby.classList.add('hidden');
+                                        if (styles.logoUrl && hasText && styles.showLogoCorner) {
+                                            corner.src = styles.logoUrl;
+                                            corner.className = 'absolute max-w-[12%] max-h-[15%] object-contain z-30 transition-all';
+                                            const logoPos = styles.logoPosition || 'top-left';
+                                            const logoClasses = {'top-left':['top-4','left-4'],'top-center':['top-4','left-1/2','-translate-x-1/2'],'top-right':['top-4','right-4'],'bottom-left':['bottom-4','left-4'],'bottom-center':['bottom-4','left-1/2','-translate-x-1/2'],'bottom-right':['bottom-4','right-4']};
+                                            corner.classList.add(...(logoClasses[logoPos] || logoClasses['top-left'])); corner.classList.remove('hidden');
+                                        } else corner.classList.add('hidden');
+
+                                        if (data.mediaMode === 'youtube' && data.videoUrl) { if (youtube.src !== data.videoUrl) youtube.src = data.videoUrl; youtube.classList.remove('hidden'); }
+                                        else { youtube.classList.add('hidden'); youtube.src = ''; }
+                                        if (data.mediaMode === 'video' && data.videoUrl) { if (video.src !== data.videoUrl) video.src = data.videoUrl; video.classList.remove('hidden'); if (data.isVideoPlaying) video.play().catch(() => {}); else video.pause(); }
+                                        else { video.classList.add('hidden'); if (video.srcObject) video.srcObject = null; }
+                                    }
+
+                                    // Recupera el último estado al abrir o recargar la ventana de proyección.
+                                    try {
+                                        const saved = localStorage.getItem(STORAGE_KEY);
+                                        if (saved) applyProjection(JSON.parse(saved));
+                                    } catch (error) { console.warn('No se pudo recuperar el estado guardado', error); }
+                                })();
+                            <\/script>
                         </body>
                         </html>
                     `);
