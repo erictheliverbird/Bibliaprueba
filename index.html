@@ -291,6 +291,9 @@
                                     <span class="text-xs font-bold text-gray-200">Seleccionar video (MP4, WEBM)</span>
                                     <input type="file" id="video-file-input" accept="video/*" class="hidden">
                                 </label>
+                                <button id="btn-remove-video" type="button" class="w-full bg-red-950/70 hover:bg-red-900 border border-red-900 text-red-200 p-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-eject"></i> Quitar video y mostrar solo versículos
+                                </button>
                             </div>
                         </div>
 
@@ -1333,6 +1336,26 @@
             videoSeekTo = null;
         }
 
+        function queueVideoSeek(videoEl, target) {
+            if (!videoEl || !Number.isFinite(target) || target < 0) return;
+            const applySeek = () => {
+                const pending = Number(videoEl.dataset.pendingSeek);
+                if (Number.isFinite(pending) && pending >= 0 && Number.isFinite(videoEl.duration)) {
+                    try { videoEl.currentTime = Math.min(pending, videoEl.duration || pending); } catch (_) {}
+                    delete videoEl.dataset.pendingSeek;
+                }
+            };
+            if (videoEl.readyState >= 1 && Number.isFinite(videoEl.duration) && Math.abs((videoEl.currentTime || 0) - target) > 0.4) {
+                try { videoEl.currentTime = Math.min(target, videoEl.duration || target); } catch (_) { videoEl.dataset.pendingSeek = String(target); }
+            } else if (videoEl.readyState < 1) {
+                videoEl.dataset.pendingSeek = String(target);
+                if (videoEl.dataset.seekListenerAttached !== '1') {
+                    videoEl.dataset.seekListenerAttached = '1';
+                    videoEl.addEventListener('loadedmetadata', () => { applySeek(); videoEl.dataset.seekListenerAttached = '0'; }, { once: true });
+                }
+            }
+        }
+
         function updateProjectorDOM(docObj, data, isLocalFs = false) {
             const prefix = isLocalFs ? 'local-fs-' : (docObj === document ? 'preview-' : 'proj-');
 
@@ -1375,9 +1398,9 @@
                     videoEl.play().catch(() => {});
                 } else if (data.mediaMode === 'video' && data.videoUrl) {
                     videoEl.srcObject = null;
-                    if (videoEl.src !== data.videoUrl) videoEl.src = data.videoUrl;
+                    if (videoEl.getAttribute('src') !== data.videoUrl) { videoEl.setAttribute('src', data.videoUrl); videoEl.load(); }
                     videoEl.loop = !!data.videoLoop;
-                    if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null && Math.abs((videoEl.currentTime || 0) - data.videoSeekTo) > 1.25) { try { videoEl.currentTime = data.videoSeekTo; } catch (_) {} }
+                    if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null) queueVideoSeek(videoEl, data.videoSeekTo);
                     videoEl.classList.remove('hidden');
                     if (data.isVideoPlaying) videoEl.play().catch(() => {});
                     else videoEl.pause();
@@ -1662,8 +1685,27 @@
                                         }
                                     });
 
+                                    function queueProjectionSeek(video, target) {
+                                        if (!video || !Number.isFinite(target) || target < 0) return;
+                                        const seekNow = () => {
+                                            const pending = Number(video.dataset.pendingSeek);
+                                            if (Number.isFinite(pending) && Number.isFinite(video.duration)) {
+                                                try { video.currentTime = Math.min(pending, video.duration || pending); } catch (_) {}
+                                                delete video.dataset.pendingSeek;
+                                            }
+                                        };
+                                        if (video.readyState >= 1 && Number.isFinite(video.duration)) {
+                                            if (Math.abs((video.currentTime || 0) - target) > 0.4) { try { video.currentTime = Math.min(target, video.duration || target); } catch (_) { video.dataset.pendingSeek = String(target); } }
+                                        } else {
+                                            video.dataset.pendingSeek = String(target);
+                                            if (video.dataset.seekListenerAttached !== '1') {
+                                                video.dataset.seekListenerAttached = '1';
+                                                video.addEventListener('loadedmetadata', () => { seekNow(); video.dataset.seekListenerAttached = '0'; }, { once: true });
+                                            }
+                                        }
+                                    }
                                     function applyProjection(data) {
-                                        if (!data || !data.styles) return;
+                                        if (!data) return;
                                         const styles = data.styles;
                                         const text = document.getElementById('proj-text');
                                         const citation = document.getElementById('proj-citation');
@@ -1745,7 +1787,7 @@
                                             if (screenFrame) screenFrame.classList.add('hidden');
                                             if (data.mediaMode === 'youtube' && data.videoUrl) { if (youtube.src !== data.videoUrl) youtube.src = data.videoUrl; youtube.classList.remove('hidden'); }
                                             else { youtube.classList.add('hidden'); youtube.src = ''; }
-                                            if (data.mediaMode === 'video' && data.videoUrl) { if (video.src !== data.videoUrl) video.src = data.videoUrl; video.loop = !!data.videoLoop; if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null && Math.abs((video.currentTime || 0) - data.videoSeekTo) > 1.25) { try { video.currentTime = data.videoSeekTo; } catch (_) {} } video.classList.remove('hidden'); if (data.isVideoPlaying) video.play().catch(() => {}); else video.pause(); }
+                                            if (data.mediaMode === 'video' && data.videoUrl) { if (video.getAttribute('src') !== data.videoUrl) { video.setAttribute('src', data.videoUrl); video.load(); } video.loop = !!data.videoLoop; if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null) queueProjectionSeek(video, data.videoSeekTo); video.classList.remove('hidden'); if (data.isVideoPlaying) video.play().catch(() => {}); else video.pause(); }
                                             else { video.classList.add('hidden'); if (video.srcObject) video.srcObject = null; }
                                         }
                                     }
@@ -1942,7 +1984,21 @@
             };
 
             const controlVideo = document.getElementById('preview-video');
-            ['loadedmetadata', 'timeupdate', 'play', 'pause', 'ended', 'durationchange'].forEach(eventName => controlVideo.addEventListener(eventName, refreshVideoControls));
+            ['loadedmetadata', 'timeupdate', 'play', 'pause', 'ended', 'durationchange', 'seeked'].forEach(eventName => controlVideo.addEventListener(eventName, refreshVideoControls));
+            document.getElementById('btn-remove-video').onclick = () => {
+                if (mediaMode === 'screen') stopScreenCapture();
+                if (activeVideoUrl && activeVideoUrl.startsWith('blob:')) URL.revokeObjectURL(activeVideoUrl);
+                activeVideoUrl = '';
+                mediaMode = 'none';
+                isVideoPlaying = false;
+                videoSeekTo = null;
+                try { controlVideo.pause(); controlVideo.removeAttribute('src'); controlVideo.srcObject = null; controlVideo.load(); } catch (_) {}
+                const youtubeInput = document.getElementById('video-url-input');
+                if (youtubeInput) youtubeInput.value = '';
+                syncToProjector();
+                refreshVideoControls();
+                showToast('Video quitado; se mostrarán solo los versículos', 'success');
+            };
             document.getElementById('btn-video-play-pause').onclick = () => {
                 if (mediaMode !== 'video' || !activeVideoUrl) return;
                 if (controlVideo.paused) {
@@ -1955,11 +2011,21 @@
                     refreshVideoControls();
                 }
             };
-            document.getElementById('video-seek-slider').oninput = (event) => {
+            const seekSlider = document.getElementById('video-seek-slider');
+            seekSlider.oninput = (event) => {
+                if (mediaMode !== 'video' || !Number.isFinite(controlVideo.duration) || controlVideo.duration <= 0) return;
+                const target = (Number(event.target.value) / 1000) * controlVideo.duration;
+                // Durante el arrastre solo se mueve la vista previa; evita reinicios por mensajes repetidos.
+                try { controlVideo.currentTime = target; } catch (_) {}
+                const currentLabel = document.getElementById('video-current-time');
+                if (currentLabel) currentLabel.textContent = formatVideoTime(target);
+            };
+            seekSlider.onchange = (event) => {
                 if (mediaMode !== 'video' || !Number.isFinite(controlVideo.duration) || controlVideo.duration <= 0) return;
                 videoSeekTo = (Number(event.target.value) / 1000) * controlVideo.duration;
-                try { controlVideo.currentTime = videoSeekTo; } catch (_) {}
+                isVideoPlaying = !controlVideo.paused;
                 syncToProjector();
+                refreshVideoControls();
             };
             document.getElementById('video-loop-toggle').onchange = (event) => {
                 videoLoop = !!event.target.checked;
