@@ -686,6 +686,7 @@
         let isVideoPlaying = false;
         let videoLoop = false;
         let videoSeekTo = null;
+        let videoSeekId = 0; // Identificador único para que la ventana externa aplique cada búsqueda una sola vez
 
         let cultoList = [];
         let externalWindow = null;
@@ -1318,6 +1319,7 @@
                 isVideoPlaying: isVideoPlaying,
                 videoLoop: videoLoop,
                 videoSeekTo: videoSeekTo,
+                videoSeekId: videoSeekId,
                 timestamp: Date.now()
             };
 
@@ -1687,20 +1689,31 @@
 
                                     function queueProjectionSeek(video, target) {
                                         if (!video || !Number.isFinite(target) || target < 0) return;
-                                        const seekNow = () => {
-                                            const pending = Number(video.dataset.pendingSeek);
-                                            if (Number.isFinite(pending) && Number.isFinite(video.duration)) {
-                                                try { video.currentTime = Math.min(pending, video.duration || pending); } catch (_) {}
+                                        const applyTarget = () => {
+                                            const duration = Number.isFinite(video.duration) ? video.duration : target;
+                                            const safeTarget = Math.max(0, Math.min(target, duration));
+                                            try {
+                                                video.currentTime = safeTarget;
                                                 delete video.dataset.pendingSeek;
+                                            } catch (_) {
+                                                video.dataset.pendingSeek = String(safeTarget);
                                             }
                                         };
-                                        if (video.readyState >= 1 && Number.isFinite(video.duration)) {
-                                            if (Math.abs((video.currentTime || 0) - target) > 0.4) { try { video.currentTime = Math.min(target, video.duration || target); } catch (_) { video.dataset.pendingSeek = String(target); } }
-                                        } else {
+                                        if (video.readyState >= 1 && Number.isFinite(video.duration)) applyTarget();
+                                        else {
                                             video.dataset.pendingSeek = String(target);
                                             if (video.dataset.seekListenerAttached !== '1') {
                                                 video.dataset.seekListenerAttached = '1';
-                                                video.addEventListener('loadedmetadata', () => { seekNow(); video.dataset.seekListenerAttached = '0'; }, { once: true });
+                                                const retry = () => {
+                                                    const pending = Number(video.dataset.pendingSeek);
+                                                    if (Number.isFinite(pending)) {
+                                                        const duration = Number.isFinite(video.duration) ? video.duration : pending;
+                                                        try { video.currentTime = Math.max(0, Math.min(pending, duration)); delete video.dataset.pendingSeek; } catch (_) {}
+                                                    }
+                                                    video.dataset.seekListenerAttached = '0';
+                                                };
+                                                video.addEventListener('loadedmetadata', retry, { once: true });
+                                                video.addEventListener('canplay', retry, { once: true });
                                             }
                                         }
                                     }
@@ -1787,7 +1800,7 @@
                                             if (screenFrame) screenFrame.classList.add('hidden');
                                             if (data.mediaMode === 'youtube' && data.videoUrl) { if (youtube.src !== data.videoUrl) youtube.src = data.videoUrl; youtube.classList.remove('hidden'); }
                                             else { youtube.classList.add('hidden'); youtube.src = ''; }
-                                            if (data.mediaMode === 'video' && data.videoUrl) { if (video.getAttribute('src') !== data.videoUrl) { video.setAttribute('src', data.videoUrl); video.load(); } video.loop = !!data.videoLoop; if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null) queueProjectionSeek(video, data.videoSeekTo); video.classList.remove('hidden'); if (data.isVideoPlaying) video.play().catch(() => {}); else video.pause(); }
+                                            if (data.mediaMode === 'video' && data.videoUrl) { if (video.getAttribute('src') !== data.videoUrl) { video.setAttribute('src', data.videoUrl); video.load(); } video.loop = !!data.videoLoop; if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null && String(video.dataset.lastSeekId || '') !== String(data.videoSeekId ?? 'legacy')) { video.dataset.lastSeekId = String(data.videoSeekId ?? 'legacy'); queueProjectionSeek(video, data.videoSeekTo); } video.classList.remove('hidden'); if (data.isVideoPlaying) video.play().catch(() => {}); else video.pause(); }
                                             else { video.classList.add('hidden'); if (video.srcObject) video.srcObject = null; }
                                         }
                                     }
@@ -2012,21 +2025,27 @@
                 }
             };
             const seekSlider = document.getElementById('video-seek-slider');
-            seekSlider.oninput = (event) => {
+            const commitVideoSeek = () => {
                 if (mediaMode !== 'video' || !Number.isFinite(controlVideo.duration) || controlVideo.duration <= 0) return;
-                const target = (Number(event.target.value) / 1000) * controlVideo.duration;
-                // Durante el arrastre solo se mueve la vista previa; evita reinicios por mensajes repetidos.
+                const target = Math.max(0, Math.min(controlVideo.duration, (Number(seekSlider.value) / 1000) * controlVideo.duration));
+                // En iPad/Safari, el evento change puede llegar antes de terminar el seek local.
                 try { controlVideo.currentTime = target; } catch (_) {}
-                const currentLabel = document.getElementById('video-current-time');
-                if (currentLabel) currentLabel.textContent = formatVideoTime(target);
-            };
-            seekSlider.onchange = (event) => {
-                if (mediaMode !== 'video' || !Number.isFinite(controlVideo.duration) || controlVideo.duration <= 0) return;
-                videoSeekTo = (Number(event.target.value) / 1000) * controlVideo.duration;
+                videoSeekTo = target;
+                videoSeekId += 1;
                 isVideoPlaying = !controlVideo.paused;
                 syncToProjector();
                 refreshVideoControls();
             };
+            seekSlider.oninput = (event) => {
+                if (mediaMode !== 'video' || !Number.isFinite(controlVideo.duration) || controlVideo.duration <= 0) return;
+                const target = Math.max(0, Math.min(controlVideo.duration, (Number(event.target.value) / 1000) * controlVideo.duration));
+                const currentLabel = document.getElementById('video-current-time');
+                if (currentLabel) currentLabel.textContent = formatVideoTime(target);
+            };
+            seekSlider.onchange = commitVideoSeek;
+            // Algunos navegadores táctiles no disparan change de forma consistente al soltar el control.
+            seekSlider.onpointerup = commitVideoSeek;
+            seekSlider.ontouchend = commitVideoSeek;
             document.getElementById('video-loop-toggle').onchange = (event) => {
                 videoLoop = !!event.target.checked;
                 controlVideo.loop = videoLoop;
