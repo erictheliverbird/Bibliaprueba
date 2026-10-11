@@ -380,7 +380,7 @@
                                         <span class="text-xs font-black text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
                                             <i class="fa-solid fa-globe text-emerald-400"></i> Buscador de Imágenes Online
                                         </span>
-                                        <span class="text-[10px] text-gray-400 font-semibold">Pixabay & Unsplash API</span>
+                                        <span class="text-[10px] text-gray-400 font-semibold">Pixabay API</span>
                                     </div>
                                     
                                     <!-- Input de Búsqueda por Palabras Clave -->
@@ -390,6 +390,11 @@
                                             <i class="fa-solid fa-magnifying-glass"></i> Buscar
                                         </button>
                                     </div>
+                                    <div class="flex gap-1.5">
+                                        <input type="password" id="pixabay-api-key-input" autocomplete="off" placeholder="Clave API de Pixabay" class="min-w-0 flex-1 bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500 transition">
+                                        <button id="btn-save-pixabay-key" type="button" class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-xl text-xs font-bold transition shrink-0">Guardar clave</button>
+                                    </div>
+                                    <p class="text-[10px] text-gray-500">La clave se guarda solo en este navegador. En una web pública, una clave del cliente puede ser visible.</p>
 
                                     <!-- Sugerencias Rápidas -->
                                     <div class="flex items-center gap-1 overflow-x-auto pb-1 no-scrollbar text-[10px]">
@@ -556,7 +561,7 @@
                     "En lugares de delicados pastos me hará descansar; junto a aguas de reposo me pastoreará.",
                     "Confortará mi alma; me guiará por sendas de justicia por amor de su nombre.",
                     "Aunque ande en valle de sombra de muerte, no temeré mal alguno, porque tú estarás conmigo; tu vara y tu cayado me infundirán aliento.",
-                    "Aderezas mesa delante de mí en presencia de mis angustiadores; unges my cabeza con aceite; mi copa está rebosando.",
+                    "Aderezas mesa delante de mí en presencia de mis angustiadores; unges mi cabeza con aceite; mi copa está rebosando.",
                     "Ciertamente el bien y la misericordia me seguirán todos los días de mi vida, y en la casa de Jehová moraré por largos días."
                 ]
             },
@@ -607,7 +612,7 @@
 
         let cultoList = [];
         let externalWindow = null;
-        let broadcastChannel = new BroadcastChannel('biblical-projector-channel');
+        let broadcastChannel = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('biblical-projector-channel') : null;
         
         window.screenStream = null; 
 
@@ -705,7 +710,13 @@
             container.innerHTML = '';
             if (loading) loading.classList.remove('hidden');
 
-            const pixabayKey = '43328549-36159c9d519b5b27e6995057a';
+            const pixabayKey = (localStorage.getItem('pixabay_api_key') || '').trim();
+            if (!pixabayKey) {
+                if (loading) loading.classList.add('hidden');
+                container.innerHTML = '<div class="col-span-2 py-6 px-3 text-center text-amber-300 text-xs"><i class="fa-solid fa-key text-xl mb-2 block"></i><p class="font-bold mb-1">Falta la clave API de Pixabay</p><p class="text-gray-400">Pega tu clave en el campo de arriba y pulsa “Guardar clave”.</p></div>';
+                document.getElementById('pixabay-api-key-input')?.focus();
+                return;
+            }
             const variants = getImageQueryVariants(query);
             const allResults = [];
             const seenIds = new Set();
@@ -947,17 +958,22 @@
             });
         }
 
-        function getYouTubeEmbedUrl(url) {
-            if (!url) return '';
-            let videoId = '';
+        function getYouTubeEmbedUrl(value) {
+            if (!value) return '';
             try {
-                if (url.includes('youtu.be/')) videoId = url.split('youtu.be/')[1].split('?')[0].split('&')[0];
-                else if (url.includes('youtube.com/watch')) videoId = new URLSearchParams(url.split('?')[1]).get('v');
-                else if (url.includes('youtube.com/shorts/')) videoId = url.split('youtube.com/shorts/')[1].split('?')[0].split('&')[0];
-                else if (url.includes('youtube.com/embed/')) videoId = url.split('youtube.com/embed/')[1].split('?')[0].split('&')[0];
-            } catch (e) {}
-            if (videoId) return `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&rel=0`;
-            return '';
+                const parsed = new URL(value.trim());
+                const host = parsed.hostname.toLowerCase().replace(/^www\./, '');
+                let videoId = '';
+                if (host === 'youtu.be') videoId = parsed.pathname.split('/').filter(Boolean)[0] || '';
+                else if (host === 'youtube.com' || host === 'm.youtube.com' || host === 'music.youtube.com') {
+                    if (parsed.pathname === '/watch') videoId = parsed.searchParams.get('v') || '';
+                    else if (/^\/(shorts|embed)\//.test(parsed.pathname)) videoId = parsed.pathname.split('/')[2] || '';
+                }
+                if (!/^[A-Za-z0-9_-]{11}$/.test(videoId)) return '';
+                return `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&rel=0`;
+            } catch (e) {
+                return '';
+            }
         }
 
         function showToast(msg, type = "info") {
@@ -1150,7 +1166,7 @@
                 timestamp: Date.now()
             };
 
-            try { broadcastChannel.postMessage(payload); } catch (e) {}
+            try { if (broadcastChannel) broadcastChannel.postMessage(payload); } catch (e) {}
             try { localStorage.setItem('biblical_projector_data', JSON.stringify(payload)); } catch (e) {}
 
             updateProjectorDOM(document, payload, false);
@@ -1424,7 +1440,12 @@
                     reader.onload = (event) => {
                         try {
                             const parsed = JSON.parse(event.target.result);
-                            if (typeof parsed === 'object' && parsed !== null) {
+                            const isValidBible = parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+                                && Object.keys(parsed).length > 0
+                                && Object.values(parsed).every(chapters => chapters && typeof chapters === 'object' && !Array.isArray(chapters)
+                                    && Object.keys(chapters).length > 0
+                                    && Object.values(chapters).every(verses => Array.isArray(verses) && verses.every(verse => typeof verse === 'string')));
+                            if (isValidBible) {
                                 bibleData = parsed;
                                 const firstBook = Object.keys(bibleData)[0];
                                 if (firstBook) {
@@ -1437,12 +1458,15 @@
                                     saveOperatorState();
                                     showToast("Biblia JSON cargada con éxito", "success");
                                 }
+                            } else {
+                                showToast("Estructura bíblica inválida. Se esperaba libro > capítulo > lista de versículos de texto.", "error");
                             }
                         } catch (err) {
                             showToast("Formato JSON inválido", "error");
                         }
                     };
                     reader.readAsText(file);
+                    e.target.value = '';
                 }
             };
 
@@ -1537,6 +1561,7 @@
             document.getElementById('video-file-input').onchange = (e) => {
                 const file = e.target.files[0];
                 if (file) {
+                    if (activeVideoUrl && activeVideoUrl.startsWith('blob:')) URL.revokeObjectURL(activeVideoUrl);
                     activeVideoUrl = URL.createObjectURL(file);
                     mediaMode = 'video';
                     isVideoPlaying = true;
@@ -1598,6 +1623,30 @@
                     if(projectionStyles.bgType === 'gradient') syncToProjector();
                 };
             });
+
+            // Configuración de la clave de Pixabay (se guarda en este navegador).
+            const pixabayKeyInput = document.getElementById('pixabay-api-key-input');
+            if (pixabayKeyInput) pixabayKeyInput.value = localStorage.getItem('pixabay_api_key') || '';
+            document.getElementById('btn-save-pixabay-key').onclick = () => {
+                const key = (pixabayKeyInput?.value || '').trim();
+                if (!key) {
+                    localStorage.removeItem('pixabay_api_key');
+                    showToast('Clave API eliminada de este navegador', 'info');
+                    return;
+                }
+                if (!/^[A-Za-z0-9-]{20,}$/.test(key)) {
+                    showToast('La clave no parece tener un formato válido', 'error');
+                    return;
+                }
+                try {
+                    localStorage.setItem('pixabay_api_key', key);
+                    showToast('Clave de Pixabay guardada', 'success');
+                    const currentQuery = document.getElementById('internet-keyword-input').value.trim();
+                    if (currentQuery) searchImagesOnline(currentQuery);
+                } catch (err) {
+                    showToast('No se pudo guardar la clave en este navegador', 'error');
+                }
+            };
 
             // Buscador de Imágenes en Internet por Palabras Clave
             document.getElementById('btn-search-keyword-images').onclick = () => {
