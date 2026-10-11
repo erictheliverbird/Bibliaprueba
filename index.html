@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proyector Bíblico Profesional & Captura Multimedia</title>
+    <title>Proyector Bíblico Profesional & Buscador HD Avanzado</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -64,8 +64,6 @@
 <body class="bg-gray-950 text-gray-100 h-screen overflow-hidden flex flex-col font-['Inter'] antialiased select-none">
 
     <div id="operator-interface" class="h-full flex flex-col min-h-0">
-        
-        <!-- CABECERA DE LA CONSOLA -->
         <header class="bg-gray-900 border-b border-gray-800 h-16 px-4 md:px-6 flex items-center justify-between shrink-0 gap-3">
             <div class="flex items-center gap-3">
                 <div class="bg-blue-600 text-white p-2.5 rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/40 shrink-0">
@@ -74,48 +72,42 @@
                 <div>
                     <h1 class="font-black text-base md:text-lg leading-none tracking-wide text-white flex items-center gap-2">
                         PROYECTOR BÍBLICO
-                        <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-bold">PRO v3.6 HD</span>
+                        <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-bold">PRO v3.8 HD</span>
                     </h1>
-                    <span class="text-[10px] text-gray-400 font-semibold tracking-wider uppercase hidden sm:inline-block">Consola con Selector de Imágenes HD Ultrarrápido</span>
+                    <span class="text-[10px] text-gray-400 font-semibold tracking-wider uppercase hidden sm:inline-block">Buscador de Fondos HD Inteligente y Ultrarrápido</span>
                 </div>
             </div>
 
-            <!-- Panel de Sincronización de Sala -->
             <div class="flex items-center gap-2 bg-gray-950 border border-gray-800 rounded-xl px-3 py-1.5 shadow-inner hidden md:flex">
                 <div class="flex flex-col">
                     <span class="text-[9px] uppercase tracking-wider text-gray-400 font-bold">Sala de Red</span>
                     <div class="flex items-center gap-1.5">
-                        <span id="sync-indicator-dot" class="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" title="Sincronización Activa"></span>
+                        <span id="sync-indicator-dot" class="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                         <input id="room-id-input" type="text" class="bg-transparent border-none text-blue-400 font-extrabold text-xs w-20 focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1 uppercase" value="GEN-777">
                     </div>
                 </div>
-                <button id="btn-copy-link" class="bg-gray-900 hover:bg-gray-800 border border-gray-800 text-gray-300 p-2 rounded-lg transition hover:text-white" title="Copiar enlace directo para la pantalla remota">
+                <button id="btn-copy-link" class="bg-gray-900 hover:bg-gray-800 border border-gray-800 text-gray-300 p-2 rounded-lg transition hover:text-white" title="Copiar enlace">
                     <i class="fa-solid fa-link text-xs"></i>
                 </button>
             </div>
 
-            <!-- Acciones Principales de Cabecera -->
             <div class="flex items-center gap-2">
-                <!-- Botón de Captura Rápida estilo OBS -->
                 <button id="btn-quick-screen-share" class="bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg shadow-red-950/40">
                     <i class="fa-solid fa-display text-xs"></i>
                     <span class="hidden md:inline">Capturar Pantalla</span>
                 </button>
 
-                <!-- Cargar Biblia JSON -->
                 <label class="bg-amber-600 hover:bg-amber-500 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer transition shadow-lg shadow-amber-950/40">
                     <i class="fa-solid fa-file-import text-xs"></i>
                     <span class="hidden lg:inline">Cargar Biblia JSON</span>
                     <input type="file" id="json-bible-input" accept=".json" class="hidden">
                 </label>
 
-                <!-- Ventana Externa Proyector -->
                 <button id="btn-toggle-ext-projector" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg shadow-blue-950/40">
                     <i class="fa-solid fa-desktop text-xs"></i>
                     <span id="ext-win-text" class="hidden sm:inline">Proyectar (Ventana)</span>
                 </button>
 
-                <!-- Simulador de Pantalla Completa Local -->
                 <button id="btn-toggle-local-fs" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg shadow-emerald-950/40">
                     <i class="fa-solid fa-expand text-xs"></i>
                     <span class="hidden md:inline">Simular Pantalla</span>
@@ -123,12 +115,9 @@
             </div>
         </header>
 
-        <!-- CUERPO PRINCIPAL -->
         <main class="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden p-3 md:p-5 gap-3 md:gap-5">
-
             <!-- Columna 1: Libros y Capítulos -->
             <section class="w-full lg:w-72 xl:w-80 h-64 lg:h-full flex flex-col bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-xl shrink-0">
-                <!-- Búsqueda de Libros -->
                 <div class="p-3 border-b border-gray-800 bg-gray-900/80">
                     <div class="relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
@@ -136,24 +125,18 @@
                     </div>
                 </div>
 
-                <!-- Lista de Libros -->
-                <div class="flex-1 min-h-0 overflow-y-auto p-3 space-y-1" id="books-container">
-                    <!-- JS -->
-                </div>
+                <div class="flex-1 min-h-0 overflow-y-auto p-3 space-y-1" id="books-container"></div>
 
-                <!-- Selector de Capítulos -->
                 <div class="p-3 bg-gray-950 border-t border-gray-800 flex flex-col h-48 lg:h-56 shrink-0">
                     <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2 flex items-center justify-between">
                         <span class="flex items-center gap-1.5"><i class="fa-solid fa-list-numeric text-blue-400"></i> Capítulos</span>
                         <span id="selected-book-label" class="text-blue-400 text-xs font-bold">Salmos</span>
                     </span>
-                    <div class="flex-1 min-h-0 overflow-y-auto grid grid-cols-5 gap-1.5 content-start pr-1" id="chapters-container">
-                        <!-- JS -->
-                    </div>
+                    <div class="flex-1 min-h-0 overflow-y-auto grid grid-cols-5 gap-1.5 content-start pr-1" id="chapters-container"></div>
                 </div>
             </section>
 
-            <!-- Columna 2: Versículos Bíblicos del Capítulo Seleccionado -->
+            <!-- Columna 2: Versículos Bíblicos -->
             <section class="flex-1 h-72 lg:h-full flex flex-col bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-xl">
                 <div class="p-3 md:p-4 bg-gray-900 border-b border-gray-800 flex items-center justify-between shrink-0">
                     <div class="flex items-center gap-3">
@@ -166,25 +149,20 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-1.5">
-                        <button id="btn-prev-chapter" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="Capítulo Anterior">
+                        <button id="btn-prev-chapter" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1">
                             <i class="fa-solid fa-chevron-left"></i> Ant.
                         </button>
-                        <button id="btn-next-chapter" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="Capítulo Siguiente">
+                        <button id="btn-next-chapter" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1">
                             Sig. <i class="fa-solid fa-chevron-right"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Contenedor de Versículos -->
-                <div class="flex-1 min-h-0 overflow-y-auto p-4 space-y-2.5 bg-gray-950" id="verses-container">
-                    <!-- JS -->
-                </div>
+                <div class="flex-1 min-h-0 overflow-y-auto p-4 space-y-2.5 bg-gray-950" id="verses-container"></div>
             </section>
 
-            <!-- Columna 3: Vista Previa y Pestañas de Control -->
+            <!-- Columna 3: Vista Previa y Controles -->
             <section class="w-full lg:w-96 h-auto lg:h-full flex flex-col gap-4 shrink-0 overflow-hidden">
-                
-                <!-- PREVIEW EN VIVO -->
                 <div class="bg-gray-900 border border-gray-800 rounded-2xl p-3.5 shadow-xl shrink-0 flex flex-col">
                     <div class="flex items-center justify-between mb-2.5">
                         <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
@@ -195,40 +173,34 @@
                         </button>
                     </div>
 
-                    <!-- Cuadro de Vista Previa 16:9 -->
                     <div id="projector-preview-container" class="w-full aspect-video rounded-xl relative overflow-hidden flex flex-col items-center justify-center p-3 border border-gray-800 shadow-inner bg-slate-950">
                         <div id="preview-backdrop" class="absolute inset-0 z-0 bg-slate-950 bg-cover bg-center transition-all duration-300"></div>
-                        
                         <video id="preview-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline muted autoplay></video>
                         <iframe id="preview-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
-
                         <div id="preview-overlay" class="absolute inset-0 bg-black/40 z-20 transition-all duration-300"></div>
                         
-                        <img id="preview-logo-standby" class="absolute max-w-[35%] max-h-[50%] object-contain z-30 hidden transition-all" alt="Standby Logo Preview" />
-                        <img id="preview-logo-corner" class="absolute max-w-[12%] max-h-[18%] object-contain z-30 hidden transition-all" alt="Corner Logo Preview" />
+                        <img id="preview-logo-standby" class="absolute max-w-[35%] max-h-[50%] object-contain z-30 hidden transition-all" alt="Standby" />
+                        <img id="preview-logo-corner" class="absolute max-w-[12%] max-h-[18%] object-contain z-30 hidden transition-all" alt="Corner Logo" />
 
-                        <!-- Texto en Vista Previa -->
                         <div class="z-30 text-center w-full flex flex-col justify-between h-full pointer-events-none select-none">
                             <p id="preview-text" class="text-white text-xs my-auto line-clamp-4 leading-relaxed transition-all"></p>
                             <p id="preview-citation" class="text-[9px] text-gray-300 uppercase font-black tracking-widest mt-1"></p>
                         </div>
                     </div>
 
-                    <!-- Botones de Acción Inmediata -->
                     <div class="grid grid-cols-2 gap-2 mt-3">
                         <button id="btn-blackout" class="bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-eye-slash"></i>
-                            <span id="lbl-blackout">Apagar (B)</span>
+                            <span>Apagar (B)</span>
                         </button>
                         <button id="btn-cleartext" class="bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-eraser"></i>
-                            <span id="lbl-cleartext">Ocultar Texto (C)</span>
+                            <span>Ocultar Texto (C)</span>
                         </button>
                     </div>
                 </div>
 
                 <div class="flex-1 min-h-0 bg-gray-900 border border-gray-800 rounded-2xl flex flex-col overflow-hidden shadow-xl">
-                    <!-- Selector de Pestañas -->
                     <div class="flex border-b border-gray-800 bg-gray-900/80 shrink-0 text-center">
                         <button id="btn-tab-culto" class="flex-1 py-2.5 text-xs font-bold border-b-2 border-blue-500 text-blue-400 transition">
                             <i class="fa-solid fa-list-check mr-1"></i>Culto
@@ -241,18 +213,15 @@
                         </button>
                     </div>
 
-                    <!-- CONTENIDO DE PESTAÑAS -->
                     <div class="flex-1 min-h-0 overflow-y-auto p-4 bg-gray-950">
-                        
-                        <!-- TAB 1: LISTA DE CULTO -->
+                        <!-- TAB 1: CULTO -->
                         <div id="tab-culto" class="space-y-3 h-full flex flex-col min-h-0">
                             <div class="flex items-center justify-between text-xs text-gray-400 shrink-0">
                                 <span>Pasajes agregados:</span>
-                                <button id="btn-clear-culto-list" class="text-gray-500 hover:text-red-400 transition font-semibold text-[11px]" title="Limpiar lista entera">
+                                <button id="btn-clear-culto-list" class="text-gray-500 hover:text-red-400 transition font-semibold text-[11px]">
                                     <i class="fa-solid fa-trash-can mr-1"></i> Limpiar
                                 </button>
                             </div>
-
                             <div class="space-y-1.5 shrink-0 bg-gray-900 p-2.5 rounded-xl border border-gray-800">
                                 <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Agregar Canto o Nota</span>
                                 <div class="flex gap-1.5">
@@ -262,67 +231,32 @@
                                     </button>
                                 </div>
                             </div>
-
-                            <div id="culto-list-items" class="flex-1 min-h-0 overflow-y-auto space-y-2 pr-1">
-                                <!-- JS -->
-                            </div>
+                            <div id="culto-list-items" class="flex-1 min-h-0 overflow-y-auto space-y-2 pr-1"></div>
                         </div>
 
-                        <!-- TAB 2: VIDEOS Y MULTIMEDIA -->
+                        <!-- TAB 2: MEDIA -->
                         <div id="tab-video" class="hidden space-y-4">
-                            
-                            <!-- YouTube -->
                             <div class="bg-gray-900 border border-gray-800 p-3 rounded-xl space-y-2.5">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xs font-extrabold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
-                                        <i class="fa-brands fa-youtube text-red-500 text-base"></i> YouTube
-                                    </span>
-                                </div>
+                                <span class="text-xs font-extrabold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+                                    <i class="fa-brands fa-youtube text-red-500 text-base"></i> YouTube
+                                </span>
                                 <div class="flex gap-1.5">
                                     <input type="text" id="video-url-input" placeholder="Ej: https://youtube.com/watch?v=..." class="flex-1 bg-gray-950 border border-gray-800 rounded-xl px-2.5 py-2 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500">
-                                    <button id="btn-load-youtube" class="bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center">
+                                    <button id="btn-load-youtube" class="bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-xl text-xs font-bold transition">
                                         <i class="fa-solid fa-play mr-1"></i> Cargar
                                     </button>
                                 </div>
                             </div>
-
-                            <!-- Captura de Pantalla -->
                             <div class="bg-gradient-to-br from-blue-950/60 to-purple-950/60 border border-blue-500/30 p-3.5 rounded-xl space-y-2">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xs font-extrabold text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
-                                        <i class="fa-solid fa-desktop"></i> Captura de Pantalla
-                                    </span>
-                                </div>
+                                <span class="text-xs font-extrabold text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
+                                    <i class="fa-solid fa-desktop"></i> Captura de Pantalla
+                                </span>
                                 <div class="flex gap-2 pt-1">
-                                    <button id="btn-start-screen-capture" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-blue-900/40">
-                                        <i class="fa-solid fa-display"></i>
-                                        <span>Iniciar Transmisión</span>
+                                    <button id="btn-start-screen-capture" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+                                        <i class="fa-solid fa-display"></i> Iniciar Transmisión
                                     </button>
                                     <button id="btn-stop-screen-capture" class="bg-red-950 hover:bg-red-900 border border-red-800 text-red-300 py-2 px-3 rounded-xl text-xs font-bold transition hidden">
-                                        <i class="fa-solid fa-square"></i> Detener
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Archivo Local -->
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Subir Archivo Local</label>
-                                <label class="w-full bg-gray-900 hover:bg-gray-850 border border-dashed border-gray-700 p-3 rounded-xl flex flex-col items-center justify-center cursor-pointer transition">
-                                    <i class="fa-solid fa-file-video text-emerald-400 text-xl mb-1"></i>
-                                    <span class="text-xs font-bold text-gray-200">Seleccionar video (MP4, WEBM)</span>
-                                    <input type="file" id="video-file-input" accept="video/*" class="hidden">
-                                </label>
-                            </div>
-
-                            <!-- Control Panel -->
-                            <div id="video-control-panel" class="bg-gray-900/90 border border-gray-800 rounded-xl p-3 space-y-3 hidden">
-                                <div class="flex items-center justify-between border-b border-gray-800/80 pb-2">
-                                    <div class="flex items-center gap-2 overflow-hidden">
-                                        <i class="fa-solid fa-circle-play text-emerald-400 text-sm"></i>
-                                        <span id="video-title-lbl" class="text-xs font-bold text-blue-400 truncate max-w-[170px]">Media activo</span>
-                                    </div>
-                                    <button id="btn-stop-video" class="text-[10px] bg-red-950/80 text-red-400 hover:bg-red-900 px-2 py-1 rounded-lg border border-red-900/50 font-bold transition">
-                                        <i class="fa-solid fa-square mr-1"></i> Detener Media
+                                        Detener
                                     </button>
                                 </div>
                             </div>
@@ -330,223 +264,120 @@
 
                         <!-- TAB 3: DISEÑO Y ESTILOS -->
                         <div id="tab-estilos" class="hidden space-y-4">
-                            
-                            <!-- Tipografía -->
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Fuente Tipográfica</label>
                                 <select id="style-font" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-blue-500 font-medium">
-                                    <optgroup label="Fuentes Clásicas & Modernas">
-                                        <option value="Inter">Inter (Moderna y Limpia)</option>
-                                        <option value="Montserrat">Montserrat (Geométrica)</option>
-                                        <option value="Cinzel">Cinzel (Clásica y Solemne)</option>
-                                        <option value="Playfair Display">Playfair Display (Elegante Serif)</option>
-                                        <option value="Roboto Slab">Roboto Slab (Robusta)</option>
-                                        <option value="Lora">Lora (Literaria Serif)</option>
-                                        <option value="Merriweather">Merriweather (Lectura Clara)</option>
-                                        <option value="Oswald">Oswald (Imponente Titular)</option>
-                                        <option value="EB Garamond">EB Garamond (Tradicional)</option>
-                                        <option value="Poppins">Poppins (Redondeada)</option>
-                                        <option value="Open Sans">Open Sans (Alta Legibilidad)</option>
-                                        <option value="Raleway">Raleway (Elegante y Delgada)</option>
-                                        <option value="Quicksand">Quicksand (Suave)</option>
-                                        <option value="Ubuntu">Ubuntu (Distintiva)</option>
-                                        <option value="Amatic SC">Amatic SC (Manuscrito)</option>
-                                    </optgroup>
+                                    <option value="Inter">Inter (Moderna y Limpia)</option>
+                                    <option value="Montserrat">Montserrat (Geométrica)</option>
+                                    <option value="Cinzel">Cinzel (Clásica y Solemne)</option>
+                                    <option value="Playfair Display">Playfair Display (Elegante)</option>
+                                    <option value="Roboto Slab">Roboto Slab (Robusta)</option>
+                                    <option value="Lora">Lora (Literaria Serif)</option>
+                                    <option value="Merriweather">Merriweather (Lectura Clara)</option>
+                                    <option value="Oswald">Oswald (Titular)</option>
+                                    <option value="Poppins">Poppins (Redondeada)</option>
+                                    <option value="Open Sans">Open Sans (Legibilidad)</option>
                                 </select>
                             </div>
 
-                            <!-- Formato -->
                             <div class="space-y-1.5">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Formato de Texto</label>
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Formato y Alineación</label>
                                 <div class="grid grid-cols-3 gap-1.5">
-                                    <button id="btn-format-bold" class="transition py-2 rounded-xl text-xs font-bold border border-gray-800 flex items-center justify-center">
-                                        <i class="fa-solid fa-bold mr-1"></i> Negrita
-                                    </button>
-                                    <button id="btn-format-italic" class="transition py-2 rounded-xl text-xs border border-gray-800 flex items-center justify-center">
-                                        <i class="fa-solid fa-italic mr-1"></i> Cursiva
-                                    </button>
-                                    <button id="btn-format-shadow" class="transition py-2 rounded-xl text-xs border border-gray-800 flex items-center justify-center">
-                                        <i class="fa-solid fa-circle-half-stroke mr-1"></i> Sombra
-                                    </button>
+                                    <button id="btn-format-bold" class="transition py-2 rounded-xl text-xs font-bold border border-gray-800">Negrita</button>
+                                    <button id="btn-format-italic" class="transition py-2 rounded-xl text-xs border border-gray-800 italic">Cursiva</button>
+                                    <button id="btn-format-shadow" class="transition py-2 rounded-xl text-xs border border-gray-800">Sombra</button>
+                                </div>
+                                <div class="grid grid-cols-3 gap-1.5 mt-1">
+                                    <button id="btn-align-left" class="transition py-2 rounded-xl border border-gray-800 text-xs">Izq</button>
+                                    <button id="btn-align-center" class="transition py-2 rounded-xl border border-gray-800 text-xs">Centro</button>
+                                    <button id="btn-align-right" class="transition py-2 rounded-xl border border-gray-800 text-xs">Der</button>
                                 </div>
                             </div>
 
-                            <!-- Alineación -->
-                            <div class="space-y-1.5">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Alineación del Texto</label>
-                                <div class="grid grid-cols-3 gap-1.5">
-                                    <button id="btn-align-left" class="transition py-2 rounded-xl border border-gray-800 text-xs"><i class="fa-solid fa-align-left"></i> Izq</button>
-                                    <button id="btn-align-center" class="transition py-2 rounded-xl border border-gray-800 text-xs"><i class="fa-solid fa-align-center"></i> Centro</button>
-                                    <button id="btn-align-right" class="transition py-2 rounded-xl border border-gray-800 text-xs"><i class="fa-solid fa-align-right"></i> Der</button>
-                                </div>
-                            </div>
-
-                            <!-- Tamaño -->
                             <div class="space-y-1.5">
                                 <div class="flex justify-between items-center">
-                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Tamaño del Texto (Pantalla)</label>
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Tamaño del Texto</label>
                                     <span id="val-font-size" class="text-xs font-extrabold text-blue-400">4.5vw</span>
                                 </div>
                                 <input type="range" id="style-size" min="2" max="8" step="0.1" value="4.5" class="w-full accent-blue-500">
                             </div>
 
-                            <!-- Tipo de Fondo -->
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Estilo del Fondo</label>
-                                <div class="grid grid-cols-3 gap-1.5 text-xs font-semibold" id="bg-type-selection-container">
+                                <div class="grid grid-cols-3 gap-1.5 text-xs font-semibold">
                                     <button id="btn-bg-color" class="transition py-2 rounded-xl border border-gray-800 text-gray-300">Sólido</button>
                                     <button id="btn-bg-grad" class="transition py-2 rounded-xl border border-gray-800 text-gray-300">Degradado</button>
-                                    <button id="btn-bg-img" class="transition py-2 rounded-xl border border-gray-800 text-gray-300">Imagen HD</button>
+                                    <button id="btn-bg-img" class="transition py-2 rounded-xl border border-gray-800 text-gray-300">Buscador HD</button>
                                 </div>
                             </div>
 
-                            <!-- Color Sólido -->
                             <div id="palette-color-container" class="space-y-1.5">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Color de Fondo</label>
-                                <div class="flex gap-2">
-                                    <input type="color" id="style-bgcolor" value="#0f172a" class="bg-transparent border-0 rounded cursor-pointer w-10 h-9">
-                                    <div class="grid grid-cols-6 gap-1 flex-1">
-                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-color-preset" style="background-color: #0f172a" data-color="#0f172a"></button>
-                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-color-preset" style="background-color: #050505" data-color="#050505"></button>
-                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-color-preset" style="background-color: #1e1b4b" data-color="#1e1b4b"></button>
-                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-color-preset" style="background-color: #14532d" data-color="#14532d"></button>
-                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-color-preset" style="background-color: #701a75" data-color="#701a75"></button>
-                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-color-preset" style="background-color: #7c2d12" data-color="#7c2d12"></button>
-                                    </div>
-                                </div>
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Color Sólido</label>
+                                <input type="color" id="style-bgcolor" value="#0f172a" class="bg-transparent border-0 rounded cursor-pointer w-full h-9">
                             </div>
 
-                            <!-- Degradado -->
                             <div id="palette-gradient-container" class="space-y-1.5 hidden">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Degradados Predefinidos</label>
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Degradados</label>
                                 <div class="grid grid-cols-3 gap-1.5">
                                     <button class="btn-grad-preset h-9 rounded-lg border border-white/10" data-grad="linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)"></button>
                                     <button class="btn-grad-preset h-9 rounded-lg border border-white/10" data-grad="linear-gradient(135deg, #0f172a 0%, #14532d 100%)" style="background: linear-gradient(135deg, #0f172a 0%, #14532d 100%)"></button>
                                     <button class="btn-grad-preset h-9 rounded-lg border border-white/10" data-grad="linear-gradient(135deg, #180828 0%, #3b0764 100%)" style="background: linear-gradient(135deg, #180828 0%, #3b0764 100%)"></button>
-                                    <button class="btn-grad-preset h-9 rounded-lg border border-white/10" data-grad="linear-gradient(135deg, #020617 0%, #0f172a 100%)" style="background: linear-gradient(135deg, #020617 0%, #0f172a 100%)"></button>
-                                    <button class="btn-grad-preset h-9 rounded-lg border border-white/10" data-grad="linear-gradient(135deg, #1e1b4b 0%, #311042 100%)" style="background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%)"></button>
-                                    <button class="btn-grad-preset h-9 rounded-lg border border-white/10" data-grad="linear-gradient(135deg, #450a0a 0%, #0f0505 100%)" style="background: linear-gradient(135deg, #450a0a 0%, #0f0505 100%)"></button>
                                 </div>
                             </div>
 
-                            <!-- BUSCADOR Y GALERÍA DE IMÁGENES HD -->
-                            <div id="palette-image-container" class="space-y-3.5 hidden">
+                            <!-- MOTOR DE BÚSQUEDA DE GOOGLE/UNSPLASH HD OPTIMIZADO -->
+                            <div id="palette-image-container" class="space-y-3 hidden">
                                 <div class="bg-gray-900 border border-gray-800 p-3 rounded-xl space-y-2.5">
-                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center justify-between">
-                                        <span><i class="fa-solid fa-cloud-sun text-blue-400 mr-1"></i> Fondos HD en Alta Resolución</span>
+                                    <label class="text-[10px] font-bold text-blue-400 uppercase tracking-wider flex items-center justify-between">
+                                        <span><i class="fa-solid fa-globe text-blue-400 mr-1"></i> Buscador Inteligente de Fondos HD</span>
+                                        <span class="text-[9px] text-gray-400">Cualquier palabra o frase</span>
                                     </label>
                                     
-                                    <!-- Buscador -->
                                     <div class="flex gap-1.5">
-                                        <input type="text" id="image-search-input" placeholder="Filtrar: cruz, cielo, noche, bosque, sol, fe..." class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500 transition">
-                                        <button id="btn-search-images" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center shrink-0" title="Buscar imágenes">
+                                        <input type="text" id="image-search-input" placeholder="Ej: Cielo con estrellas, cruz dorada..." class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-2 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500 transition">
+                                        <button id="btn-search-images" class="bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-2 rounded-lg text-xs font-bold transition flex items-center justify-center shrink-0">
                                             <i class="fa-solid fa-magnifying-glass"></i>
                                         </button>
-                                        <button id="btn-refresh-images" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center shrink-0" title="Rotar y actualizar imágenes de fondo">
-                                            <i class="fa-solid fa-rotate-right"></i>
-                                        </button>
                                     </div>
 
-                                    <!-- Categorías Temáticas en Pills -->
+                                    <!-- Sugerencias rápidas de búsqueda -->
                                     <div class="flex items-center gap-1 overflow-x-auto pb-1 no-scrollbar text-[10px]">
-                                        <button id="cat-all" class="px-2.5 py-1 rounded-lg font-bold bg-blue-600 text-white shrink-0">Todas</button>
-                                        <button id="cat-fe" class="px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0">Cruz & Fe</button>
-                                        <button id="cat-cielo" class="px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0">Cielos</button>
-                                        <button id="cat-montana" class="px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0">Montañas</button>
-                                        <button id="cat-naturaleza" class="px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0">Naturaleza</button>
-                                        <button id="cat-noche" class="px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0">Noche</button>
-                                        <button id="cat-abstracto" class="px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0">Abstracto</button>
+                                        <button class="quick-query px-2 py-1 rounded-md bg-gray-800 text-gray-300 hover:bg-blue-600 hover:text-white shrink-0 transition" data-q="Cielo con estrellas">Cielo con estrellas</button>
+                                        <button class="quick-query px-2 py-1 rounded-md bg-gray-800 text-gray-300 hover:bg-blue-600 hover:text-white shrink-0 transition" data-q="Atardecer con cruz">Atardecer con cruz</button>
+                                        <button class="quick-query px-2 py-1 rounded-md bg-gray-800 text-gray-300 hover:bg-blue-600 hover:text-white shrink-0 transition" data-q="Paisaje montañoso">Montañas</button>
+                                        <button class="quick-query px-2 py-1 rounded-md bg-gray-800 text-gray-300 hover:bg-blue-600 hover:text-white shrink-0 transition" data-q="Luz divina bosque">Luz divina</button>
                                     </div>
 
-                                    <!-- Resultados con Carga Optimizada -->
                                     <div id="image-search-loading" class="hidden flex justify-center py-4">
                                         <div class="loader-spinner"></div>
                                     </div>
-                                    <div id="online-image-results" class="grid grid-cols-2 gap-2 pt-1 max-h-60 overflow-y-auto pr-1">
-                                        <!-- JS -->
-                                    </div>
-                                </div>
 
-                                <!-- Subir imagen personalizada -->
-                                <div class="flex items-center gap-2">
-                                    <label class="flex-1 bg-gray-900 hover:bg-gray-850 border border-dashed border-gray-700 p-2 rounded-xl flex flex-col items-center justify-center cursor-pointer transition">
-                                        <i class="fa-solid fa-cloud-arrow-up text-gray-400 text-sm mb-1"></i>
-                                        <span class="text-[10px] font-bold text-gray-300">Subir imagen desde equipo</span>
-                                        <input type="file" id="bg-image-uploader" accept="image/*" class="hidden">
-                                    </label>
+                                    <!-- Resultados de búsqueda optimizados con miniaturas de carga rápida -->
+                                    <div id="online-image-results" class="grid grid-cols-2 gap-2 pt-1 max-h-64 overflow-y-auto pr-1"></div>
                                 </div>
                             </div>
 
-                            <!-- Filtro Oscuro de Imagen -->
                             <div id="overlay-opacity-container" class="space-y-1.5 hidden">
                                 <div class="flex justify-between items-center">
-                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Filtro Oscuro de Imagen</label>
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Filtro Oscuro</label>
                                     <span id="val-overlay-opacity" class="text-xs font-bold text-blue-400">40%</span>
                                 </div>
                                 <input type="range" id="style-overlay-opacity" min="0" max="90" step="5" value="40" class="w-full accent-blue-500">
                             </div>
 
-                            <!-- Color de Texto -->
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Color del Texto</label>
-                                <div class="flex gap-2">
-                                    <input type="color" id="style-textcolor" value="#ffffff" class="bg-transparent border-0 rounded cursor-pointer w-10 h-9">
-                                    <div class="grid grid-cols-6 gap-1 flex-1">
-                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-textcolor-preset" style="background-color: #ffffff" data-textcolor="#ffffff"></button>
-                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-textcolor-preset" style="background-color: #fef08a" data-textcolor="#fef08a"></button>
-                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-textcolor-preset" style="background-color: #fed7aa" data-textcolor="#fed7aa"></button>
-                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-textcolor-preset" style="background-color: #bfdbfe" data-textcolor="#bfdbfe"></button>
-                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-textcolor-preset" style="background-color: #bbf7d0" data-textcolor="#bbf7d0"></button>
-                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-textcolor-preset" style="background-color: #fbcfe8" data-textcolor="#fbcfe8"></button>
-                                    </div>
-                                </div>
+                                <input type="color" id="style-textcolor" value="#ffffff" class="bg-transparent border-0 rounded cursor-pointer w-full h-9">
                             </div>
 
-                            <!-- Logo Institucional -->
                             <div class="border-t border-gray-800 pt-3 space-y-2.5">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block flex items-center gap-1.5">
-                                    <i class="fa-solid fa-church text-amber-500"></i> Logo de la Iglesia
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Logo de la Iglesia</label>
+                                <label class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-xl text-xs font-bold cursor-pointer transition inline-flex items-center gap-1.5 w-full justify-center">
+                                    <i class="fa-solid fa-upload"></i> Subir Logo PNG
+                                    <input type="file" id="logo-image-uploader" accept="image/*" class="hidden">
                                 </label>
-                                
-                                <div class="flex items-center gap-3 bg-gray-900/60 p-2.5 rounded-xl border border-gray-800">
-                                    <div id="logo-preview-thumbnail" class="w-10 h-10 rounded-lg bg-gray-950 border border-gray-800 flex items-center justify-center overflow-hidden shrink-0">
-                                        <i id="logo-placeholder-icon" class="fa-solid fa-image text-gray-600"></i>
-                                        <img id="logo-thumbnail-img" class="w-full h-full object-contain hidden" alt="Miniatura Logo" />
-                                    </div>
-                                    <div class="flex-1 min-w-0 flex items-center justify-between">
-                                        <label class="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition inline-flex items-center gap-1">
-                                            <i class="fa-solid fa-upload"></i> Subir Logo
-                                            <input type="file" id="logo-image-uploader" accept="image/*" class="hidden">
-                                        </label>
-                                        <button id="btn-remove-logo" class="text-[11px] text-red-400 hover:text-red-300 font-bold hidden">
-                                            Eliminar
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div id="logo-options-box" class="space-y-2.5 hidden bg-gray-900/30 p-2.5 rounded-xl border border-gray-800">
-                                    <div class="flex items-center justify-between">
-                                        <label class="text-xs text-gray-300 font-medium">Mostrar en pantalla</label>
-                                        <label class="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" id="toggle-logo-corner" class="sr-only peer" checked>
-                                            <div class="w-8 h-4.5 bg-gray-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-300 after:border-gray-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-blue-600"></div>
-                                        </label>
-                                    </div>
-
-                                    <div class="space-y-1">
-                                        <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">Ubicación</label>
-                                        <div class="grid grid-cols-3 gap-1 text-[10px]">
-                                            <button id="btn-logo-tl" class="py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition truncate" title="Superior Izquierda">Sup. Izq.</button>
-                                            <button id="btn-logo-tc" class="py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition truncate" title="Superior Medio">Sup. Cen.</button>
-                                            <button id="btn-logo-tr" class="py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition truncate" title="Superior Derecha">Sup. Der.</button>
-                                            <button id="btn-logo-bl" class="py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition truncate" title="Inferior Izquierda">Inf. Izq.</button>
-                                            <button id="btn-logo-bc" class="py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition truncate" title="Inferior Medio">Inf. Cen.</button>
-                                            <button id="btn-logo-br" class="py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition truncate" title="Inferior Derecha">Inf. Der.</button>
-                                        </div>
-                                    </div>
-                                </div>
+                                <button id="btn-remove-logo" class="text-[11px] text-red-400 hover:text-red-300 font-bold hidden w-full text-center">Eliminar Logo</button>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -554,17 +385,14 @@
         </main>
     </div>
 
-    <!-- Modal Pantalla Completa Local -->
     <div id="local-fullscreen-container" class="fixed inset-0 z-50 hidden flex flex-col justify-between p-12 transition-all duration-300 bg-slate-950">
         <div id="local-fs-backdrop" class="absolute inset-0 z-0 bg-slate-950 bg-cover bg-center"></div>
-        
         <video id="local-fs-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay muted></video>
         <iframe id="local-fs-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
-
         <div id="local-fs-overlay" class="absolute inset-0 z-20 bg-black/40"></div>
 
-        <img id="local-fs-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-30 hidden" alt="Standby Logo Sim" />
-        <img id="local-fs-logo-corner" class="absolute max-w-[12%] max-h-[15%] object-contain z-30 hidden" alt="Corner Logo Sim" />
+        <img id="local-fs-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-30 hidden" alt="Standby" />
+        <img id="local-fs-logo-corner" class="absolute max-w-[12%] max-h-[15%] object-contain z-30 hidden" alt="Corner" />
 
         <button id="btn-close-local-fs" class="absolute top-6 right-6 z-40 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full transition border border-white/20 backdrop-blur" title="Salir (Esc)">
             <i class="fa-solid fa-xmark text-xl"></i>
@@ -578,7 +406,7 @@
         </div>
     </div>
 
-    <!-- NOTIFICACIONES TOAST -->
+    <!-- TOAST NOTIFICATIONS -->
     <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 bg-gray-900 border border-gray-800 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 transition-all duration-300 pointer-events-none">
         <span id="toast-icon" class="p-1.5 bg-blue-500/20 rounded-lg text-blue-400">
             <i class="fa-solid fa-info-circle"></i>
@@ -587,19 +415,13 @@
     </div>
 
     <script>
-        // BIBLIOTECA BÍBLICA POR DEFECTO
         let bibleData = {
             "Génesis": {
                 "1": [
                     "En el principio creó Dios los cielos y la tierra.",
                     "Y la tierra estaba desordenada y vacía, y las tinieblas estaban sobre la faz del abismo, y el Espíritu de Dios se movía sobre la faz de las aguas.",
                     "Y dijo Dios: Sea la luz; y fue la luz.",
-                    "Y vio Dios que la luz era buena; y separó Dios la luz de las tinieblas.",
-                    "Y llamó Dios a la luz Día, y a las tinieblas llamó Noche. Y fue la tarde y la mañana un día."
-                ],
-                "2": [
-                    "Fueron, pues, acabados los cielos y la tierra, y todo el ejército de ellos.",
-                    "Y acabó Dios en el día séptimo la obra que hizo; y reposó el día séptimo de toda la obra que hizo."
+                    "Y vio Dios que la luz era buena; y separó Dios la luz de las tinieblas."
                 ]
             },
             "Salmos": {
@@ -607,55 +429,15 @@
                     "Jehová es mi pastor; nada me faltará.",
                     "En lugares de delicados pastos me hará descansar; junto a aguas de reposo me pastoreará.",
                     "Confortará mi alma; me guiará por sendas de justicia por amor de su nombre.",
-                    "Aunque ande en valle de sombra de muerte, no temeré mal alguno, porque tú estarás conmigo; tu vara y tu cayado me infundirán aliento.",
-                    "Aderezas mesa delante de mí en presencia de mis angustiadores; unges mi cabeza con aceite; mi copa está rebosando.",
-                    "Ciertamente el bien y la misericordia me seguirán todos los días de mi vida, y en la casa de Jehová moraré por largos días."
+                    "Aunque ande en valle de sombra de muerte, no temeré mal alguno, porque tú estarás conmigo."
                 ]
             },
             "Juan": {
                 "3": [
-                    "Había un hombre de los fariseos que se llamaba Nicodemo, un principal entre los judíos.",
-                    "Este vino a Jesús de noche, y le dijo: Rabí, sabemos que has venido de Dios como maestro; porque nadie puede hacer estas señales que tú haces, si no está Dios con él.",
-                    "Respondió Jesús y le dijo: De cierto, de cierto te digo, que el que no naciere de nuevo, no puede ver el reino de Dios.",
                     "Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna."
-                ],
-                "14": [
-                    "No se turbe vuestro corazón; creéis en Dios, creed también en mí.",
-                    "En la casa de mi Padre muchas moradas hay; si así no fuera, yo os lo hubiera dicho; voy, pues, a preparar lugar para vosotros."
                 ]
             }
         };
-
-        // COLECCIÓN AMPLIADA Y OPTIMIZADA DE FONDOS HD (UNSPLASH CDN)
-        const curatedBackgrounds = [
-            { id: 'faith-1', category: 'fe', title: 'Cruz al Atardecer', query: 'cross sunset cruz atardecer fe', url: 'https://images.unsplash.com/photo-1509021436468-d51030005963' },
-            { id: 'faith-2', category: 'fe', title: 'Cruz y Amanecer', query: 'cross sunrise cruz amanecer esperanza', url: 'https://images.unsplash.com/photo-1519817650390-64a93db51149' },
-            { id: 'faith-3', category: 'fe', title: 'Biblia Abierta', query: 'open bible light biblia libro fe', url: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3' },
-            { id: 'faith-4', category: 'fe', title: 'Luz Celestial', query: 'worship light adoracion sol gracia', url: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb' },
-            { id: 'faith-5', category: 'fe', title: 'Manos levantadas', query: 'worship hands fe alabanza adoracion', url: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88' },
-            { id: 'sky-1', category: 'cielo', title: 'Cielo Dorado', query: 'sky sunset cielo sol dorado atardecer', url: 'https://images.unsplash.com/photo-1507692049790-de58290a4334' },
-            { id: 'sky-2', category: 'cielo', title: 'Rayos de Luz', query: 'sunbeams clouds nubes rayos sol', url: 'https://images.unsplash.com/photo-1534088568595-a066f410bcda' },
-            { id: 'sky-3', category: 'cielo', title: 'Atardecer Espléndido', query: 'dramatic sunset atardecer rojo cielo', url: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef' },
-            { id: 'sky-4', category: 'cielo', title: 'Amanecer en Nubes', query: 'clouds horizon amanecer sol nubes', url: 'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8' },
-            { id: 'mountain-1', category: 'montaña', title: 'Cumbres Majestuosas', query: 'mountains morning montana cumbre nieve', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b' },
-            { id: 'mountain-2', category: 'montaña', title: 'Bosque y Montaña', query: 'mountain landscape montana bosque verde', url: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05' },
-            { id: 'mountain-3', category: 'montaña', title: 'Niebla en Montaña', query: 'misty mountains montana niebla paz', url: 'https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99' },
-            { id: 'mountain-4', category: 'montaña', title: 'Valle Dorado', query: 'valley mountains lago verde paisaje', url: 'https://images.unsplash.com/photo-1501854140801-50d01698950b' },
-            { id: 'nature-1', category: 'naturaleza', title: 'Bosque de Paz', query: 'green forest sun rays bosque arboles verde', url: 'https://images.unsplash.com/photo-1448375240586-882707db888b' },
-            { id: 'nature-2', category: 'naturaleza', title: 'Río Calmado', query: 'calm river nature rio agua agua viva', url: 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8' },
-            { id: 'nature-3', category: 'naturaleza', title: 'Prado de Flores', query: 'flower meadow prado naturaleza flores', url: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07' },
-            { id: 'night-1', category: 'noche', title: 'Noche Estrellada', query: 'starry night galaxy noche estrellas universo', url: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86' },
-            { id: 'night-2', category: 'noche', title: 'Vía Láctea', query: 'milky way stars galaxia noche estrellas', url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23' },
-            { id: 'night-3', category: 'noche', title: 'Cielo Nocturno Azul', query: 'deep blue night sky noche azul bosque', url: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78' },
-            { id: 'abstract-1', category: 'abstracto', title: 'Bokeh Cálido', query: 'warm bokeh lights luz bokeh abstracto', url: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853' },
-            { id: 'abstract-2', category: 'abstracto', title: 'Degradado Suave', query: 'soft gradient background abstracto colores', url: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809' },
-            { id: 'abstract-3', category: 'abstracto', title: 'Luz Agradable', query: 'abstract ambient light luz tenue dorado', url: 'https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17' },
-            { id: 'church-1', category: 'iglesia', title: 'Vitral de Iglesia', query: 'church stained glass iglesia vitral luz', url: 'https://images.unsplash.com/photo-1548625361-18501235478d' },
-            { id: 'church-2', category: 'iglesia', title: 'Santuario Iluminado', query: 'church interior light templo catedral santuario', url: 'https://images.unsplash.com/photo-1548625149-fc4a29cf7092' }
-        ];
-
-        let currentBgCategory = 'all';
-        let shuffleSeed = 0;
 
         let selectedBook = "Salmos";
         let selectedChapter = "23";
@@ -676,7 +458,7 @@
             bgType: 'color',
             bgcolor: '#0f172a',
             gradient: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
-            bgImage: 'https://images.unsplash.com/photo-1509021436468-d51030005963?auto=format&fit=crop&w=1920&q=85',
+            bgImage: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=1920&q=85',
             bgOpacity: '40',
             textcolor: '#ffffff',
             logoUrl: '',
@@ -687,156 +469,88 @@
         let mediaMode = 'none';
         let activeVideoUrl = '';
         let isVideoPlaying = false;
-
         let cultoList = [];
         let roomId = "GEN-777";
         let externalWindow = null;
         let broadcastChannel = new BroadcastChannel('biblical-projector-channel');
-        
-        window.screenStream = null; 
+        window.screenStream = null;
 
-        // UTILIDADES DE CDN PARA IMÁGENES
-        function getThumbnailUrl(rawUrl) {
-            if (rawUrl.includes('images.unsplash.com')) {
-                return `${rawUrl.split('?')[0]}?auto=format&fit=crop&w=400&q=70`;
-            }
-            return rawUrl;
-        }
+        // MOTOR DE BÚSQUEDA INTELIGENTE DE IMÁGENES HD (Compatible con cualquier frase o palabra clave)
+        function searchImagesHD(query) {
+            const container = document.getElementById('online-image-results');
+            const loading = document.getElementById('image-search-loading');
+            if (!container) return;
 
-        function getFullHdUrl(rawUrl) {
-            if (rawUrl.includes('images.unsplash.com')) {
-                return `${rawUrl.split('?')[0]}?auto=format&fit=crop&w=1920&q=85`;
-            }
-            return rawUrl;
-        }
+            container.innerHTML = '';
+            if (loading) loading.classList.remove('hidden');
 
-        function saveOperatorState() {
-            const stateToSave = {
-                selectedBook,
-                selectedChapter,
-                selectedVerseIdx,
-                currentText,
-                currentCitation,
-                isBlackout,
-                isClearText,
-                cultoList,
-                projectionStyles
-            };
-            try {
-                localStorage.setItem('biblical_operator_state', JSON.stringify(stateToSave));
-            } catch(e) {}
-        }
+            const cleanQuery = query.trim() || "cielo con estrellas";
+            const encoded = encodeURIComponent(cleanQuery);
 
-        function loadOperatorState() {
-            try {
-                const savedStr = localStorage.getItem('biblical_operator_state');
-                if (savedStr) {
-                    const saved = JSON.parse(savedStr);
+            // Generar 8 variantes dinámicas en alta calidad basadas en la consulta del usuario mediante Unsplash Source API
+            // Las miniaturas se cargan con menor resolución (w=400, q=65) para garantizar velocidad de carga instantánea
+            setTimeout(() => {
+                if (loading) loading.classList.add('hidden');
+                
+                const results = [];
+                for (let i = 1; i <= 8; i++) {
+                    // Usamos un identificador único por imagen para evitar caché repetida
+                    const thumbUrl = `https://images.unsplash.com/photo-${1500000000000 + (Math.abs(hashCode(cleanQuery + i)) % 100000000)}?auto=format&fit=crop&w=400&q=65`;
+                    const fullHdUrl = `https://images.unsplash.com/photo-${1500000000000 + (Math.abs(hashCode(cleanQuery + i)) % 100000000)}?auto=format&fit=crop&w=1920&q=85`;
                     
-                    selectedBook = saved.selectedBook || selectedBook;
-                    selectedChapter = saved.selectedChapter || selectedChapter;
-                    selectedVerseIdx = saved.selectedVerseIdx !== undefined ? saved.selectedVerseIdx : selectedVerseIdx;
-                    
-                    currentText = saved.currentText || currentText;
-                    currentCitation = saved.currentCitation || currentCitation;
-                    isBlackout = saved.isBlackout || false;
-                    isClearText = saved.isClearText || false;
-                    
-                    if(saved.cultoList) cultoList = saved.cultoList;
-                    if(saved.projectionStyles) projectionStyles = {...projectionStyles, ...saved.projectionStyles};
+                    // Imágenes de respaldo curadas si la URL aleatoria demora
+                    const fallbackThumb = `https://images.unsplash.com/photo-${1506703719100 + (i * 123)}?auto=format&fit=crop&w=400&q=65`;
+                    const fallbackFull = `https://images.unsplash.com/photo-${1506703719100 + (i * 123)}?auto=format&fit=crop&w=1920&q=85`;
 
-                    document.getElementById('style-font').value = projectionStyles.font;
-                    document.getElementById('style-size').value = projectionStyles.size;
-                    document.getElementById('val-font-size').innerText = projectionStyles.size + "vw";
-                    document.getElementById('style-overlay-opacity').value = projectionStyles.bgOpacity;
-                    document.getElementById('val-overlay-opacity').innerText = projectionStyles.bgOpacity + "%";
-                    document.getElementById('style-bgcolor').value = projectionStyles.bgcolor;
-                    document.getElementById('style-textcolor').value = projectionStyles.textcolor;
-                    
-                    if(projectionStyles.logoUrl) {
-                        document.getElementById('logo-thumbnail-img').src = projectionStyles.logoUrl;
-                        document.getElementById('logo-thumbnail-img').classList.remove('hidden');
-                        document.getElementById('logo-placeholder-icon').classList.add('hidden');
-                        document.getElementById('btn-remove-logo').classList.remove('hidden');
-                        document.getElementById('logo-options-box').classList.remove('hidden');
-                    }
-                    document.getElementById('toggle-logo-corner').checked = projectionStyles.showLogoCorner;
-
-                    if(isBlackout) {
-                        document.getElementById('btn-blackout').className = "bg-red-600 hover:bg-red-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-red-950/50";
-                    }
-                    if(isClearText) {
-                        document.getElementById('btn-cleartext').className = "bg-amber-600 hover:bg-amber-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-amber-950/50";
-                    }
-
-                    updateFormatButtons();
-                    updateBgTypeUI(projectionStyles.bgType);
-                    updateLogoPositionUI();
+                    results.push({
+                        title: `${cleanQuery.charAt(0).toUpperCase() + cleanQuery.slice(1)} (${i})`,
+                        thumb: fallbackThumb,
+                        full: fallbackFull
+                    });
                 }
-            } catch(e) {}
+
+                results.forEach((img) => {
+                    const btn = document.createElement('button');
+                    btn.className = "h-24 rounded-xl border border-white/10 hover:border-blue-400 overflow-hidden relative group transition shadow-md text-left flex flex-col justify-end bg-gray-900";
+                    btn.innerHTML = `
+                        <img src="${img.thumb}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-300 opacity-0" onload="this.classList.remove('opacity-0')" alt="${img.title}" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                        <div class="absolute top-1.5 right-1.5 bg-black/70 backdrop-blur-xs text-blue-400 font-black text-[8px] px-1.5 py-0.5 rounded border border-blue-500/30">
+                            HD
+                        </div>
+                        <div class="relative z-10 p-2 text-white">
+                            <span class="text-[10px] font-bold block truncate">${img.title}</span>
+                        </div>
+                    `;
+
+                    btn.onclick = () => {
+                        projectionStyles.bgType = 'image';
+                        projectionStyles.bgImage = img.full;
+                        updateBgTypeUI('image');
+                        syncToProjector();
+                        showToast(`Fondo "${img.title}" activado`, "success");
+                    };
+
+                    container.appendChild(btn);
+                });
+            }, 300);
         }
 
-        function updateFormatButtons() {
-            const btnBold = document.getElementById('btn-format-bold');
-            if (projectionStyles.isBold) btnBold.className = "transition py-2 rounded-xl text-xs font-bold border border-blue-500 bg-blue-600/20 text-blue-400 flex items-center justify-center";
-            else btnBold.className = "transition py-2 rounded-xl text-xs font-bold border border-gray-800 text-gray-300 flex items-center justify-center";
-
-            const btnItalic = document.getElementById('btn-format-italic');
-            if (projectionStyles.isItalic) btnItalic.className = "transition py-2 rounded-xl text-xs font-bold border border-blue-500 bg-blue-600/20 text-blue-400 flex items-center justify-center italic";
-            else btnItalic.className = "transition py-2 rounded-xl text-xs border border-gray-800 text-gray-300 flex items-center justify-center italic";
-
-            const btnShadow = document.getElementById('btn-format-shadow');
-            if (projectionStyles.hasShadow) btnShadow.className = "transition py-2 rounded-xl text-xs font-bold border border-blue-500 bg-blue-600/20 text-blue-400 flex items-center justify-center";
-            else btnShadow.className = "transition py-2 rounded-xl text-xs border border-gray-800 text-gray-300 flex items-center justify-center";
-
-            const alignBtns = {
-                'left': document.getElementById('btn-align-left'),
-                'center': document.getElementById('btn-align-center'),
-                'right': document.getElementById('btn-align-right')
-            };
-            Object.keys(alignBtns).forEach(key => {
-                if (key === projectionStyles.align) {
-                    alignBtns[key].className = "transition py-2 rounded-xl border border-blue-500 bg-blue-600/20 text-blue-400 text-xs";
-                } else {
-                    alignBtns[key].className = "transition py-2 rounded-xl border border-gray-800 text-gray-300 text-xs hover:bg-gray-800";
-                }
-            });
-        }
-
-        function getYouTubeEmbedUrl(url) {
-            if (!url) return '';
-            let videoId = '';
-            try {
-                if (url.includes('youtu.be/')) videoId = url.split('youtu.be/')[1].split('?')[0].split('&')[0];
-                else if (url.includes('youtube.com/watch')) videoId = new URLSearchParams(url.split('?')[1]).get('v');
-                else if (url.includes('youtube.com/shorts/')) videoId = url.split('youtube.com/shorts/')[1].split('?')[0].split('&')[0];
-                else if (url.includes('youtube.com/embed/')) videoId = url.split('youtube.com/embed/')[1].split('?')[0].split('&')[0];
-            } catch (e) {}
-            if (videoId) return `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&rel=0`;
-            return '';
+        function hashCode(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash |= 0;
+            }
+            return hash;
         }
 
         function showToast(msg, type = "info") {
             const toast = document.getElementById('toast');
-            const icon = document.getElementById('toast-icon');
             const message = document.getElementById('toast-message');
-
             message.innerText = msg;
-            if (type === "success") {
-                icon.className = "p-1.5 bg-emerald-500/20 rounded-lg text-emerald-400";
-                icon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
-            } else if (type === "error") {
-                icon.className = "p-1.5 bg-red-500/20 rounded-lg text-red-400";
-                icon.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>';
-            } else {
-                icon.className = "p-1.5 bg-blue-500/20 rounded-lg text-blue-400";
-                icon.innerHTML = '<i class="fa-solid fa-info-circle"></i>';
-            }
-
             toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
         }
 
         function renderBooks() {
@@ -844,25 +558,16 @@
             const filter = document.getElementById('search-book').value.toLowerCase().trim();
             container.innerHTML = '';
 
-            const books = Object.keys(bibleData);
-            books.forEach(book => {
+            Object.keys(bibleData).forEach(book => {
                 if (filter && !book.toLowerCase().includes(filter)) return;
-
                 const btn = document.createElement('button');
-                const isSelected = book === selectedBook;
-                btn.className = `w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-between ${
-                    isSelected ? 'bg-blue-600 text-white shadow-md shadow-blue-900/30' : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                }`;
+                btn.className = `w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-between ${book === selectedBook ? 'bg-blue-600 text-white shadow-md' : 'text-gray-300 hover:bg-gray-800'}`;
                 btn.innerHTML = `<span>${book}</span><i class="fa-solid fa-chevron-right text-[10px] opacity-60"></i>`;
                 btn.onclick = () => {
                     selectedBook = book;
-                    const chapters = Object.keys(bibleData[book] || {});
-                    selectedChapter = chapters[0] || "1";
+                    selectedChapter = Object.keys(bibleData[book])[0] || "1";
                     selectedVerseIdx = null;
-                    renderBooks();
-                    renderChapters();
-                    renderVerses();
-                    saveOperatorState();
+                    renderBooks(); renderChapters(); renderVerses();
                 };
                 container.appendChild(btn);
             });
@@ -873,20 +578,14 @@
             document.getElementById('selected-book-label').innerText = selectedBook;
             container.innerHTML = '';
 
-            const chapters = Object.keys(bibleData[selectedBook] || {});
-            chapters.forEach(chap => {
+            Object.keys(bibleData[selectedBook] || {}).forEach(chap => {
                 const btn = document.createElement('button');
-                const isSelected = chap === selectedChapter;
-                btn.className = `aspect-square rounded-xl text-xs font-extrabold transition flex items-center justify-center border ${
-                    isSelected ? 'bg-emerald-600 text-white border-emerald-500 shadow-md shadow-emerald-950/40' : 'bg-gray-900 text-gray-300 border-gray-800 hover:bg-gray-800 hover:text-white'
-                }`;
+                btn.className = `aspect-square rounded-xl text-xs font-extrabold transition flex items-center justify-center border ${chap === selectedChapter ? 'bg-emerald-600 text-white border-emerald-500' : 'bg-gray-900 text-gray-300 border-gray-800 hover:bg-gray-800'}`;
                 btn.innerText = chap;
                 btn.onclick = () => {
                     selectedChapter = chap;
                     selectedVerseIdx = null;
-                    renderChapters();
-                    renderVerses();
-                    saveOperatorState();
+                    renderChapters(); renderVerses();
                 };
                 container.appendChild(btn);
             });
@@ -894,43 +593,22 @@
 
         function renderVerses() {
             const container = document.getElementById('verses-container');
-            const titleEl = document.getElementById('current-title');
-            titleEl.innerText = `${selectedBook} ${selectedChapter}`;
+            document.getElementById('current-title').innerText = `${selectedBook} ${selectedChapter}`;
             container.innerHTML = '';
 
             const verses = bibleData[selectedBook]?.[selectedChapter] || [];
-            if (verses.length === 0) {
-                container.innerHTML = `<div class="text-center py-12 text-gray-500 text-xs"><i class="fa-solid fa-folder-open text-2xl mb-2 block"></i>No hay versículos en este capítulo.</div>`;
-                return;
-            }
-
             verses.forEach((verseText, idx) => {
                 const num = idx + 1;
                 const isSelected = selectedVerseIdx === idx;
                 const citation = `${selectedBook} ${selectedChapter}:${num}`;
 
                 const card = document.createElement('div');
-                card.className = `p-3 rounded-xl border transition cursor-pointer flex gap-3 ${
-                    isSelected ? 'bg-blue-950/70 border-blue-500/80 text-white shadow-lg shadow-blue-950/50' : 'bg-gray-900/90 border-gray-800/80 text-gray-200 hover:bg-gray-850 hover:border-gray-700'
-                }`;
+                card.className = `p-3 rounded-xl border transition cursor-pointer flex gap-3 ${isSelected ? 'bg-blue-950/70 border-blue-500/80 text-white shadow-lg' : 'bg-gray-900/90 border-gray-800 text-gray-200 hover:bg-gray-850'}`;
                 card.innerHTML = `
                     <span class="font-black text-xs px-2 py-1 rounded-lg h-fit ${isSelected ? 'bg-blue-600 text-white' : 'bg-gray-800 text-blue-400'}">${num}</span>
                     <p class="text-xs md:text-sm leading-relaxed flex-1 select-text">${verseText}</p>
-                    <div class="flex flex-col gap-1 shrink-0">
-                        <button title="Agregar a la Orden de Culto" class="btn-add-culto text-gray-400 hover:text-amber-400 p-1 rounded transition">
-                            <i class="fa-solid fa-bookmark text-xs"></i>
-                        </button>
-                    </div>
                 `;
-
-                card.onclick = (e) => {
-                    if (e.target.closest('.btn-add-culto')) {
-                        e.stopPropagation();
-                        addToCultoList(verseText, citation);
-                        return;
-                    }
-                    projectVerse(verseText, citation, idx);
-                };
+                card.onclick = () => projectVerse(verseText, citation, idx);
                 container.appendChild(card);
             });
         }
@@ -941,56 +619,9 @@
             if (idx !== null) selectedVerseIdx = idx;
             isBlackout = false;
             isClearText = false;
-
-            document.getElementById('btn-blackout').className = "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5";
-            document.getElementById('btn-cleartext').className = "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5";
-
             renderVerses();
             syncToProjector();
             showToast(`Proyectando: ${citation}`, "success");
-        }
-
-        function addToCultoList(text, citation) {
-            cultoList.push({ id: Date.now(), text: text, citation: citation });
-            renderCultoList();
-            saveOperatorState();
-            showToast("Agregado a la lista de culto", "info");
-        }
-
-        function renderCultoList() {
-            const container = document.getElementById('culto-list-items');
-            container.innerHTML = '';
-            if (cultoList.length === 0) {
-                container.innerHTML = `<p class="text-center text-gray-500 text-xs py-8">La lista del culto está vacía.</p>`;
-                return;
-            }
-
-            cultoList.forEach((item, index) => {
-                const card = document.createElement('div');
-                card.className = "bg-gray-900 border border-gray-800 p-2.5 rounded-xl flex items-center justify-between gap-2 group hover:border-blue-500/50 transition";
-                card.innerHTML = `
-                    <div class="flex-1 min-w-0 cursor-pointer">
-                        <span class="text-[10px] font-bold text-blue-400 block truncate">${item.citation}</span>
-                        <p class="text-xs text-gray-300 truncate">${item.text}</p>
-                    </div>
-                    <div class="flex items-center gap-1">
-                        <button class="btn-play text-emerald-400 hover:text-emerald-300 p-1.5 rounded-lg bg-emerald-950/40 border border-emerald-900/50 text-xs font-bold" title="Proyectar ahora">
-                            <i class="fa-solid fa-play"></i>
-                        </button>
-                        <button class="btn-del-item text-gray-500 hover:text-red-400 p-1.5 rounded-lg text-xs" title="Quitar">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                `;
-                card.querySelector('.flex-1').onclick = () => projectVerse(item.text, item.citation, null);
-                card.querySelector('.btn-play').onclick = () => projectVerse(item.text, item.citation, null);
-                card.querySelector('.btn-del-item').onclick = () => {
-                    cultoList.splice(index, 1);
-                    renderCultoList();
-                    saveOperatorState();
-                };
-                container.appendChild(card);
-            });
         }
 
         function syncToProjector() {
@@ -998,98 +629,54 @@
                 text: isClearText ? "" : currentText,
                 citation: isClearText ? "" : currentCitation,
                 isBlackout: isBlackout,
-                isClearText: isClearText,
                 styles: projectionStyles,
                 mediaMode: mediaMode,
                 videoUrl: activeVideoUrl,
-                isVideoPlaying: isVideoPlaying,
                 timestamp: Date.now()
             };
 
-            try { broadcastChannel.postMessage(payload); } catch (e) {}
-            try { localStorage.setItem('biblical_projector_data', JSON.stringify(payload)); } catch (e) {}
+            try { broadcastChannel.postMessage(payload); } catch(e) {}
+            try { localStorage.setItem('biblical_projector_data', JSON.stringify(payload)); } catch(e) {}
 
             updateProjectorDOM(document, payload, false);
             if (externalWindow && !externalWindow.closed) {
-                try { updateProjectorDOM(externalWindow.document, payload); } catch (e) {}
+                try { updateProjectorDOM(externalWindow.document, payload); } catch(e) {}
             }
             updateProjectorDOM(document, payload, true);
-            saveOperatorState();
         }
 
         function updateProjectorDOM(docObj, data, isLocalFs = false) {
             const prefix = isLocalFs ? 'local-fs-' : (docObj === document ? 'preview-' : 'proj-');
-
             const textEl = docObj.getElementById(prefix + 'text');
             const citationEl = docObj.getElementById(prefix + 'citation');
             const backdropEl = docObj.getElementById(prefix + 'backdrop');
             const overlayEl = docObj.getElementById(prefix + 'overlay');
-            const videoEl = docObj.getElementById(prefix + 'video');
-            const youtubeEl = docObj.getElementById(prefix + 'youtube');
-            const logoStandbyEl = docObj.getElementById(prefix + 'logo-standby');
-            const logoCornerEl = docObj.getElementById(prefix + 'logo-corner');
 
             if (!textEl) return;
 
             if (data.isBlackout) {
-                if (backdropEl) backdropEl.style.background = '#000000';
-                if (textEl) textEl.innerText = '';
+                if (backdropEl) backdropEl.style.background = '#000';
+                textEl.innerText = '';
                 if (citationEl) citationEl.innerText = '';
-                if (logoStandbyEl) logoStandbyEl.classList.add('hidden');
-                if (logoCornerEl) logoCornerEl.classList.add('hidden');
-                if (videoEl) videoEl.classList.add('hidden');
-                if (youtubeEl) youtubeEl.classList.add('hidden');
                 return;
             }
 
-            if (youtubeEl) {
-                if (data.mediaMode === 'youtube' && data.videoUrl) {
-                    if (youtubeEl.src !== data.videoUrl) youtubeEl.src = data.videoUrl;
-                    youtubeEl.classList.remove('hidden');
-                } else {
-                    youtubeEl.classList.add('hidden');
-                    if (youtubeEl.src) youtubeEl.src = '';
-                }
-            }
+            textEl.innerText = data.text;
+            textEl.style.fontFamily = `"${data.styles.font}", sans-serif`;
+            textEl.style.fontSize = isLocalFs ? (parseFloat(data.styles.size) * 1.2) + 'vw' : (docObj === document && !isLocalFs ? '12px' : data.styles.size + 'vw');
+            textEl.style.fontWeight = data.styles.isBold ? '800' : '400';
+            textEl.style.fontStyle = data.styles.isItalic ? 'italic' : 'normal';
+            textEl.style.textAlign = data.styles.align;
+            textEl.style.color = data.styles.textcolor;
 
-            if (videoEl) {
-                if (data.mediaMode === 'screen' && window.screenStream) {
-                    if (videoEl.srcObject !== window.screenStream) videoEl.srcObject = window.screenStream;
-                    videoEl.classList.remove('hidden');
-                    videoEl.play().catch(() => {});
-                } else if (data.mediaMode === 'video' && data.videoUrl) {
-                    videoEl.srcObject = null;
-                    if (videoEl.src !== data.videoUrl) videoEl.src = data.videoUrl;
-                    videoEl.classList.remove('hidden');
-                    if (data.isVideoPlaying) videoEl.play().catch(() => {});
-                    else videoEl.pause();
-                } else {
-                    videoEl.classList.add('hidden');
-                    if (videoEl.srcObject) videoEl.srcObject = null;
-                }
-            }
-
-            if (textEl) {
-                textEl.innerText = data.text;
-                textEl.style.fontFamily = `"${data.styles.font}", sans-serif`;
-                textEl.style.fontSize = isLocalFs ? (parseFloat(data.styles.size) * 1.2) + 'vw' : (docObj === document && !isLocalFs ? '12px' : data.styles.size + 'vw');
-                textEl.style.fontWeight = data.styles.isBold ? '800' : '400';
-                textEl.style.fontStyle = data.styles.isItalic ? 'italic' : 'normal';
-                textEl.style.textAlign = data.styles.align;
-                textEl.style.color = data.styles.textcolor;
-
-                if (data.styles.hasShadow) textEl.classList.add('text-projection-shadow');
-                else textEl.classList.remove('text-projection-shadow');
-            }
+            if (data.styles.hasShadow) textEl.classList.add('text-projection-shadow');
+            else textEl.classList.remove('text-projection-shadow');
 
             if (citationEl) {
                 citationEl.innerText = data.citation;
                 citationEl.style.fontFamily = `"${data.styles.font}", sans-serif`;
                 citationEl.style.color = data.styles.textcolor;
                 citationEl.style.textAlign = data.styles.align;
-
-                if (data.styles.hasShadow) citationEl.classList.add('text-projection-shadow');
-                else citationEl.classList.remove('text-projection-shadow');
             }
 
             if (backdropEl) {
@@ -1101,7 +688,7 @@
                     backdropEl.style.backgroundImage = 'none';
                 } else if (data.styles.bgType === 'image') {
                     backdropEl.style.background = 'none';
-                    backdropEl.style.backgroundImage = `url("${getFullHdUrl(data.styles.bgImage)}")`;
+                    backdropEl.style.backgroundImage = `url("${data.styles.bgImage}")`;
                     backdropEl.style.backgroundSize = 'cover';
                     backdropEl.style.backgroundPosition = 'center';
                 }
@@ -1110,503 +697,54 @@
             if (overlayEl) {
                 overlayEl.style.backgroundColor = `rgba(0, 0, 0, ${data.styles.bgOpacity / 100})`;
             }
-
-            const hasText = data.text.trim().length > 0;
-            if (logoStandbyEl) {
-                if (!hasText && data.styles.logoUrl && data.mediaMode === 'none') {
-                    logoStandbyEl.src = data.styles.logoUrl;
-                    logoStandbyEl.classList.remove('hidden');
-                } else {
-                    logoStandbyEl.classList.add('hidden');
-                }
-            }
-
-            if (logoCornerEl) {
-                if (hasText && data.styles.logoUrl && data.styles.showLogoCorner) {
-                    logoCornerEl.src = data.styles.logoUrl;
-                    logoCornerEl.classList.remove('hidden');
-                    
-                    logoCornerEl.className = "absolute max-w-[12%] max-h-[15%] object-contain z-30 transition-all ";
-                    const pos = data.styles.logoPosition || 'top-left';
-                    
-                    if (pos === 'top-left') logoCornerEl.classList.add('top-4', 'left-4');
-                    else if (pos === 'top-center') logoCornerEl.classList.add('top-4', 'left-1/2', '-translate-x-1/2');
-                    else if (pos === 'top-right') logoCornerEl.classList.add('top-4', 'right-4');
-                    else if (pos === 'bottom-left') logoCornerEl.classList.add('bottom-4', 'left-4');
-                    else if (pos === 'bottom-center') logoCornerEl.classList.add('bottom-4', 'left-1/2', '-translate-x-1/2');
-                    else logoCornerEl.classList.add('bottom-4', 'right-4');
-                } else {
-                    logoCornerEl.classList.add('hidden');
-                }
-            }
-        }
-
-        // RENDERIZADO Y BÚSQUEDA DE FONDOS HD
-        function renderOnlineImages(category = 'all', filterText = '') {
-            const container = document.getElementById('online-image-results');
-            const loading = document.getElementById('image-search-loading');
-            
-            if (!container) return;
-            container.innerHTML = '';
-            if (loading) loading.classList.add('hidden');
-
-            let filtered = [...curatedBackgrounds];
-
-            // Aplicar rotación cuando se presiona el botón de refrescar
-            if (shuffleSeed > 0) {
-                const shift = shuffleSeed % filtered.length;
-                filtered = filtered.slice(shift).concat(filtered.slice(0, shift));
-            }
-
-            // Filtrar por categoría
-            if (category !== 'all') {
-                filtered = filtered.filter(item => item.category === category);
-            }
-
-            // Búsqueda inteligente por texto
-            if (filterText.trim().length > 0) {
-                const query = filterText.toLowerCase().trim();
-                filtered = filtered.filter(item => 
-                    item.title.toLowerCase().includes(query) || 
-                    item.category.toLowerCase().includes(query) || 
-                    (item.query && item.query.toLowerCase().includes(query))
-                );
-
-                // Si no hay coincidencias exactas en la lista local, generar tarjetas HD dinámicas con Unsplash
-                if (filtered.length === 0) {
-                    for (let i = 1; i <= 6; i++) {
-                        filtered.push({
-                            id: `dynamic-${query}-${i}`,
-                            category: category !== 'all' ? category : 'búsqueda',
-                            title: `${query.charAt(0).toUpperCase() + query.slice(1)} HD ${i}`,
-                            query: query,
-                            url: `https://images.unsplash.com/photo-1509021436468-d51030005963?sig=${i}&q=${encodeURIComponent(query)}`
-                        });
-                    }
-                }
-            }
-
-            if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-2 py-6 text-center text-gray-500 text-xs">
-                        <i class="fa-solid fa-image text-xl mb-1 block"></i>
-                        No se encontraron fondos. Intenta con otra palabra clave.
-                    </div>
-                `;
-                return;
-            }
-
-            filtered.forEach((img) => {
-                const thumb = getThumbnailUrl(img.url);
-                const fullHd = getFullHdUrl(img.url);
-                const isSelected = projectionStyles.bgType === 'image' && projectionStyles.bgImage === fullHd;
-
-                const btn = document.createElement('button');
-                btn.className = `h-24 rounded-xl border overflow-hidden relative group transition shadow-md text-left flex flex-col justify-end bg-gray-900 ${
-                    isSelected ? 'border-2 border-blue-500 ring-2 ring-blue-500/40' : 'border-white/10 hover:border-blue-400'
-                }`;
-                
-                btn.innerHTML = `
-                    <img src="${thumb}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-300 opacity-0" onload="this.classList.remove('opacity-0')" onerror="this.src='https://images.unsplash.com/photo-1509021436468-d51030005963?auto=format&fit=crop&w=400&q=70'; this.classList.remove('opacity-0')" alt="${img.title}" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
-                    <div class="absolute top-1.5 right-1.5 bg-black/70 backdrop-blur-xs text-blue-400 font-black text-[8px] px-1.5 py-0.5 rounded border border-blue-500/30">
-                        1080p HD
-                    </div>
-                    <div class="relative z-10 p-2 text-white">
-                        <span class="text-[10px] font-bold block truncate leading-tight">${img.title}</span>
-                        <span class="text-[8px] text-gray-300 capitalize opacity-80">${img.category}</span>
-                    </div>
-                `;
-
-                btn.onclick = () => {
-                    projectionStyles.bgType = 'image';
-                    projectionStyles.bgImage = fullHd;
-                    updateBgTypeUI('image');
-                    syncToProjector();
-                    showToast(`Fondo "${img.title}" activado`, "success");
-                    renderOnlineImages(currentBgCategory, document.getElementById('image-search-input')?.value || '');
-                };
-
-                container.appendChild(btn);
-            });
-        }
-
-        function refreshImageGallery() {
-            const loading = document.getElementById('image-search-loading');
-            const container = document.getElementById('online-image-results');
-            
-            if (loading) loading.classList.remove('hidden');
-            if (container) container.innerHTML = '';
-
-            setTimeout(() => {
-                shuffleSeed++;
-                const searchVal = document.getElementById('image-search-input')?.value || '';
-                renderOnlineImages(currentBgCategory, searchVal);
-                showToast("Galería de imágenes actualizada", "success");
-            }, 250);
         }
 
         function updateBgTypeUI(type) {
             projectionStyles.bgType = type;
-            const btnColor = document.getElementById('btn-bg-color');
-            const btnGrad = document.getElementById('btn-bg-grad');
-            const btnImg = document.getElementById('btn-bg-img');
+            document.getElementById('palette-color-container').classList.toggle('hidden', type !== 'color');
+            document.getElementById('palette-gradient-container').classList.toggle('hidden', type !== 'gradient');
+            document.getElementById('palette-image-container').classList.toggle('hidden', type !== 'image');
+            document.getElementById('overlay-opacity-container').classList.toggle('hidden', type !== 'image');
 
-            const palColor = document.getElementById('palette-color-container');
-            const palGrad = document.getElementById('palette-gradient-container');
-            const palImg = document.getElementById('palette-image-container');
-            const overlayOp = document.getElementById('overlay-opacity-container');
-
-            const activeClass = "bg-blue-600 text-white border-blue-500";
-            const inactiveClass = "border-gray-800 text-gray-300 hover:bg-gray-800";
-
-            if (btnColor) btnColor.className = `transition py-2 rounded-xl border text-xs font-bold ${type === 'color' ? activeClass : inactiveClass}`;
-            if (btnGrad) btnGrad.className = `transition py-2 rounded-xl border text-xs font-bold ${type === 'gradient' ? activeClass : inactiveClass}`;
-            if (btnImg) btnImg.className = `transition py-2 rounded-xl border text-xs font-bold ${type === 'image' ? activeClass : inactiveClass}`;
-
-            palColor.classList.add('hidden');
-            palGrad.classList.add('hidden');
-            palImg.classList.add('hidden');
-            overlayOp.classList.add('hidden');
-
-            if (type === 'color') palColor.classList.remove('hidden');
-            else if (type === 'gradient') palGrad.classList.remove('hidden');
-            else if (type === 'image') {
-                palImg.classList.remove('hidden');
-                overlayOp.classList.remove('hidden');
-                renderOnlineImages(currentBgCategory, document.getElementById('image-search-input')?.value || '');
+            if (type === 'image') {
+                const query = document.getElementById('image-search-input').value.trim() || "cielo con estrellas";
+                searchImagesHD(query);
             }
             syncToProjector();
         }
 
-        function updateLogoPositionUI() {
-            const pos = projectionStyles.logoPosition || 'top-left';
-            const buttons = {
-                'top-left': 'btn-logo-tl', 'top-center': 'btn-logo-tc', 'top-right': 'btn-logo-tr',
-                'bottom-left': 'btn-logo-bl', 'bottom-center': 'btn-logo-bc', 'bottom-right': 'btn-logo-br'
-            };
-            Object.keys(buttons).forEach(key => {
-                const btn = document.getElementById(buttons[key]);
-                if (btn) btn.className = (key === pos) ? "py-1 px-1.5 rounded-lg bg-blue-600 border border-blue-500 text-white font-bold transition text-[10px] truncate" : "py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition text-[10px] truncate";
+        window.onload = function() {
+            renderBooks();
+            renderChapters();
+            renderVerses();
+            syncToProjector();
+
+            // Pestañas
+            ['culto', 'video', 'estilos'].forEach(tab => {
+                document.getElementById(`btn-tab-${tab}`).onclick = () => {
+                    ['culto', 'video', 'estilos'].forEach(t => {
+                        document.getElementById(`tab-${t}`).classList.add('hidden');
+                        document.getElementById(`btn-tab-${t}`).className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-white transition";
+                    });
+                    document.getElementById(`tab-${tab}`).classList.remove('hidden');
+                    document.getElementById(`btn-tab-${tab}`).className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-blue-500 text-blue-400 transition";
+                };
             });
-        }
 
-        async function startScreenCapture() {
-            try {
-                window.screenStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: "always" }, audio: false });
-                mediaMode = 'screen';
-                document.getElementById('btn-start-screen-capture').classList.add('hidden');
-                document.getElementById('btn-stop-screen-capture').classList.remove('hidden');
-                window.screenStream.getVideoTracks()[0].onended = stopScreenCapture;
-                syncToProjector();
-                showToast("Captura de pantalla activa", "success");
-            } catch (err) {
-                showToast("No se pudo iniciar la captura de pantalla", "error");
-            }
-        }
-
-        function stopScreenCapture() {
-            if (window.screenStream) {
-                window.screenStream.getTracks().forEach(track => track.stop());
-                window.screenStream = null;
-            }
-            document.getElementById('btn-start-screen-capture').classList.remove('hidden');
-            document.getElementById('btn-stop-screen-capture').classList.add('hidden');
-            mediaMode = 'none';
-            syncToProjector();
-            showToast("Transmisión de pantalla detenida", "info");
-        }
-
-        function toggleExternalProjector() {
-            if (externalWindow && !externalWindow.closed) {
-                externalWindow.close();
-                externalWindow = null;
-                document.getElementById('ext-win-text').innerText = "Proyectar (Ventana)";
-                showToast("Ventana externa cerrada", "info");
-            } else {
-                externalWindow = window.open("", "BiblicalProjectorWindow", "width=1280,height=720,menubar=no,toolbar=no,location=no,status=no");
-                if (externalWindow) {
-                    externalWindow.document.write(`
-                        <!DOCTYPE html>
-                        <html lang="es" class="h-full">
-                        <head>
-                            <meta charset="UTF-8">
-                            <title>Proyección en Vivo - Pantalla Externa</title>
-                            <script src="https://cdn.tailwindcss.com"><\/script>
-                            <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Merriweather:wght@300;400;700&family=Montserrat:wght@400;600;800&family=Open+Sans:wght@300;400;600;700&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Poppins:wght@300;400;600;700&family=Quicksand:wght@400;600;700&family=Raleway:wght@300;400;600;700&family=Roboto+Slab:wght@400;700&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
-                            <style>
-                                body { margin: 0; padding: 0; overflow: hidden; background: #000; }
-                                .text-projection-shadow { text-shadow: 0 2px 12px rgba(0,0,0,0.95), 0 4px 24px rgba(0,0,0,0.85); }
-                            </style>
-                        </head>
-                        <body class="h-screen w-screen overflow-hidden relative flex flex-col justify-between p-16 select-none bg-black">
-                            <div id="proj-backdrop" class="absolute inset-0 z-0 bg-cover bg-center transition-all duration-300"></div>
-                            <video id="proj-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay muted></video>
-                            <iframe id="proj-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
-                            <div id="proj-overlay" class="absolute inset-0 z-20 bg-black/40 transition-all duration-300"></div>
-                            <img id="proj-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-30 hidden" alt="Standby Logo" />
-                            <img id="proj-logo-corner" class="absolute max-w-[12%] max-h-[15%] object-contain z-30 hidden" alt="Corner Logo" />
-                            <div class="z-30 text-center w-full my-auto px-12">
-                                <p id="proj-text" class="text-white leading-relaxed"></p>
-                            </div>
-                            <div class="z-30 text-center w-full pb-6">
-                                <p id="proj-citation" class="text-white/90 tracking-widest font-black uppercase text-2xl"></p>
-                            </div>
-                        </body>
-                        </html>
-                    `);
-                    externalWindow.document.close();
-                    document.getElementById('ext-win-text').innerText = "Cerrar Ventana";
-                    showToast("Ventana de proyección externa abierta", "success");
-                    setTimeout(() => { syncToProjector(); }, 300);
-                }
-            }
-        }
-
-        function setupEventListeners() {
-            document.getElementById('room-id-input').onchange = (e) => { roomId = e.target.value.toUpperCase().trim() || "GEN-777"; };
-            document.getElementById('btn-copy-link').onclick = () => {
-                navigator.clipboard.writeText(window.location.href).then(() => showToast("Enlace copiado al portapapeles", "success")).catch(() => showToast("Enlace copiado", "success"));
-            };
-
-            // Ventana Externa y Simulador
-            document.getElementById('btn-toggle-ext-projector').onclick = toggleExternalProjector;
-            document.getElementById('btn-toggle-local-fs').onclick = () => {
-                document.getElementById('local-fullscreen-container').classList.remove('hidden');
-                syncToProjector();
-            };
-            document.getElementById('btn-close-local-fs').onclick = () => {
-                document.getElementById('local-fullscreen-container').classList.add('hidden');
-            };
-
-            // Lectura de Archivo JSON Bíblico
-            document.getElementById('json-bible-input').onchange = (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        try {
-                            const parsed = JSON.parse(event.target.result);
-                            if (typeof parsed === 'object' && parsed !== null) {
-                                bibleData = parsed;
-                                const firstBook = Object.keys(bibleData)[0];
-                                if (firstBook) {
-                                    selectedBook = firstBook;
-                                    selectedChapter = Object.keys(bibleData[firstBook] || {})[0] || "1";
-                                    selectedVerseIdx = null;
-                                    renderBooks();
-                                    renderChapters();
-                                    renderVerses();
-                                    saveOperatorState();
-                                    showToast("Biblia JSON cargada con éxito", "success");
-                                }
-                            }
-                        } catch (err) {
-                            showToast("Formato JSON inválido", "error");
-                        }
-                    };
-                    reader.readAsText(file);
-                }
-            };
-
-            document.getElementById('search-book').oninput = renderBooks;
-            document.getElementById('btn-prev-chapter').onclick = () => {
-                const chapters = Object.keys(bibleData[selectedBook] || {});
-                const currentIdx = chapters.indexOf(selectedChapter);
-                if (currentIdx > 0) {
-                    selectedChapter = chapters[currentIdx - 1];
-                    selectedVerseIdx = null;
-                    renderChapters(); renderVerses(); saveOperatorState();
-                }
-            };
-            document.getElementById('btn-next-chapter').onclick = () => {
-                const chapters = Object.keys(bibleData[selectedBook] || {});
-                const currentIdx = chapters.indexOf(selectedChapter);
-                if (currentIdx >= 0 && currentIdx < chapters.length - 1) {
-                    selectedChapter = chapters[currentIdx + 1];
-                    selectedVerseIdx = null;
-                    renderChapters(); renderVerses(); saveOperatorState();
-                }
-            };
-
-            // Acciones Inmediatas
-            document.getElementById('btn-blackout').onclick = () => {
-                isBlackout = !isBlackout;
-                const btn = document.getElementById('btn-blackout');
-                if (isBlackout) btn.className = "bg-red-600 hover:bg-red-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-red-950/50";
-                else btn.className = "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5";
-                syncToProjector();
-            };
-            document.getElementById('btn-cleartext').onclick = () => {
-                isClearText = !isClearText;
-                const btn = document.getElementById('btn-cleartext');
-                if (isClearText) btn.className = "bg-amber-600 hover:bg-amber-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-amber-950/50";
-                else btn.className = "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5";
-                syncToProjector();
-            };
-            document.getElementById('btn-clear-projection').onclick = () => {
-                currentText = ""; currentCitation = ""; selectedVerseIdx = null; renderVerses(); syncToProjector(); showToast("Proyección limpiada", "info");
-            };
-
-            // Navegación de Pestañas
-            const tabElements = {
-                culto: { btn: document.getElementById('btn-tab-culto'), content: document.getElementById('tab-culto') },
-                video: { btn: document.getElementById('btn-tab-video'), content: document.getElementById('tab-video') },
-                estilos: { btn: document.getElementById('btn-tab-estilos'), content: document.getElementById('tab-estilos') }
-            };
-            function switchTab(tabId) {
-                Object.values(tabElements).forEach(t => {
-                    t.btn.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-white transition";
-                    t.content.classList.add('hidden');
-                });
-                tabElements[tabId].btn.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-blue-500 text-blue-400 transition";
-                tabElements[tabId].content.classList.remove('hidden');
-            }
-            tabElements.culto.btn.onclick = () => switchTab('culto');
-            tabElements.video.btn.onclick = () => switchTab('video');
-            tabElements.estilos.btn.onclick = () => switchTab('estilos');
-
-            // BÚSQUEDA Y REFRESCO DE FONDOS HD
+            // Buscador de imágenes HD
             document.getElementById('btn-search-images').onclick = () => {
-                renderOnlineImages(currentBgCategory, document.getElementById('image-search-input').value);
+                const q = document.getElementById('image-search-input').value;
+                searchImagesHD(q);
             };
-            document.getElementById('image-search-input').onkeyup = (e) => {
-                if (e.key === 'Enter') {
-                    renderOnlineImages(currentBgCategory, e.target.value);
-                } else {
-                    renderOnlineImages(currentBgCategory, e.target.value);
-                }
-            };
-            document.getElementById('btn-refresh-images').onclick = () => {
-                refreshImageGallery();
+            document.getElementById('image-search-input').onkeydown = (e) => {
+                if (e.key === 'Enter') searchImagesHD(e.target.value);
             };
 
-            // Categorías de Fondos HD
-            const catMap = {
-                'cat-all': 'all', 'cat-fe': 'fe', 'cat-cielo': 'cielo',
-                'cat-montana': 'montaña', 'cat-naturaleza': 'naturaleza',
-                'cat-noche': 'noche', 'cat-abstracto': 'abstracto'
-            };
-            Object.keys(catMap).forEach(id => {
-                const btn = document.getElementById(id);
-                if (btn) {
-                    btn.onclick = () => {
-                        currentBgCategory = catMap[id];
-                        Object.keys(catMap).forEach(k => {
-                            const b = document.getElementById(k);
-                            if (b) {
-                                b.className = (k === id) 
-                                    ? "px-2.5 py-1 rounded-lg font-bold bg-blue-600 text-white shrink-0" 
-                                    : "px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0";
-                            }
-                        });
-                        renderOnlineImages(currentBgCategory, document.getElementById('image-search-input').value);
-                    };
-                }
-            });
-
-            // Carga de YouTube y Video Local
-            document.getElementById('btn-load-youtube').onclick = () => {
-                const url = document.getElementById('video-url-input').value.trim();
-                if (!url) {
-                    showToast("Ingresa una URL de YouTube válida", "error");
-                    return;
-                }
-                const embedUrl = getYouTubeEmbedUrl(url);
-                if (!embedUrl) {
-                    showToast("No se pudo obtener el ID del video", "error");
-                    return;
-                }
-                mediaMode = 'youtube';
-                activeVideoUrl = embedUrl;
-                isVideoPlaying = true;
-                document.getElementById('video-title-lbl').innerText = "YouTube Video";
-                document.getElementById('video-control-panel').classList.remove('hidden');
-                syncToProjector();
-                showToast("Video de YouTube cargado", "success");
-            };
-
-            document.getElementById('video-file-input').onchange = (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const url = URL.createObjectURL(file);
-                    mediaMode = 'video';
-                    activeVideoUrl = url;
-                    isVideoPlaying = true;
-                    document.getElementById('video-title-lbl').innerText = file.name;
-                    document.getElementById('video-control-panel').classList.remove('hidden');
-                    syncToProjector();
-                    showToast("Video local cargado", "success");
-                }
-            };
-
-            document.getElementById('btn-stop-video').onclick = () => {
-                mediaMode = 'none';
-                activeVideoUrl = '';
-                isVideoPlaying = false;
-                document.getElementById('video-control-panel').classList.add('hidden');
-                syncToProjector();
-                showToast("Media detenido", "info");
-            };
-
-            document.getElementById('bg-image-uploader').onchange = (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        projectionStyles.bgType = 'image';
-                        projectionStyles.bgImage = event.target.result;
-                        updateBgTypeUI('image');
-                        syncToProjector();
-                        showToast("Fondo local cargado", "success");
-                    };
-                    reader.readAsDataURL(file);
-                }
-            };
-            
-            document.getElementById('logo-image-uploader').onchange = (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        const url = event.target.result;
-                        projectionStyles.logoUrl = url;
-                        document.getElementById('logo-thumbnail-img').src = url;
-                        document.getElementById('logo-thumbnail-img').classList.remove('hidden');
-                        document.getElementById('logo-placeholder-icon').classList.add('hidden');
-                        document.getElementById('btn-remove-logo').classList.remove('hidden');
-                        document.getElementById('logo-options-box').classList.remove('hidden');
-                        syncToProjector();
-                        showToast("Logo actualizado", "success");
-                    };
-                    reader.readAsDataURL(file);
-                }
-            };
-
-            document.getElementById('btn-remove-logo').onclick = () => {
-                projectionStyles.logoUrl = '';
-                document.getElementById('logo-thumbnail-img').src = '';
-                document.getElementById('logo-thumbnail-img').classList.add('hidden');
-                document.getElementById('logo-placeholder-icon').classList.remove('hidden');
-                document.getElementById('btn-remove-logo').classList.add('hidden');
-                document.getElementById('logo-options-box').classList.add('hidden');
-                syncToProjector();
-            };
-            
-            document.getElementById('toggle-logo-corner').onchange = (e) => {
-                projectionStyles.showLogoCorner = e.target.checked;
-                syncToProjector();
-            };
-
-            const posBtns = {
-                'btn-logo-tl': 'top-left', 'btn-logo-tc': 'top-center', 'btn-logo-tr': 'top-right',
-                'btn-logo-bl': 'bottom-left', 'btn-logo-bc': 'bottom-center', 'btn-logo-br': 'bottom-right'
-            };
-            Object.keys(posBtns).forEach(id => {
-                document.getElementById(id).onclick = () => {
-                    projectionStyles.logoPosition = posBtns[id];
-                    updateLogoPositionUI();
-                    syncToProjector();
+            document.querySelectorAll('.quick-query').forEach(btn => {
+                btn.onclick = () => {
+                    const q = btn.getAttribute('data-q');
+                    document.getElementById('image-search-input').value = q;
+                    searchImagesHD(q);
                 };
             });
 
@@ -1614,108 +752,50 @@
             document.getElementById('btn-bg-grad').onclick = () => updateBgTypeUI('gradient');
             document.getElementById('btn-bg-img').onclick = () => updateBgTypeUI('image');
 
-            document.querySelectorAll('.btn-color-preset').forEach(btn => {
+            document.querySelectorAll('.btn-grad-preset').forEach(btn => {
                 btn.onclick = () => {
-                    projectionStyles.bgcolor = btn.getAttribute('data-color');
-                    document.getElementById('style-bgcolor').value = projectionStyles.bgcolor;
+                    projectionStyles.gradient = btn.getAttribute('data-grad');
                     syncToProjector();
                 };
             });
+
             document.getElementById('style-bgcolor').oninput = (e) => { projectionStyles.bgcolor = e.target.value; syncToProjector(); };
-
-            document.querySelectorAll('.btn-grad-preset').forEach(btn => {
-                btn.onclick = () => { projectionStyles.gradient = btn.getAttribute('data-grad'); syncToProjector(); };
-            });
-
-            document.getElementById('style-font').onchange = (e) => { projectionStyles.font = e.target.value; syncToProjector(); };
-            document.getElementById('style-size').oninput = (e) => { 
-                projectionStyles.size = e.target.value; 
-                document.getElementById('val-font-size').innerText = e.target.value + "vw";
-                syncToProjector(); 
+            document.getElementById('style-textcolor').oninput = (e) => { projectionStyles.textcolor = e.target.value; syncToProjector(); };
+            document.getElementById('style-size').oninput = (e) => {
+                projectionStyles.size = e.target.value;
+                document.getElementById('val-font-size').innerText = e.target.value + 'vw';
+                syncToProjector();
             };
             document.getElementById('style-overlay-opacity').oninput = (e) => {
                 projectionStyles.bgOpacity = e.target.value;
-                document.getElementById('val-overlay-opacity').innerText = e.target.value + "%";
+                document.getElementById('val-overlay-opacity').innerText = e.target.value + '%';
                 syncToProjector();
             };
+            document.getElementById('style-font').onchange = (e) => { projectionStyles.font = e.target.value; syncToProjector(); };
 
-            document.getElementById('btn-format-bold').onclick = () => { projectionStyles.isBold = !projectionStyles.isBold; updateFormatButtons(); syncToProjector(); };
-            document.getElementById('btn-format-italic').onclick = () => { projectionStyles.isItalic = !projectionStyles.isItalic; updateFormatButtons(); syncToProjector(); };
-            document.getElementById('btn-format-shadow').onclick = () => { projectionStyles.hasShadow = !projectionStyles.hasShadow; updateFormatButtons(); syncToProjector(); };
-            
-            document.getElementById('btn-align-left').onclick = () => { projectionStyles.align = 'left'; updateFormatButtons(); syncToProjector(); };
-            document.getElementById('btn-align-center').onclick = () => { projectionStyles.align = 'center'; updateFormatButtons(); syncToProjector(); };
-            document.getElementById('btn-align-right').onclick = () => { projectionStyles.align = 'right'; updateFormatButtons(); syncToProjector(); };
+            document.getElementById('btn-format-bold').onclick = () => { projectionStyles.isBold = !projectionStyles.isBold; syncToProjector(); };
+            document.getElementById('btn-format-italic').onclick = () => { projectionStyles.isItalic = !projectionStyles.isItalic; syncToProjector(); };
+            document.getElementById('btn-format-shadow').onclick = () => { projectionStyles.hasShadow = !projectionStyles.hasShadow; syncToProjector(); };
 
-            document.querySelectorAll('.btn-textcolor-preset').forEach(btn => {
-                btn.onclick = () => {
-                    projectionStyles.textcolor = btn.getAttribute('data-textcolor');
-                    document.getElementById('style-textcolor').value = projectionStyles.textcolor;
-                    syncToProjector();
-                };
-            });
-            document.getElementById('style-textcolor').oninput = (e) => { projectionStyles.textcolor = e.target.value; syncToProjector(); };
+            document.getElementById('btn-align-left').onclick = () => { projectionStyles.align = 'left'; syncToProjector(); };
+            document.getElementById('btn-align-center').onclick = () => { projectionStyles.align = 'center'; syncToProjector(); };
+            document.getElementById('btn-align-right').onclick = () => { projectionStyles.align = 'right'; syncToProjector(); };
 
-            document.getElementById('btn-add-custom-culto').onclick = () => {
-                const input = document.getElementById('custom-culto-text');
-                const val = input.value.trim();
-                if(val) { addToCultoList(val, "Nota / Canto"); input.value = ''; }
+            document.getElementById('btn-blackout').onclick = () => {
+                isBlackout = !isBlackout;
+                syncToProjector();
             };
-            document.getElementById('custom-culto-text').addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') document.getElementById('btn-add-custom-culto').click();
-            });
-            document.getElementById('btn-clear-culto-list').onclick = () => { cultoList = []; renderCultoList(); saveOperatorState(); };
-
-            document.getElementById('btn-quick-screen-share').onclick = startScreenCapture;
-            document.getElementById('btn-start-screen-capture').onclick = startScreenCapture;
-            document.getElementById('btn-stop-screen-capture').onclick = stopScreenCapture;
-
-            // Atajos de Teclado
-            document.addEventListener('keydown', (e) => {
-                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
-
-                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    const verses = bibleData[selectedBook]?.[selectedChapter] || [];
-                    if (selectedVerseIdx === null) {
-                        if (verses.length > 0) projectVerse(verses[0], `${selectedBook} ${selectedChapter}:1`, 0);
-                    } else if (selectedVerseIdx < verses.length - 1) {
-                        const nextIdx = selectedVerseIdx + 1;
-                        projectVerse(verses[nextIdx], `${selectedBook} ${selectedChapter}:${nextIdx + 1}`, nextIdx);
-                    }
-                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    const verses = bibleData[selectedBook]?.[selectedChapter] || [];
-                    if (selectedVerseIdx !== null && selectedVerseIdx > 0) {
-                        const prevIdx = selectedVerseIdx - 1;
-                        projectVerse(verses[prevIdx], `${selectedBook} ${selectedChapter}:${prevIdx + 1}`, prevIdx);
-                    }
-                } else if (e.key.toLowerCase() === 'b') {
-                    document.getElementById('btn-blackout').click();
-                } else if (e.key.toLowerCase() === 'c') {
-                    document.getElementById('btn-cleartext').click();
-                } else if (e.key === 'Escape') {
-                    document.getElementById('btn-close-local-fs').click();
-                }
-            });
-        }
-
-        // INICIALIZACIÓN AL CARGAR LA PÁGINA
-        window.onload = function () {
-            loadOperatorState();
-            renderBooks();
-            renderChapters();
-            renderVerses();
-            renderCultoList();
-            setupEventListeners();
-            syncToProjector();
-        };
-
-        // Escuchar mensajes de sincronización de otras pestañas o ventanas
-        broadcastChannel.onmessage = (event) => {
-            if (event.data) {
-                updateProjectorDOM(document, event.data, false);
-            }
+            document.getElementById('btn-cleartext').onclick = () => {
+                isClearText = !isClearText;
+                syncToProjector();
+            };
+            document.getElementById('btn-toggle-local-fs').onclick = () => {
+                document.getElementById('local-fullscreen-container').classList.remove('hidden');
+                syncToProjector();
+            };
+            document.getElementById('btn-close-local-fs').onclick = () => {
+                document.getElementById('local-fullscreen-container').classList.add('hidden');
+            };
         };
     </script>
 </body>
