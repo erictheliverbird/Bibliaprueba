@@ -245,6 +245,15 @@
                                         <i class="fa-solid fa-play mr-1"></i> Cargar
                                     </button>
                                 </div>
+                                <div class="grid grid-cols-2 gap-2 pt-1">
+                                    <button id="btn-youtube-play" type="button" class="bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+                                        <i class="fa-solid fa-play"></i> Reproducir YouTube
+                                    </button>
+                                    <button id="btn-youtube-pause" type="button" class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+                                        <i class="fa-solid fa-pause"></i> Pausar YouTube
+                                    </button>
+                                </div>
+                                <p class="text-[10px] text-gray-500">Usa estos botones desde el iPad para controlar YouTube en la vista previa y en la proyección.</p>
                             </div>
 
                             <div class="bg-gradient-to-br from-blue-950/60 to-purple-950/60 border border-blue-500/30 p-3.5 rounded-xl space-y-2">
@@ -281,7 +290,7 @@
                                     <input id="video-loop-toggle" type="checkbox" class="accent-blue-500 w-4 h-4">
                                     <i class="fa-solid fa-repeat text-blue-400"></i> Reproducir en bucle
                                 </label>
-                                <p class="text-[10px] text-gray-500">Los controles de avance y pausa son para videos locales. YouTube tiene sus propios controles dentro del reproductor.</p>
+                                <p class="text-[10px] text-gray-500">Estos controles de avance son para videos locales. Para YouTube, usa los botones Reproducir y Pausar de arriba o los controles del propio reproductor.</p>
                             </div>
 
                             <div class="space-y-2">
@@ -1108,6 +1117,43 @@
                 else { parsed.searchParams.delete('loop'); parsed.searchParams.delete('playlist'); }
                 return parsed.toString();
             } catch (_) { return url; }
+        }
+
+        // Envía comandos compatibles con la API IFrame de YouTube a los reproductores
+        // de la vista previa y de proyección. Los botones llaman esta función directamente
+        // desde una interacción del operador, lo que ayuda con las políticas de Safari.
+        function sendYouTubeCommand(command) {
+            const targets = [];
+            const addFrame = (frame) => {
+                if (frame && frame.contentWindow && frame.src && frame.src.includes('youtube.com/embed/')) {
+                    targets.push(frame);
+                }
+            };
+            addFrame(document.getElementById('preview-youtube'));
+            addFrame(document.getElementById('local-fs-youtube'));
+            try {
+                if (externalWindow && !externalWindow.closed) {
+                    addFrame(externalWindow.document.getElementById('proj-youtube'));
+                }
+            } catch (error) {
+                console.warn('No se pudo acceder al reproductor de proyección:', error);
+            }
+            if (!targets.length) {
+                showToast('Primero carga un video de YouTube y abre la proyección.', 'warning');
+                return;
+            }
+            const message = JSON.stringify({ event: 'command', func: command, args: '' });
+            const send = () => {
+                targets.forEach(frame => {
+                    try { frame.contentWindow.postMessage(message, 'https://www.youtube.com'); }
+                    catch (error) { console.warn('No se pudo enviar el comando a YouTube:', error); }
+                });
+            };
+            // Primer envío síncrono dentro del clic del operador; reintentos por si el iframe
+            // aún está terminando de cargar. No se puede forzar el autoplay si Safari lo bloquea.
+            send();
+            [250, 700, 1400].forEach(delay => setTimeout(send, delay));
+            showToast(command === 'playVideo' ? 'Orden de reproducción enviada a YouTube.' : 'Orden de pausa enviada a YouTube.', 'info');
         }
 
         function formatVideoTime(seconds) {
@@ -1977,6 +2023,8 @@
             };
 
             // Videos
+            document.getElementById('btn-youtube-play').onclick = () => sendYouTubeCommand('playVideo');
+            document.getElementById('btn-youtube-pause').onclick = () => sendYouTubeCommand('pauseVideo');
             document.getElementById('btn-load-youtube').onclick = () => {
                 const url = document.getElementById('video-url-input').value.trim();
                 const embedUrl = getYouTubeEmbedUrl(url);
