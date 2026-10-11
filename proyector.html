@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+                        <html lang="es" class="h-full">
+                        <head>
+                            <meta charset="UTF-8">
+                            <title>Proyección en Vivo - Pantalla Externa</title>
+                            <script src="https://cdn.tailwindcss.com"></script>
+                            <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Merriweather:wght@300;400;700&family=Montserrat:wght@400;600;800&family=Open+Sans:wght@300;400;600;700&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Poppins:wght@300;400;600;700&family=Quicksand:wght@400;600;700&family=Raleway:wght@300;400;600;700&family=Roboto+Slab:wght@400;700&family=Ubuntu:wght@400;700&family=Fira+Sans:wght@400;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=Spectral:ital,wght@0,400;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,700;1,400&family=Cardo:wght@400;700&family=Josefin+Sans:wght@400;600;700&family=Nunito+Sans:wght@400;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Archivo+Black&display=swap" rel="stylesheet">
+                            <style>
+                                body { margin: 0; padding: 0; overflow: hidden; background: #000; }
+                                .text-projection-shadow { text-shadow: 0 2px 12px rgba(0,0,0,0.95), 0 4px 24px rgba(0,0,0,0.85); }
+                            </style>
+                        </head>
+                        <body class="h-screen w-screen overflow-hidden relative flex flex-col justify-between p-16 select-none bg-black">
+                            <div id="proj-backdrop" class="absolute inset-0 z-0 bg-cover bg-center transition-all duration-300"></div>
+                            <video id="proj-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay muted></video>
+                            <img id="proj-screen-frame" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" alt="Captura de pantalla en vivo" />
+                            <iframe id="proj-youtube" referrerpolicy="strict-origin-when-cross-origin" title="Reproductor de YouTube (proyección)" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>
+                            <div id="proj-overlay" class="absolute inset-0 z-20 bg-black/40 transition-all duration-300"></div>
+                            <img id="proj-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-30 hidden" alt="Standby Logo" />
+                            <img id="proj-logo-corner" class="absolute max-w-[12%] max-h-[15%] object-contain z-30 hidden" alt="Corner Logo" />
+                            <div class="z-30 text-center w-full my-auto px-12">
+                                <p id="proj-text" class="text-white leading-relaxed"></p>
+                            </div>
+                            <div class="z-30 text-center w-full pb-6">
+                                <p id="proj-citation" class="text-white/90 tracking-widest font-black uppercase text-2xl"></p>
+                            </div>
+                            <script>
+                                // Receptor autónomo: la proyección sigue escuchando aunque Safari
+                                // separe esta pestaña y ya no podamos manipular su document desde la consola.
+                                (() => {
+                                    const CHANNEL_NAME = 'biblical-projector-channel';
+                                    const STORAGE_KEY = 'biblical_projector_data';
+                                    let channel = null;
+                                    try {
+                                        if ('BroadcastChannel' in window) {
+                                            channel = new BroadcastChannel(CHANNEL_NAME);
+                                            channel.addEventListener('message', event => {
+                                                const data = event.data;
+                                                if (data && data.type === '__screen_frame') {
+                                                    const frame = document.getElementById('proj-screen-frame');
+                                                    if (frame && data.frame) { frame.src = data.frame; frame.classList.remove('hidden'); }
+                                                    return;
+                                                }
+                                                applyProjection(data);
+                                            });
+                                        }
+                                    } catch (error) { console.warn('BroadcastChannel no disponible', error); }
+
+                                    function handleYouTubeCommand(command) {
+                                        const frame = document.getElementById('proj-youtube');
+                                        if (!frame || !frame.src || !frame.src.includes('youtube.com/embed/')) return;
+                                        const message = JSON.stringify({ event: 'command', func: command, args: [] });
+                                        try { frame.contentWindow.postMessage(message, 'https://www.youtube.com'); } catch (_) {}
+                                    }
+                                    window.addEventListener('message', event => {
+                                        const data = event.data;
+                                        if (data && data.type === '__youtube_command') {
+                                            handleYouTubeCommand(data.command);
+                                            // Reintentar si el iframe aún está terminando de inicializarse.
+                                            [150, 450, 900].forEach(delay => setTimeout(() => handleYouTubeCommand(data.command), delay));
+                                            return;
+                                        }
+                                        if (data && data.type === '__screen_frame') {
+                                            const frame = document.getElementById('proj-screen-frame');
+                                            if (frame && data.frame) { frame.src = data.frame; frame.classList.remove('hidden'); }
+                                            return;
+                                        }
+                                        applyProjection(data);
+                                    });
+                                    window.addEventListener('storage', event => {
+                                        if (event.key === STORAGE_KEY && event.newValue) {
+                                            try { applyProjection(JSON.parse(event.newValue)); } catch (_) {}
+                                        }
+                                    });
+
+                                    function queueProjectionSeek(video, target) {
+                                        if (!video || !Number.isFinite(target) || target < 0) return;
+                                        const applyTarget = () => {
+                                            const duration = Number.isFinite(video.duration) ? video.duration : target;
+                                            const safeTarget = Math.max(0, Math.min(target, duration));
+                                            try {
+                                                video.currentTime = safeTarget;
+                                                delete video.dataset.pendingSeek;
+                                            } catch (_) {
+                                                video.dataset.pendingSeek = String(safeTarget);
+                                            }
+                                        };
+                                        if (video.readyState >= 1 && Number.isFinite(video.duration)) applyTarget();
+                                        else {
+                                            video.dataset.pendingSeek = String(target);
+                                            if (video.dataset.seekListenerAttached !== '1') {
+                                                video.dataset.seekListenerAttached = '1';
+                                                const retry = () => {
+                                                    const pending = Number(video.dataset.pendingSeek);
+                                                    if (Number.isFinite(pending)) {
+                                                        const duration = Number.isFinite(video.duration) ? video.duration : pending;
+                                                        try { video.currentTime = Math.max(0, Math.min(pending, duration)); delete video.dataset.pendingSeek; } catch (_) {}
+                                                    }
+                                                    video.dataset.seekListenerAttached = '0';
+                                                };
+                                                video.addEventListener('loadedmetadata', retry, { once: true });
+                                                video.addEventListener('canplay', retry, { once: true });
+                                            }
+                                        }
+                                    }
+                                    function applyProjection(data) {
+                                        if (!data) return;
+                                        const styles = data.styles;
+                                        const text = document.getElementById('proj-text');
+                                        const citation = document.getElementById('proj-citation');
+                                        const backdrop = document.getElementById('proj-backdrop');
+                                        const overlay = document.getElementById('proj-overlay');
+                                        const video = document.getElementById('proj-video');
+                                        const youtube = document.getElementById('proj-youtube');
+                                        const standby = document.getElementById('proj-logo-standby');
+                                        const corner = document.getElementById('proj-logo-corner');
+                                        if (!text || !backdrop) return;
+
+                                        if (data.isBlackout) {
+                                            backdrop.style.background = '#000';
+                                            text.textContent = '';
+                                            citation.textContent = '';
+                                            standby.classList.add('hidden'); corner.classList.add('hidden');
+                                            video.classList.add('hidden'); youtube.classList.add('hidden');
+                                            const screenFrame = document.getElementById('proj-screen-frame');
+                                            if (screenFrame) screenFrame.classList.add('hidden');
+                                            return;
+                                        }
+
+                                        text.textContent = data.text || '';
+                                        text.style.fontFamily = '"' + (styles.font || 'Inter') + '", sans-serif';
+                                        text.style.fontSize = (parseFloat(styles.size) || 4.5) + 'vw';
+                                        text.style.fontWeight = styles.isBold ? '800' : '400';
+                                        text.style.fontStyle = styles.isItalic ? 'italic' : 'normal';
+                                        text.style.textAlign = styles.align || 'center';
+                                        text.style.color = styles.textcolor || '#fff';
+                                        text.classList.toggle('text-projection-shadow', !!styles.hasShadow);
+
+                                        citation.textContent = data.citation || '';
+                                        citation.style.fontFamily = '"' + (styles.citationFont || styles.font || 'Inter') + '", sans-serif';
+                                        citation.style.fontSize = (parseFloat(styles.citationSize) || 1.6) + 'vw';
+                                        citation.style.fontWeight = styles.citationBold === false ? '400' : '800';
+                                        citation.style.fontStyle = styles.citationItalic ? 'italic' : 'normal';
+                                        citation.style.color = styles.citationColor || styles.textcolor || '#fff';
+                                        citation.style.textAlign = styles.citationAlign || 'center';
+                                        citation.style.position = 'absolute'; citation.style.zIndex = '35';
+                                        citation.style.margin = '0'; citation.style.padding = '0.25em 0.5em';
+                                        citation.style.maxWidth = '90%'; citation.style.boxSizing = 'border-box';
+                                        citation.style.pointerEvents = 'none';
+                                        citation.style.top = 'auto'; citation.style.bottom = 'auto';
+                                        citation.style.left = 'auto'; citation.style.right = 'auto';
+                                        citation.style.transform = 'none';
+                                        const pos = styles.citationPosition || 'bottom-center';
+                                        if (pos.startsWith('top-')) citation.style.top = '4%';
+                                        else if (pos.startsWith('bottom-')) citation.style.bottom = '4%';
+                                        else citation.style.top = '50%';
+                                        if (pos.endsWith('-left')) { citation.style.left = '4%'; citation.style.textAlign = 'left'; }
+                                        else if (pos.endsWith('-right')) { citation.style.right = '4%'; citation.style.textAlign = 'right'; }
+                                        else { citation.style.left = '50%'; citation.style.transform = 'translateX(-50%)'; }
+                                        if (pos.startsWith('middle-')) citation.style.transform = (pos.endsWith('-left') || pos.endsWith('-right')) ? 'translateY(-50%)' : 'translate(-50%, -50%)';
+                                        citation.classList.toggle('text-projection-shadow', styles.citationShadow !== false);
+
+                                        if (styles.bgType === 'color') { backdrop.style.background = styles.bgcolor || '#0f172a'; backdrop.style.backgroundImage = 'none'; }
+                                        else if (styles.bgType === 'gradient') { backdrop.style.background = styles.gradient || '#0f172a'; backdrop.style.backgroundImage = 'none'; }
+                                        else if (styles.bgType === 'image') { backdrop.style.background = 'none'; backdrop.style.backgroundImage = 'url("' + String(styles.bgImage || '').replace(/"/g, '%22') + '")'; backdrop.style.backgroundSize = 'cover'; backdrop.style.backgroundPosition = 'center'; }
+                                        overlay.style.backgroundColor = 'rgba(0,0,0,' + (Number(styles.bgOpacity || 0) / 100) + ')';
+
+                                        const hasText = (data.text || '').trim().length > 0;
+                                        if (styles.logoUrl && !hasText && data.mediaMode === 'none') { standby.src = styles.logoUrl; standby.classList.remove('hidden'); }
+                                        else standby.classList.add('hidden');
+                                        if (styles.logoUrl && hasText && styles.showLogoCorner) {
+                                            corner.src = styles.logoUrl;
+                                            corner.className = 'absolute max-w-[12%] max-h-[15%] object-contain z-30 transition-all';
+                                            const logoPos = styles.logoPosition || 'top-left';
+                                            const logoClasses = {'top-left':['top-4','left-4'],'top-center':['top-4','left-1/2','-translate-x-1/2'],'top-right':['top-4','right-4'],'bottom-left':['bottom-4','left-4'],'bottom-center':['bottom-4','left-1/2','-translate-x-1/2'],'bottom-right':['bottom-4','right-4']};
+                                            corner.classList.add(...(logoClasses[logoPos] || logoClasses['top-left'])); corner.classList.remove('hidden');
+                                        } else corner.classList.add('hidden');
+
+                                        const screenFrame = document.getElementById('proj-screen-frame');
+                                        if (data.mediaMode === 'screen') {
+                                            if (screenFrame) screenFrame.classList.remove('hidden');
+                                            video.classList.add('hidden');
+                                            if (video.srcObject) video.srcObject = null;
+                                            youtube.classList.add('hidden'); youtube.src = '';
+                                        } else {
+                                            if (screenFrame) screenFrame.classList.add('hidden');
+                                            if (data.mediaMode === 'youtube' && data.videoUrl) { if (youtube.src !== data.videoUrl) youtube.src = data.videoUrl; youtube.classList.remove('hidden'); }
+                                            else { youtube.classList.add('hidden'); youtube.src = ''; }
+                                            if (data.mediaMode === 'video' && data.videoUrl) { if (video.getAttribute('src') !== data.videoUrl) { video.setAttribute('src', data.videoUrl); video.load(); } video.loop = !!data.videoLoop; if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null && String(video.dataset.lastSeekId || '') !== String(data.videoSeekId ?? 'legacy')) { video.dataset.lastSeekId = String(data.videoSeekId ?? 'legacy'); queueProjectionSeek(video, data.videoSeekTo); } video.classList.remove('hidden'); if (data.isVideoPlaying) video.play().catch(() => {}); else video.pause(); }
+                                            else { video.classList.add('hidden'); if (video.srcObject) video.srcObject = null; }
+                                        }
+                                    }
+
+                                    // Recupera el último estado al abrir o recargar la ventana de proyección.
+                                    try {
+                                        const saved = localStorage.getItem(STORAGE_KEY);
+                                        if (saved) applyProjection(JSON.parse(saved));
+                                    } catch (error) { console.warn('No se pudo recuperar el estado guardado', error); }
+                                })();
+                            </script>
+                        </body>
+                        </html>
