@@ -1091,7 +1091,7 @@
                 const embed = new URL(`https://www.youtube.com/embed/${videoId}`);
                 // Solicitar reproducción automática. La carga se inicia desde el botón del operador;
                 // Safari/YouTube todavía pueden bloquear autoplay con sonido según sus políticas.
-                embed.searchParams.set('autoplay', '1');
+                embed.searchParams.set('autoplay', '0');
                 embed.searchParams.set('mute', '0');
                 embed.searchParams.set('controls', '1');
                 embed.searchParams.set('enablejsapi', '1');
@@ -1129,8 +1129,11 @@
                     targets.push(frame);
                 }
             };
-            addFrame(document.getElementById('preview-youtube'));
-            addFrame(document.getElementById('local-fs-youtube'));
+            const previewFrame = document.getElementById('preview-youtube');
+            if (previewFrame && !previewFrame.classList.contains('hidden')) addFrame(previewFrame);
+            const localFsContainer = document.getElementById('local-fullscreen-container');
+            const localFsFrame = document.getElementById('local-fs-youtube');
+            if (localFsFrame && localFsContainer && !localFsContainer.classList.contains('hidden')) addFrame(localFsFrame);
             try {
                 if (externalWindow && !externalWindow.closed) {
                     addFrame(externalWindow.document.getElementById('proj-youtube'));
@@ -1142,7 +1145,7 @@
                 showToast('Primero carga un video de YouTube y abre la proyección.', 'warning');
                 return;
             }
-            const message = JSON.stringify({ event: 'command', func: command, args: '' });
+            const message = JSON.stringify({ event: 'command', func: command, args: [] });
             const send = () => {
                 targets.forEach(frame => {
                     try { frame.contentWindow.postMessage(message, 'https://www.youtube.com'); }
@@ -1443,7 +1446,14 @@
             }
 
             if (youtubeEl) {
-                if (data.mediaMode === 'youtube' && data.videoUrl) {
+                // No cargar un segundo reproductor oculto en el modal de pantalla completa:
+                // en Safari podía reproducir solo el audio y dar la impresión de que el video estaba congelado.
+                const localFsContainer = isLocalFs ? document.getElementById('local-fullscreen-container') : null;
+                const localFsInactive = isLocalFs && (!localFsContainer || localFsContainer.classList.contains('hidden'));
+                if (localFsInactive) {
+                    youtubeEl.classList.add('hidden');
+                    if (youtubeEl.src) youtubeEl.src = '';
+                } else if (data.mediaMode === 'youtube' && data.videoUrl) {
                     if (youtubeEl.src !== data.videoUrl) youtubeEl.src = data.videoUrl;
                     youtubeEl.classList.remove('hidden');
                 } else {
@@ -2036,7 +2046,7 @@
                     if (location.protocol === 'file:') {
                         showToast("Aviso: YouTube puede bloquear la reproducción si abres el HTML como archivo local. Para el reproductor integrado, abre el proyector desde una dirección HTTPS o un servidor web local.", "warning");
                     } else {
-                        showToast("YouTube cargado con reproducción automática. Si no inicia, Safari puede estar bloqueando autoplay con sonido o el video puede no permitir inserciones.", "success");
+                        showToast("YouTube cargado. Pulsa Reproducir YouTube para iniciar el reproductor visible; se evita reproducir en segundo plano.", "success");
                     }
                 } else {
                     showToast("Enlace de YouTube no válido", "error");
