@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proyector Bíblico Profesional & Buscador Google HD</title>
+    <title>Proyector Bíblico Profesional & Buscador de Imágenes</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -30,18 +30,6 @@
             background: rgba(100, 116, 139, 0.9);
         }
 
-        .fade-transition {
-            transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
         .text-projection-shadow {
             text-shadow: 0 2px 12px rgba(0, 0, 0, 0.95), 0 4px 24px rgba(0, 0, 0, 0.85);
         }
@@ -64,7 +52,7 @@
 <body class="bg-gray-950 text-gray-100 h-screen overflow-hidden flex flex-col font-['Inter'] antialiased select-none">
 
     <div id="operator-interface" class="h-full flex flex-col min-h-0">
-        
+        <!-- CABECERA DE LA CONSOLA -->
         <header class="bg-gray-900 border-b border-gray-800 h-16 px-4 md:px-6 flex items-center justify-between shrink-0 gap-3">
             <div class="flex items-center gap-3">
                 <div class="bg-blue-600 text-white p-2.5 rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/40 shrink-0">
@@ -73,27 +61,13 @@
                 <div>
                     <h1 class="font-black text-base md:text-lg leading-none tracking-wide text-white flex items-center gap-2">
                         PROYECTOR BÍBLICO
-                        <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-bold">PRO v4.5 HD</span>
+                        <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-bold">PRO v4.0 HD</span>
                     </h1>
-                    <span class="text-[10px] text-gray-400 font-semibold tracking-wider uppercase hidden sm:inline-block">Buscador Google de Fondos HD en Línea</span>
+                    <span class="text-[10px] text-gray-400 font-semibold tracking-wider uppercase hidden sm:inline-block">Con Buscador de Imágenes en Internet por Palabras Clave</span>
                 </div>
             </div>
 
-            <!-- Panel de Sincronización de Sala -->
-            <div class="flex items-center gap-2 bg-gray-950 border border-gray-800 rounded-xl px-3 py-1.5 shadow-inner hidden md:flex">
-                <div class="flex flex-col">
-                    <span class="text-[9px] uppercase tracking-wider text-gray-400 font-bold">Sala de Red</span>
-                    <div class="flex items-center gap-1.5">
-                        <span id="sync-indicator-dot" class="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" title="Sincronización Activa"></span>
-                        <input id="room-id-input" type="text" class="bg-transparent border-none text-blue-400 font-extrabold text-xs w-20 focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1 uppercase" value="GEN-777">
-                    </div>
-                </div>
-                <button id="btn-copy-link" class="bg-gray-900 hover:bg-gray-800 border border-gray-800 text-gray-300 p-2 rounded-lg transition hover:text-white" title="Copiar enlace directo">
-                    <i class="fa-solid fa-link text-xs"></i>
-                </button>
-            </div>
-
-            <!-- Acciones Principales de Cabecera -->
+            <!-- Panel de Sincronización y Acciones de Cabecera -->
             <div class="flex items-center gap-2">
                 <button id="btn-quick-screen-share" class="bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg shadow-red-950/40">
                     <i class="fa-solid fa-display text-xs"></i>
@@ -118,6 +92,7 @@
             </div>
         </header>
 
+        <!-- CUERPO PRINCIPAL -->
         <main class="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden p-3 md:p-5 gap-3 md:gap-5">
 
             <!-- Columna 1: Libros y Capítulos -->
@@ -130,7 +105,7 @@
                 </div>
 
                 <div class="flex-1 min-h-0 overflow-y-auto p-3 space-y-1" id="books-container">
-                    <!-- JS -->
+                    <!-- Libros cargados por JS -->
                 </div>
 
                 <div class="p-3 bg-gray-950 border-t border-gray-800 flex flex-col h-48 lg:h-56 shrink-0">
@@ -139,12 +114,12 @@
                         <span id="selected-book-label" class="text-blue-400 text-xs font-bold">Salmos</span>
                     </span>
                     <div class="flex-1 min-h-0 overflow-y-auto grid grid-cols-5 gap-1.5 content-start pr-1" id="chapters-container">
-                        <!-- JS -->
+                        <!-- Capítulos cargados por JS -->
                     </div>
                 </div>
             </section>
 
-            <!-- Columna 2: Versículos Bíblicos -->
+            <!-- Columna 2: Versículos Bíblicos del Capítulo Seleccionado -->
             <section class="flex-1 h-72 lg:h-full flex flex-col bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-xl">
                 <div class="p-3 md:p-4 bg-gray-900 border-b border-gray-800 flex items-center justify-between shrink-0">
                     <div class="flex items-center gap-3">
@@ -167,13 +142,14 @@
                 </div>
 
                 <div class="flex-1 min-h-0 overflow-y-auto p-4 space-y-2.5 bg-gray-950" id="verses-container">
-                    <!-- JS -->
+                    <!-- Versículos cargados por JS -->
                 </div>
             </section>
 
-            <!-- Columna 3: Vista Previa y Controles -->
+            <!-- Columna 3: Vista Previa y Pestañas de Control -->
             <section class="w-full lg:w-96 h-auto lg:h-full flex flex-col gap-4 shrink-0 overflow-hidden">
                 
+                <!-- PREVIEW EN VIVO -->
                 <div class="bg-gray-900 border border-gray-800 rounded-2xl p-3.5 shadow-xl shrink-0 flex flex-col">
                     <div class="flex items-center justify-between mb-2.5">
                         <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
@@ -184,6 +160,7 @@
                         </button>
                     </div>
 
+                    <!-- Cuadro de Vista Previa 16:9 -->
                     <div id="projector-preview-container" class="w-full aspect-video rounded-xl relative overflow-hidden flex flex-col items-center justify-center p-3 border border-gray-800 shadow-inner bg-slate-950">
                         <div id="preview-backdrop" class="absolute inset-0 z-0 bg-slate-950 bg-cover bg-center transition-all duration-300"></div>
                         
@@ -192,6 +169,10 @@
 
                         <div id="preview-overlay" class="absolute inset-0 bg-black/40 z-20 transition-all duration-300"></div>
                         
+                        <img id="preview-logo-standby" class="absolute max-w-[35%] max-h-[50%] object-contain z-30 hidden transition-all" alt="Standby Logo Preview" />
+                        <img id="preview-logo-corner" class="absolute max-w-[12%] max-h-[18%] object-contain z-30 hidden transition-all" alt="Corner Logo Preview" />
+
+                        <!-- Texto en Vista Previa -->
                         <div class="z-30 text-center w-full flex flex-col justify-between h-full pointer-events-none select-none">
                             <p id="preview-text" class="text-white text-xs my-auto line-clamp-4 leading-relaxed transition-all"></p>
                             <p id="preview-citation" class="text-[9px] text-gray-300 uppercase font-black tracking-widest mt-1"></p>
@@ -223,9 +204,10 @@
                         </button>
                     </div>
 
+                    <!-- CONTENIDO DE PESTAÑAS -->
                     <div class="flex-1 min-h-0 overflow-y-auto p-4 bg-gray-950">
                         
-                        <!-- TAB 1: CULTO -->
+                        <!-- TAB 1: LISTA DE CULTO -->
                         <div id="tab-culto" class="space-y-3 h-full flex flex-col min-h-0">
                             <div class="flex items-center justify-between text-xs text-gray-400 shrink-0">
                                 <span>Pasajes agregados:</span>
@@ -245,11 +227,11 @@
                             </div>
 
                             <div id="culto-list-items" class="flex-1 min-h-0 overflow-y-auto space-y-2 pr-1">
-                                <!-- JS -->
+                                <!-- Elementos del culto -->
                             </div>
                         </div>
 
-                        <!-- TAB 2: MEDIA -->
+                        <!-- TAB 2: VIDEOS Y MULTIMEDIA -->
                         <div id="tab-video" class="hidden space-y-4">
                             <div class="bg-gray-900 border border-gray-800 p-3 rounded-xl space-y-2.5">
                                 <div class="flex items-center justify-between">
@@ -292,7 +274,7 @@
                             </div>
                         </div>
 
-                        <!-- TAB 3: ESTILOS Y NUEVO BUSCADOR GOOGLE IMÁGENES -->
+                        <!-- TAB 3: DISEÑO Y ESTILOS & BUSCADOR DE IMÁGENES EN INTERNET -->
                         <div id="tab-estilos" class="hidden space-y-4">
                             
                             <!-- Tipografía -->
@@ -307,7 +289,13 @@
                                     <option value="Lora">Lora (Literaria Serif)</option>
                                     <option value="Merriweather">Merriweather (Lectura Clara)</option>
                                     <option value="Oswald">Oswald (Imponente Titular)</option>
+                                    <option value="EB Garamond">EB Garamond (Tradicional)</option>
                                     <option value="Poppins">Poppins (Redondeada)</option>
+                                    <option value="Open Sans">Open Sans (Alta Legibilidad)</option>
+                                    <option value="Raleway">Raleway (Elegante y Delgada)</option>
+                                    <option value="Quicksand">Quicksand (Suave)</option>
+                                    <option value="Ubuntu">Ubuntu (Distintiva)</option>
+                                    <option value="Amatic SC">Amatic SC (Manuscrito)</option>
                                 </select>
                             </div>
 
@@ -329,7 +317,7 @@
 
                             <!-- Alineación -->
                             <div class="space-y-1.5">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Alineación</label>
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Alineación del Texto</label>
                                 <div class="grid grid-cols-3 gap-1.5">
                                     <button id="btn-align-left" class="transition py-2 rounded-xl border border-gray-800 text-xs"><i class="fa-solid fa-align-left"></i> Izq</button>
                                     <button id="btn-align-center" class="transition py-2 rounded-xl border border-gray-800 text-xs"><i class="fa-solid fa-align-center"></i> Centro</button>
@@ -340,7 +328,7 @@
                             <!-- Tamaño -->
                             <div class="space-y-1.5">
                                 <div class="flex justify-between items-center">
-                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Tamaño del Texto</label>
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Tamaño del Texto (Pantalla)</label>
                                     <span id="val-font-size" class="text-xs font-extrabold text-blue-400">4.5vw</span>
                                 </div>
                                 <input type="range" id="style-size" min="2" max="8" step="0.1" value="4.5" class="w-full accent-blue-500">
@@ -352,13 +340,13 @@
                                 <div class="grid grid-cols-3 gap-1.5 text-xs font-semibold" id="bg-type-selection-container">
                                     <button id="btn-bg-color" class="transition py-2 rounded-xl border border-gray-800 text-gray-300">Sólido</button>
                                     <button id="btn-bg-grad" class="transition py-2 rounded-xl border border-gray-800 text-gray-300">Degradado</button>
-                                    <button id="btn-bg-img" class="transition py-2 rounded-xl border border-gray-800 text-gray-300">Google Imágenes</button>
+                                    <button id="btn-bg-img" class="transition py-2 rounded-xl border border-gray-800 text-gray-300">Buscador Web</button>
                                 </div>
                             </div>
 
                             <!-- Color Sólido -->
                             <div id="palette-color-container" class="space-y-1.5">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Color Sólido</label>
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Color de Fondo</label>
                                 <div class="flex gap-2">
                                     <input type="color" id="style-bgcolor" value="#0f172a" class="bg-transparent border-0 rounded cursor-pointer w-10 h-9">
                                     <div class="grid grid-cols-6 gap-1 flex-1">
@@ -374,58 +362,64 @@
 
                             <!-- Degradado -->
                             <div id="palette-gradient-container" class="space-y-1.5 hidden">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Degradados</label>
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Degradados Predefinidos</label>
                                 <div class="grid grid-cols-3 gap-1.5">
                                     <button class="btn-grad-preset h-9 rounded-lg border border-white/10" data-grad="linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)"></button>
                                     <button class="btn-grad-preset h-9 rounded-lg border border-white/10" data-grad="linear-gradient(135deg, #0f172a 0%, #14532d 100%)" style="background: linear-gradient(135deg, #0f172a 0%, #14532d 100%)"></button>
                                     <button class="btn-grad-preset h-9 rounded-lg border border-white/10" data-grad="linear-gradient(135deg, #180828 0%, #3b0764 100%)" style="background: linear-gradient(135deg, #180828 0%, #3b0764 100%)"></button>
+                                    <button class="btn-grad-preset h-9 rounded-lg border border-white/10" data-grad="linear-gradient(135deg, #020617 0%, #0f172a 100%)" style="background: linear-gradient(135deg, #020617 0%, #0f172a 100%)"></button>
+                                    <button class="btn-grad-preset h-9 rounded-lg border border-white/10" data-grad="linear-gradient(135deg, #1e1b4b 0%, #311042 100%)" style="background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%)"></button>
+                                    <button class="btn-grad-preset h-9 rounded-lg border border-white/10" data-grad="linear-gradient(135deg, #450a0a 0%, #0f0505 100%)" style="background: linear-gradient(135deg, #450a0a 0%, #0f0505 100%)"></button>
                                 </div>
                             </div>
 
-                            <!-- BUSCADOR DE FONDOS EN LÍNEA ESTILO GOOGLE IMÁGENES -->
+                            <!-- BUSCADOR DE IMÁGENES EN INTERNET POR PALABRAS CLAVE -->
                             <div id="palette-image-container" class="space-y-3.5 hidden">
-                                <div class="bg-gray-900 border border-gray-800 p-3 rounded-xl space-y-3">
+                                <div class="bg-gray-900 border border-gray-800 p-3.5 rounded-xl space-y-3 shadow-lg">
                                     <div class="flex items-center justify-between">
                                         <span class="text-xs font-black text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
-                                            <i class="fa-brands fa-google text-blue-500"></i> Buscador Google Imágenes HD
+                                            <i class="fa-solid fa-globe text-emerald-400"></i> Buscador de Imágenes Online
                                         </span>
-                                        <span class="text-[9px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">En vivo</span>
+                                        <span class="text-[10px] text-gray-400 font-semibold">Pixabay & Unsplash API</span>
                                     </div>
-
-                                    <!-- Barra de búsqueda Estilo Google -->
-                                    <div class="relative flex items-center">
-                                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-gray-400 text-xs"></i>
-                                        <input type="text" id="google-img-search-input" placeholder="Buscar cualquier fondo en HD (ej: cielo, cruz, mar)..." class="w-full bg-gray-950 border border-gray-700 rounded-xl py-2.5 pl-9 pr-20 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500 shadow-inner">
-                                        <button id="btn-google-img-search" class="absolute right-1.5 bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                                            Buscar
+                                    
+                                    <!-- Input de Búsqueda por Palabras Clave -->
+                                    <div class="flex gap-1.5">
+                                        <input type="text" id="internet-keyword-input" placeholder="Escribe palabra clave (ej. cruz, cielo, adoracion)..." class="flex-1 bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500 transition">
+                                        <button id="btn-search-keyword-images" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-blue-950/50 shrink-0">
+                                            <i class="fa-solid fa-magnifying-glass"></i> Buscar
                                         </button>
                                     </div>
 
-                                    <!-- Filtros y etiquetas de categoría estilo Google -->
-                                    <div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-[10px]">
-                                        <button class="google-filter-pill px-2.5 py-1 rounded-full bg-blue-600 text-white font-bold shrink-0 transition" data-tag="cielo estrellado">Cielo Estrellado</button>
-                                        <button class="google-filter-pill px-2.5 py-1 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-300 shrink-0 transition" data-tag="cruz cristiana">Cruz</button>
-                                        <button class="google-filter-pill px-2.5 py-1 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-300 shrink-0 transition" data-tag="paisaje natural">Naturaleza</button>
-                                        <button class="google-filter-pill px-2.5 py-1 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-300 shrink-0 transition" data-tag="rio agua viva">Agua / Río</button>
-                                        <button class="google-filter-pill px-2.5 py-1 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-300 shrink-0 transition" data-tag="fuego espiritu santo">Fuego</button>
-                                        <button class="google-filter-pill px-2.5 py-1 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-300 shrink-0 transition" data-tag="atardecer dorado">Atardecer</button>
+                                    <!-- Sugerencias Rápidas -->
+                                    <div class="flex items-center gap-1 overflow-x-auto pb-1 no-scrollbar text-[10px]">
+                                        <button class="keyword-suggestion px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0" data-keyword="cruz">Cruz</button>
+                                        <button class="keyword-suggestion px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0" data-keyword="cielo estrellado">Cielo</button>
+                                        <button class="keyword-suggestion px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0" data-keyword="biblia abierta">Biblia</button>
+                                        <button class="keyword-suggestion px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0" data-keyword="iglesia altar">Iglesia</button>
+                                        <button class="keyword-suggestion px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0" data-keyword="paisaje cristiano">Paisaje</button>
+                                        <button class="keyword-suggestion px-2.5 py-1 rounded-lg font-bold bg-gray-800 text-gray-300 hover:text-white shrink-0" data-keyword="fuego espiritu santo">Fuego</button>
                                     </div>
 
-                                    <!-- Contenedor de Resultados (Estilo Cuadrícula Google Imágenes) -->
-                                    <div id="google-img-loading" class="hidden flex flex-col items-center justify-center py-6 gap-2">
+                                    <!-- Spinner de Carga -->
+                                    <div id="keyword-search-loading" class="hidden flex flex-col items-center justify-center py-6 gap-2">
                                         <div class="loader-spinner"></div>
-                                        <span class="text-[10px] text-gray-400 animate-pulse">Buscando imágenes HD...</span>
+                                        <span class="text-[11px] text-gray-400 font-medium">Buscando imágenes en internet...</span>
                                     </div>
 
-                                    <div id="google-img-results-grid" class="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto pr-1">
-                                        <!-- Resultados inyectados por JS -->
+                                    <!-- Resultados de la Búsqueda -->
+                                    <div id="keyword-image-results" class="grid grid-cols-2 gap-2 pt-1 max-h-64 overflow-y-auto pr-1">
+                                        <div class="col-span-2 py-8 text-center text-gray-500 text-xs">
+                                            <i class="fa-solid fa-cloud-arrow-down text-2xl mb-2 block opacity-60"></i>
+                                            Escribe una palabra clave arriba o haz clic en una sugerencia para buscar fondos en internet.
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div class="flex items-center gap-2">
                                     <label class="flex-1 bg-gray-900 hover:bg-gray-850 border border-dashed border-gray-700 p-2 rounded-xl flex flex-col items-center justify-center cursor-pointer transition">
                                         <i class="fa-solid fa-cloud-arrow-up text-gray-400 text-sm mb-1"></i>
-                                        <span class="text-[10px] font-bold text-gray-300">Subir imagen desde equipo</span>
+                                        <span class="text-[10px] font-bold text-gray-300">O subir imagen desde tu equipo</span>
                                         <input type="file" id="bg-image-uploader" accept="image/*" class="hidden">
                                     </label>
                                 </div>
@@ -434,7 +428,7 @@
                             <!-- Filtro Oscuro de Imagen -->
                             <div id="overlay-opacity-container" class="space-y-1.5 hidden">
                                 <div class="flex justify-between items-center">
-                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Filtro Oscuro de Fondo</label>
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Filtro Oscuro de Imagen</label>
                                     <span id="val-overlay-opacity" class="text-xs font-bold text-blue-400">40%</span>
                                 </div>
                                 <input type="range" id="style-overlay-opacity" min="0" max="90" step="5" value="40" class="w-full accent-blue-500">
@@ -456,6 +450,51 @@
                                 </div>
                             </div>
 
+                            <!-- Logo Institucional -->
+                            <div class="border-t border-gray-800 pt-3 space-y-2.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block flex items-center gap-1.5">
+                                    <i class="fa-solid fa-church text-amber-500"></i> Logo de la Iglesia
+                                </label>
+                                
+                                <div class="flex items-center gap-3 bg-gray-900/60 p-2.5 rounded-xl border border-gray-800">
+                                    <div id="logo-preview-thumbnail" class="w-10 h-10 rounded-lg bg-gray-950 border border-gray-800 flex items-center justify-center overflow-hidden shrink-0">
+                                        <i id="logo-placeholder-icon" class="fa-solid fa-image text-gray-600"></i>
+                                        <img id="logo-thumbnail-img" class="w-full h-full object-contain hidden" alt="Miniatura Logo" />
+                                    </div>
+                                    <div class="flex-1 min-w-0 flex items-center justify-between">
+                                        <label class="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition inline-flex items-center gap-1">
+                                            <i class="fa-solid fa-upload"></i> Subir Logo
+                                            <input type="file" id="logo-image-uploader" accept="image/*" class="hidden">
+                                        </label>
+                                        <button id="btn-remove-logo" class="text-[11px] text-red-400 hover:text-red-300 font-bold hidden">
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div id="logo-options-box" class="space-y-2.5 hidden bg-gray-900/30 p-2.5 rounded-xl border border-gray-800">
+                                    <div class="flex items-center justify-between">
+                                        <label class="text-xs text-gray-300 font-medium">Mostrar en pantalla</label>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" id="toggle-logo-corner" class="sr-only peer" checked>
+                                            <div class="w-8 h-4.5 bg-gray-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-300 after:border-gray-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+
+                                    <div class="space-y-1">
+                                        <label class="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">Ubicación</label>
+                                        <div class="grid grid-cols-3 gap-1 text-[10px]">
+                                            <button id="btn-logo-tl" class="py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition truncate" title="Superior Izquierda">Sup. Izq.</button>
+                                            <button id="btn-logo-tc" class="py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition truncate" title="Superior Medio">Sup. Cen.</button>
+                                            <button id="btn-logo-tr" class="py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition truncate" title="Superior Derecha">Sup. Der.</button>
+                                            <button id="btn-logo-bl" class="py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition truncate" title="Inferior Izquierda">Inf. Izq.</button>
+                                            <button id="btn-logo-bc" class="py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition truncate" title="Inferior Medio">Inf. Cen.</button>
+                                            <button id="btn-logo-br" class="py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition truncate" title="Inferior Derecha">Inf. Der.</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -471,6 +510,9 @@
         <iframe id="local-fs-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
 
         <div id="local-fs-overlay" class="absolute inset-0 z-20 bg-black/40"></div>
+
+        <img id="local-fs-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-30 hidden" alt="Standby Logo Sim" />
+        <img id="local-fs-logo-corner" class="absolute max-w-[12%] max-h-[15%] object-contain z-30 hidden" alt="Corner Logo Sim" />
 
         <button id="btn-close-local-fs" class="absolute top-6 right-6 z-40 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full transition border border-white/20 backdrop-blur" title="Salir (Esc)">
             <i class="fa-solid fa-xmark text-xl"></i>
@@ -493,7 +535,7 @@
     </div>
 
     <script>
-        // Base de datos bíblica robusta con múltiples libros y capítulos completos para pruebas inmediatas
+        // BIBLIOTECA BÍBLICA POR DEFECTO
         let bibleData = {
             "Génesis": {
                 "1": [
@@ -501,15 +543,11 @@
                     "Y la tierra estaba desordenada y vacía, y las tinieblas estaban sobre la faz del abismo, y el Espíritu de Dios se movía sobre la faz de las aguas.",
                     "Y dijo Dios: Sea la luz; y fue la luz.",
                     "Y vio Dios que la luz era buena; y separó Dios la luz de las tinieblas.",
-                    "Y llamó Dios a la luz Día, y a las tinieblas llamó Noche. Y fue la tarde y la mañana un día.",
-                    "Luego dijo Dios: Haya expansión en medio de las aguas, y separe las aguas de las aguas.",
-                    "E hizo Dios la expansión, y separó las aguas que estaban debajo de la expansión, de las aguas que estaban sobre la expansión. Y fue así.",
-                    "Y llamó Dios a la expansión Cielos. Y fue la tarde y la mañana el día segundo."
+                    "Y llamó Dios a la luz Día, y a las tinieblas llamó Noche. Y fue la tarde y la mañana un día."
                 ],
                 "2": [
                     "Fueron, pues, acabados los cielos y la tierra, y todo el ejército de ellos.",
-                    "Y acabó Dios en el día séptimo la obra que hizo; y reposó el día séptimo de toda la obra que hizo.",
-                    "Y bendijo Dios al día séptimo, y lo sanctificó, porque en él reposó de toda la obra que había creado y hecho."
+                    "Y acabó Dios en el día séptimo la obra que hizo; y reposó el día séptimo de toda la obra que hizo."
                 ]
             },
             "Salmos": {
@@ -518,57 +556,20 @@
                     "En lugares de delicados pastos me hará descansar; junto a aguas de reposo me pastoreará.",
                     "Confortará mi alma; me guiará por sendas de justicia por amor de su nombre.",
                     "Aunque ande en valle de sombra de muerte, no temeré mal alguno, porque tú estarás conmigo; tu vara y tu cayado me infundirán aliento.",
-                    "Aderezas mesa delante de mí en presencia de mis angustiadores; ungiste mi cabeza con aceite; mi copa está rebosando.",
-                    "Ciertamente el bien y la misericordia me seguirán todos los días de mi vida, y en la casa de Jehová habitaré por largos días."
-                ],
-                "91": [
-                    "El que habita al abrigo del Altísimo morará bajo la sombra del Omnipotente.",
-                    "Diré yo a Jehová: Esperanza mía, y castillo mío; mi Dios, en quien confiaré.",
-                    "Él te librará del lazo del cazador, de la peste destructores.",
-                    "Con sus plumas te cubrirá, y debajo de sus alas estarás seguro; escudo y adarga es su verdad."
-                ],
-                "121": [
-                    "Alzaré mis ojos a los montes; ¿De dónde vendrá mi socorro?",
-                    "Mi socorro viene de Jehová, que hizo los cielos y la tierra.",
-                    "No dará tu pie al resbalabro, ni se dormirá el que te guarda.",
-                    "He aquí, no se dormirá ni dormirá el que guarda a Israel."
-                ]
-            },
-            "Proverbios": {
-                "3": [
-                    "Hijo mío, te olvides de mi ley, y tu corazón guarde mis mandamientos;",
-                    "Porque largura de días y años de vida y paz te aumentarán.",
-                    "Nunca se aparten de ti la misericordia y la verdad; átalas a tu cuello, escríbelas en la tabla de tu corazón;",
-                    "Y hallarás gracia y buena opinión ante los ojos de Dios y de los hombres.",
-                    "Fíate de Jehová de todo tu corazón, y no te apoyes en tu propia prudencia.",
-                    "Reconocelo en todos tus caminos, y él enderezará tus veredas."
+                    "Aderezas mesa delante de mí en presencia de mis angustiadores; unges my cabeza con aceite; mi copa está rebosando.",
+                    "Ciertamente el bien y la misericordia me seguirán todos los días de mi vida, y en la casa de Jehová moraré por largos días."
                 ]
             },
             "Juan": {
                 "3": [
-                    "Había un hombre de los fariseos que se llamaba Nicodemo, un principal de los judíos.",
-                    "Este vino a Jesús de noche, y le dijo: Rabí, sabemos que has venido de Dios por maestro; porque nadie puede hacer estas señales que tú haces, si no está Dios con él.",
-                    "Respondió Jesús y le dijo: De cierto, de cierto te digo, que el que no naciere otra vez, no puede ver el reino de Dios.",
-                    "Nicodemo le dijo: ¿Cómo puede el hombre nacer siendo viejo? ¿Puede entrar otra vez en el vientre de su madre, y nacer?",
-                    "Respondió Jesús: De cierto, de cierto te digo, que el que no naciere de agua y del Espíritu, no puede entrar en el reino de Dios.",
-                    "Lo que es nacido de la carne, carne es; y lo que es nacido del Espíritu, espíritu es.",
+                    "Había un hombre de los fariseos que se llamaba Nicodemo, un principal entre los judíos.",
+                    "Este vino a Jesús de noche, y le dijo: Rabí, sabemos que has venido de Dios como maestro; porque nadie puede hacer estas señales que tú haces, si no está Dios con él.",
+                    "Respondió Jesús y le dijo: De cierto, de cierto te digo, que el que no naciere de nuevo, no puede ver el reino de Dios.",
                     "Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna."
                 ],
                 "14": [
                     "No se turbe vuestro corazón; creéis en Dios, creed también en mí.",
-                    "En la casa de mi Padre muchas moradas hay; si así no fuera, yo os lo hubiera dicho; voy, pues, a preparar lugar para vosotros.",
-                    "Y si me fuere y os preparare lugar, vendré otra vez, y os tomaré a mí mismo, para que donde yo estoy, vosotros también estéis.",
-                    "Y sabéis a dónde voy, y sabéis el camino.",
-                    "Le dijo Tomás: Señor, no sabemos a dónde vas; ¿cómo, pues, podemos saber el camino?",
-                    "Jesús le dijo: Yo soy el camino, y la verdad, y la vida; nadie viene al Padre, sino por mí."
-                ]
-            },
-            "Romanos": {
-                "8": [
-                    "Ahora, pues, ninguna condenación hay para los que están en Cristo Jesús, los que no andan conforme a la carne, sino conforme al Espíritu.",
-                    "Porque la ley del Espíritu de vida en Cristo Jesús me ha librado de la ley del pecado y de la muerte.",
-                    "Porque lo que era imposible para la ley, por cuanto era débil por la carne, Dios, enviando a su Hijo en semejanza de carne de pecado y a causa del pecado, condenó al pecado en la carne;",
-                    "Para que la justicia de la ley se cumpliese en nosotros, que no andamos conforme a la carne, sino conforme al Espíritu."
+                    "En la casa de mi Padre muchas moradas hay; si así no fuera, yo os lo hubiera dicho; voy, pues, a preparar lugar para vosotros."
                 ]
             }
         };
@@ -592,96 +593,284 @@
             bgType: 'color',
             bgcolor: '#0f172a',
             gradient: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
-            bgImage: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=1920&q=85',
+            bgImage: 'https://images.unsplash.com/photo-1509021436468-d51030005963?auto=format&fit=crop&w=1920&q=85',
             bgOpacity: '40',
-            textcolor: '#ffffff'
+            textcolor: '#ffffff',
+            logoUrl: '',
+            showLogoCorner: true,
+            logoPosition: 'top-left'
         };
 
         let mediaMode = 'none';
         let activeVideoUrl = '';
         let isVideoPlaying = false;
+
         let cultoList = [];
-        let roomId = "GEN-777";
         let externalWindow = null;
         let broadcastChannel = new BroadcastChannel('biblical-projector-channel');
-        window.screenStream = null;
+        
+        window.screenStream = null; 
 
-        function searchGoogleImages(query) {
-            const gridContainer = document.getElementById('google-img-results-grid');
-            const loadingEl = document.getElementById('google-img-loading');
-            if (!gridContainer) return;
+        // BUSCADOR DE IMÁGENES: resultados reales de Pixabay, consultas alternativas
+        // y sin imágenes aleatorias que no correspondan con la palabra buscada.
+        let imageSearchRequestId = 0;
+        let lastImageSearchQuery = '';
 
-            if (loadingEl) loadingEl.classList.remove('hidden');
-            gridContainer.innerHTML = '';
+        function normalizeImageQuery(value) {
+            return (value || '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
 
-            const cleanQuery = (query || 'cielo estrellado').trim().toLowerCase();
+        function getImageQueryVariants(keyword) {
+            const original = normalizeImageQuery(keyword);
+            const key = original.toLowerCase();
 
-            setTimeout(() => {
-                if (loadingEl) loadingEl.classList.add('hidden');
-                gridContainer.innerHTML = '';
+            // Equivalencias útiles para búsquedas bíblicas; Pixabay suele etiquetar
+            // muchas fotografías en inglés.
+            const translations = {
+                'cruz': 'cross',
+                'jesus': 'jesus christ',
+                'jesucristo': 'jesus christ',
+                'biblia': 'open bible',
+                'biblia abierta': 'open bible',
+                'adoracion': 'worship',
+                'alabanza': 'praise worship',
+                'espiritu santo': 'holy spirit',
+                'fuego espiritu santo': 'holy spirit fire',
+                'oracion': 'prayer',
+                'orando': 'praying',
+                'iglesia': 'church interior',
+                'iglesia altar': 'church altar',
+                'cielo': 'sky',
+                'cielo estrellado': 'starry night sky',
+                'paisaje cristiano': 'mountain landscape sunrise',
+                'creacion': 'creation nature landscape',
+                'creacion de dios': 'nature landscape',
+                'ovejas': 'sheep flock',
+                'pastor': 'shepherd sheep',
+                'buen pastor': 'shepherd sheep',
+                'arca de noe': "noah ark",
+                'moises': 'moses bible',
+                'mar rojo': 'red sea desert',
+                'desierto': 'biblical desert landscape',
+                'montanas': 'mountains sunrise',
+                'amanecer': 'sunrise landscape',
+                'atardecer': 'sunset landscape',
+                'agua viva': 'clear water stream',
+                'paloma': 'white dove',
+                'corona de espinas': 'crown thorns',
+                'resurreccion': 'empty tomb sunrise',
+                'tumba vacia': 'empty tomb',
+                'navidad': 'nativity scene',
+                'nacimiento de jesus': 'nativity scene jesus',
+                'ultima cena': 'last supper painting',
+                'santa cena': 'communion bread cup',
+                'pan y vino': 'communion bread wine',
+                'luz': 'sunlight rays clouds',
+                'tormenta': 'storm clouds light rays',
+                'valle de sombra de muerte': 'dark valley mountains',
+                'salmo 23': 'shepherd sheep green pastures'
+            };
 
-                const imagePools = [
-                    { id: 1507692049790, title: 'Cielo Estrellado Nocturno HD', author: 'Unsplash HD' },
-                    { id: 1518709268805, title: 'Galaxia y Nebulosa Cósmica', author: 'Unsplash HD' },
-                    { id: 1470071459604, title: 'Montañas al Atardecer Dorado', author: 'Unsplash HD' },
-                    { id: 1501785888041, title: 'Paisaje Natural con Lago Espejo', author: 'Unsplash HD' },
-                    { id: 1509316975850, title: 'Bosque Místico con Rayos de Luz', author: 'Unsplash HD' },
-                    { id: 1511497584788, title: 'Bosque Profundo Verde Esmeralda', author: 'Unsplash HD' },
-                    { id: 1544256718, title: 'Cruz Cristiana al Horizonte', author: 'Unsplash HD' },
-                    { id: 1529070538774, title: 'Atardecer Solemne y Cálido', author: 'Unsplash HD' },
-                    { id: 1500382017468, title: 'Río Cristalino de Aguas Vivas', author: 'Unsplash HD' },
-                    { id: 1464822759023, title: 'Cumbres Nevadas Majestuosas', author: 'Unsplash HD' },
-                    { id: 1519681393784, title: 'Aurora Boreal en el Cielo', author: 'Unsplash HD' },
-                    { id: 1513836279014, title: 'Luces Cálidas de Velas y Fe', author: 'Unsplash HD' }
-                ];
+            const translated = translations[key];
+            const variants = [original];
+            if (translated && translated.toLowerCase() !== key) variants.push(translated);
+            // Evita repetir la misma consulta y evita búsquedas vacías.
+            return [...new Set(variants.filter(Boolean))];
+        }
 
-                imagePools.forEach((item, index) => {
-                    let hashMod = 0;
-                    for (let i = 0; i < cleanQuery.length; i++) {
-                        hashMod += cleanQuery.charCodeAt(i);
+        async function searchImagesOnline(keyword) {
+            const container = document.getElementById('keyword-image-results');
+            const loading = document.getElementById('keyword-search-loading');
+            const input = document.getElementById('internet-keyword-input');
+            if (!container) return;
+
+            const query = normalizeImageQuery(keyword);
+            if (!query) {
+                container.innerHTML = `
+                    <div class="col-span-2 py-6 text-center text-gray-500 text-xs">
+                        Escribe una palabra o frase para buscar imágenes.
+                    </div>`;
+                if (loading) loading.classList.add('hidden');
+                return;
+            }
+
+            // Impide que una búsqueda lenta anterior sobrescriba los resultados nuevos.
+            const requestId = ++imageSearchRequestId;
+            lastImageSearchQuery = query;
+            if (input) input.value = query;
+            container.innerHTML = '';
+            if (loading) loading.classList.remove('hidden');
+
+            const pixabayKey = '43328549-36159c9d519b5b27e6995057a';
+            const variants = getImageQueryVariants(query);
+            const allResults = [];
+            const seenIds = new Set();
+            const randomPage = Math.floor(Math.random() * 4) + 1;
+
+            try {
+                for (let i = 0; i < variants.length; i++) {
+                    const searchTerm = variants[i];
+                    const lang = i === 0 ? 'es' : 'en';
+                    const page = i === 0 ? randomPage : 1;
+                    const url = new URL('https://pixabay.com/api/');
+                    url.search = new URLSearchParams({
+                        key: pixabayKey,
+                        q: searchTerm,
+                        lang,
+                        image_type: 'photo',
+                        orientation: 'horizontal',
+                        safesearch: 'true',
+                        per_page: '24',
+                        page: String(page)
+                    }).toString();
+
+                    const response = await fetch(url.toString());
+                    if (!response.ok) {
+                        if (response.status === 401 || response.status === 403) {
+                            throw new Error('Pixabay rechazó la clave de API. Comprueba la clave de acceso.');
+                        }
+                        if (response.status === 429) {
+                            throw new Error('Pixabay alcanzó el límite de búsquedas. Inténtalo más tarde.');
+                        }
+                        continue;
                     }
-                    const dynamicPhotoId = 1500000000000 + ((item.id + (index * 419) + (hashMod * 13)) % 250000000);
-                    
-                    const thumbUrl = `https://images.unsplash.com/photo-${dynamicPhotoId}?auto=format&fit=crop&w=450&q=70`;
-                    const fullHdUrl = `https://images.unsplash.com/photo-${dynamicPhotoId}?auto=format&fit=crop&w=1920&q=85`;
 
-                    const isCurrentActive = projectionStyles.bgType === 'image' && projectionStyles.bgImage === fullHdUrl;
+                    const data = await response.json();
+                    if (requestId !== imageSearchRequestId) return;
 
-                    const card = document.createElement('div');
-                    card.className = `group relative h-28 rounded-xl overflow-hidden border cursor-pointer transition transform hover:scale-[1.02] shadow-md bg-gray-900 flex flex-col justify-end ${
-                        isCurrentActive ? 'border-2 border-blue-500 ring-2 ring-blue-500/40' : 'border-gray-800 hover:border-blue-400'
-                    }`;
+                    for (const item of (data.hits || [])) {
+                        if (!item.id || seenIds.has(item.id)) continue;
+                        const thumb = item.webformatURL || item.previewURL;
+                        const full = item.largeImageURL || item.webformatURL;
+                        if (!thumb || !full) continue;
+                        seenIds.add(item.id);
+                        allResults.push({
+                            id: item.id,
+                            title: (item.tags || searchTerm).split(',').slice(0, 3).join(', '),
+                            thumb,
+                            full,
+                            pageURL: item.pageURL || '',
+                            tags: item.tags || ''
+                        });
+                    }
 
-                    card.innerHTML = `
-                        <img src="${thumbUrl}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition duration-500" onload="this.classList.remove('opacity-0')" onerror="this.src='https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=450&q=70'" alt="${item.title}" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/40 to-transparent"></div>
-                        <div class="absolute top-2 right-2 bg-black/70 backdrop-blur-xs text-blue-400 font-extrabold text-[8px] px-1.5 py-0.5 rounded border border-blue-500/30">
-                            HD 1080p
-                        </div>
-                        <div class="relative z-10 p-2">
-                            <span class="text-[10px] font-bold text-white block truncate leading-tight">${item.title}</span>
-                            <span class="text-[8px] text-gray-400 uppercase tracking-wider">Google Imágenes</span>
-                        </div>
-                    `;
+                    // Si la búsqueda original ya ofrece suficientes imágenes,
+                    // evitamos consultas innecesarias a la API.
+                    if (allResults.length >= 12) break;
+                }
+            } catch (error) {
+                if (requestId !== imageSearchRequestId) return;
+                console.error('Error al buscar imágenes:', error);
+                if (loading) loading.classList.add('hidden');
+                container.innerHTML = `
+                    <div class="col-span-2 py-6 px-3 text-center text-amber-300 text-xs">
+                        <i class="fa-solid fa-triangle-exclamation text-xl mb-2 block"></i>
+                        <p class="font-bold mb-1">No se pudo completar la búsqueda</p>
+                        <p class="text-gray-400">${error.message || 'Comprueba tu conexión e inténtalo de nuevo.'}</p>
+                        <button type="button" id="btn-retry-image-search"
+                            class="mt-3 bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-lg font-bold">
+                            Volver a intentar
+                        </button>
+                    </div>`;
+                document.getElementById('btn-retry-image-search')?.addEventListener('click', () => searchImagesOnline(query));
+                return;
+            }
 
-                    card.onclick = () => {
-                        projectionStyles.bgType = 'image';
-                        projectionStyles.bgImage = fullHdUrl;
-                        updateBgTypeUI('image');
-                        syncToProjector();
-                        showToast(`Fondo "${item.title}" aplicado en vivo`, "success");
-                    };
+            if (requestId !== imageSearchRequestId) return;
+            if (loading) loading.classList.add('hidden');
 
-                    gridContainer.appendChild(card);
-                });
-            }, 350);
+            if (allResults.length === 0) {
+                const fallbackTerm = variants[variants.length - 1] || query;
+                const webSearchUrl = `https://pixabay.com/images/search/${encodeURIComponent(fallbackTerm)}/`;
+                container.innerHTML = `
+                    <div class="col-span-2 py-6 px-3 text-center text-gray-400 text-xs">
+                        <i class="fa-solid fa-image text-xl mb-2 block"></i>
+                        <p class="font-bold text-gray-200 mb-1">No encontramos imágenes para “${query.replace(/[&<>"']/g, '')}”.</p>
+                        <p>Prueba una frase más corta o busca el término equivalente en inglés.</p>
+                        <a href="${webSearchUrl}" target="_blank" rel="noopener noreferrer"
+                           class="inline-block mt-3 bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-lg font-bold">
+                            Ver en Pixabay
+                        </a>
+                    </div>`;
+                return;
+            }
+
+            // Baraja el orden de los resultados reales para que las búsquedas repetidas
+            // no presenten siempre la misma selección en la misma secuencia.
+            for (let i = allResults.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [allResults[i], allResults[j]] = [allResults[j], allResults[i]];
+            }
+
+            allResults.slice(0, 16).forEach((img) => {
+                const isSelected = projectionStyles.bgType === 'image' && projectionStyles.bgImage === img.full;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `h-24 rounded-xl border overflow-hidden relative group transition shadow-md text-left flex flex-col justify-end bg-gray-900 ${
+                    isSelected ? 'border-2 border-blue-500 ring-2 ring-blue-500/40' : 'border-white/10 hover:border-blue-400'
+                }`;
+
+                const image = document.createElement('img');
+                image.src = img.thumb;
+                image.alt = img.title;
+                image.loading = 'lazy';
+                image.className = 'absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-300 opacity-0';
+                image.onload = () => image.classList.remove('opacity-0');
+                image.onerror = () => {
+                    btn.classList.add('hidden');
+                };
+
+                const gradient = document.createElement('div');
+                gradient.className = 'absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent';
+
+                const badge = document.createElement('div');
+                badge.className = 'absolute top-1.5 right-1.5 bg-black/70 text-blue-300 font-black text-[8px] px-1.5 py-0.5 rounded border border-blue-500/30';
+                badge.textContent = 'Pixabay';
+
+                const title = document.createElement('span');
+                title.className = 'text-[10px] font-bold block truncate leading-tight';
+                title.textContent = img.title;
+
+                const titleWrap = document.createElement('div');
+                titleWrap.className = 'relative z-10 p-2 text-white';
+                titleWrap.appendChild(title);
+
+                btn.append(image, gradient, badge, titleWrap);
+                btn.title = `Usar imagen: ${img.title}`;
+
+                btn.onclick = () => {
+                    projectionStyles.bgType = 'image';
+                    projectionStyles.bgImage = img.full;
+                    updateBgTypeUI('image', { skipSearch: true });
+                    syncToProjector();
+                    showToast('Imagen aplicada correctamente', 'success');
+                    // No volver a buscar al seleccionar: evita recargas innecesarias.
+                    container.querySelectorAll('button').forEach(el => el.classList.remove('ring-2', 'ring-blue-500/40'));
+                    btn.classList.add('ring-2', 'ring-blue-500/40');
+                };
+
+                container.appendChild(btn);
+            });
         }
 
         function saveOperatorState() {
+            const stateToSave = {
+                selectedBook,
+                selectedChapter,
+                selectedVerseIdx,
+                currentText,
+                currentCitation,
+                isBlackout,
+                isClearText,
+                cultoList,
+                projectionStyles
+            };
             try {
-                localStorage.setItem('biblical_operator_state', JSON.stringify({
-                    selectedBook, selectedChapter, selectedVerseIdx, currentText, currentCitation, isBlackout, isClearText, cultoList, projectionStyles
-                }));
+                localStorage.setItem('biblical_operator_state', JSON.stringify(stateToSave));
             } catch(e) {}
         }
 
@@ -700,44 +889,49 @@
                     if(saved.cultoList) cultoList = saved.cultoList;
                     if(saved.projectionStyles) projectionStyles = {...projectionStyles, ...saved.projectionStyles};
 
-                    const fontEl = document.getElementById('style-font');
-                    if (fontEl) fontEl.value = projectionStyles.font;
-                    const sizeEl = document.getElementById('style-size');
-                    if (sizeEl) sizeEl.value = projectionStyles.size;
-                    const valSizeEl = document.getElementById('val-font-size');
-                    if (valSizeEl) valSizeEl.innerText = projectionStyles.size + "vw";
-                    const opEl = document.getElementById('style-overlay-opacity');
-                    if (opEl) opEl.value = projectionStyles.bgOpacity;
-                    const valOpEl = document.getElementById('val-overlay-opacity');
-                    if (valOpEl) valOpEl.innerText = projectionStyles.bgOpacity + "%";
-                    const bgColEl = document.getElementById('style-bgcolor');
-                    if (bgColEl) bgColEl.value = projectionStyles.bgcolor;
-                    const textColEl = document.getElementById('style-textcolor');
-                    if (textColEl) textColEl.value = projectionStyles.textcolor;
+                    document.getElementById('style-font').value = projectionStyles.font;
+                    document.getElementById('style-size').value = projectionStyles.size;
+                    document.getElementById('val-font-size').innerText = projectionStyles.size + "vw";
+                    document.getElementById('style-overlay-opacity').value = projectionStyles.bgOpacity;
+                    document.getElementById('val-overlay-opacity').innerText = projectionStyles.bgOpacity + "%";
+                    document.getElementById('style-bgcolor').value = projectionStyles.bgcolor;
+                    document.getElementById('style-textcolor').value = projectionStyles.textcolor;
+                    
+                    if(projectionStyles.logoUrl) {
+                        document.getElementById('logo-thumbnail-img').src = projectionStyles.logoUrl;
+                        document.getElementById('logo-thumbnail-img').classList.remove('hidden');
+                        document.getElementById('logo-placeholder-icon').classList.add('hidden');
+                        document.getElementById('btn-remove-logo').classList.remove('hidden');
+                        document.getElementById('logo-options-box').classList.remove('hidden');
+                    }
+                    document.getElementById('toggle-logo-corner').checked = projectionStyles.showLogoCorner;
+
+                    if(isBlackout) {
+                        document.getElementById('btn-blackout').className = "bg-red-600 hover:bg-red-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-red-950/50";
+                    }
+                    if(isClearText) {
+                        document.getElementById('btn-cleartext').className = "bg-amber-600 hover:bg-amber-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-amber-950/50";
+                    }
+
                     updateFormatButtons();
                     updateBgTypeUI(projectionStyles.bgType);
+                    updateLogoPositionUI();
                 }
             } catch(e) {}
         }
 
         function updateFormatButtons() {
             const btnBold = document.getElementById('btn-format-bold');
-            if (btnBold) {
-                if (projectionStyles.isBold) btnBold.className = "transition py-2 rounded-xl text-xs font-bold border border-blue-500 bg-blue-600/20 text-blue-400 flex items-center justify-center";
-                else btnBold.className = "transition py-2 rounded-xl text-xs font-bold border border-gray-800 text-gray-300 flex items-center justify-center";
-            }
+            if (projectionStyles.isBold) btnBold.className = "transition py-2 rounded-xl text-xs font-bold border border-blue-500 bg-blue-600/20 text-blue-400 flex items-center justify-center";
+            else btnBold.className = "transition py-2 rounded-xl text-xs font-bold border border-gray-800 text-gray-300 flex items-center justify-center";
 
             const btnItalic = document.getElementById('btn-format-italic');
-            if (btnItalic) {
-                if (projectionStyles.isItalic) btnItalic.className = "transition py-2 rounded-xl text-xs font-bold border border-blue-500 bg-blue-600/20 text-blue-400 flex items-center justify-center italic";
-                else btnItalic.className = "transition py-2 rounded-xl text-xs border border-gray-800 text-gray-300 flex items-center justify-center italic";
-            }
+            if (projectionStyles.isItalic) btnItalic.className = "transition py-2 rounded-xl text-xs font-bold border border-blue-500 bg-blue-600/20 text-blue-400 flex items-center justify-center italic";
+            else btnItalic.className = "transition py-2 rounded-xl text-xs border border-gray-800 text-gray-300 flex items-center justify-center italic";
 
             const btnShadow = document.getElementById('btn-format-shadow');
-            if (btnShadow) {
-                if (projectionStyles.hasShadow) btnShadow.className = "transition py-2 rounded-xl text-xs font-bold border border-blue-500 bg-blue-600/20 text-blue-400 flex items-center justify-center";
-                else btnShadow.className = "transition py-2 rounded-xl text-xs border border-gray-800 text-gray-300 flex items-center justify-center";
-            }
+            if (projectionStyles.hasShadow) btnShadow.className = "transition py-2 rounded-xl text-xs font-bold border border-blue-500 bg-blue-600/20 text-blue-400 flex items-center justify-center";
+            else btnShadow.className = "transition py-2 rounded-xl text-xs border border-gray-800 text-gray-300 flex items-center justify-center";
 
             const alignBtns = {
                 'left': document.getElementById('btn-align-left'),
@@ -745,18 +939,32 @@
                 'right': document.getElementById('btn-align-right')
             };
             Object.keys(alignBtns).forEach(key => {
-                if (alignBtns[key]) {
-                    if (key === projectionStyles.align) alignBtns[key].className = "transition py-2 rounded-xl border border-blue-500 bg-blue-600/20 text-blue-400 text-xs";
-                    else alignBtns[key].className = "transition py-2 rounded-xl border border-gray-800 text-gray-300 text-xs hover:bg-gray-800";
+                if (key === projectionStyles.align) {
+                    alignBtns[key].className = "transition py-2 rounded-xl border border-blue-500 bg-blue-600/20 text-blue-400 text-xs";
+                } else {
+                    alignBtns[key].className = "transition py-2 rounded-xl border border-gray-800 text-gray-300 text-xs hover:bg-gray-800";
                 }
             });
+        }
+
+        function getYouTubeEmbedUrl(url) {
+            if (!url) return '';
+            let videoId = '';
+            try {
+                if (url.includes('youtu.be/')) videoId = url.split('youtu.be/')[1].split('?')[0].split('&')[0];
+                else if (url.includes('youtube.com/watch')) videoId = new URLSearchParams(url.split('?')[1]).get('v');
+                else if (url.includes('youtube.com/shorts/')) videoId = url.split('youtube.com/shorts/')[1].split('?')[0].split('&')[0];
+                else if (url.includes('youtube.com/embed/')) videoId = url.split('youtube.com/embed/')[1].split('?')[0].split('&')[0];
+            } catch (e) {}
+            if (videoId) return `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&rel=0`;
+            return '';
         }
 
         function showToast(msg, type = "info") {
             const toast = document.getElementById('toast');
             const icon = document.getElementById('toast-icon');
             const message = document.getElementById('toast-message');
-            if (!toast || !message || !icon) return;
+
             message.innerText = msg;
             if (type === "success") {
                 icon.className = "p-1.5 bg-emerald-500/20 rounded-lg text-emerald-400";
@@ -768,18 +976,22 @@
                 icon.className = "p-1.5 bg-blue-500/20 rounded-lg text-blue-400";
                 icon.innerHTML = '<i class="fa-solid fa-info-circle"></i>';
             }
+
             toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
         }
 
         function renderBooks() {
             const container = document.getElementById('books-container');
-            const searchInput = document.getElementById('search-book');
-            if (!container) return;
-            const filter = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const filter = document.getElementById('search-book').value.toLowerCase().trim();
             container.innerHTML = '';
-            Object.keys(bibleData).forEach(book => {
+
+            const books = Object.keys(bibleData);
+            books.forEach(book => {
                 if (filter && !book.toLowerCase().includes(filter)) return;
+
                 const btn = document.createElement('button');
                 const isSelected = book === selectedBook;
                 btn.className = `w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-between ${
@@ -791,7 +1003,10 @@
                     const chapters = Object.keys(bibleData[book] || {});
                     selectedChapter = chapters[0] || "1";
                     selectedVerseIdx = null;
-                    renderBooks(); renderChapters(); renderVerses(); saveOperatorState();
+                    renderBooks();
+                    renderChapters();
+                    renderVerses();
+                    saveOperatorState();
                 };
                 container.appendChild(btn);
             });
@@ -799,11 +1014,11 @@
 
         function renderChapters() {
             const container = document.getElementById('chapters-container');
-            const label = document.getElementById('selected-book-label');
-            if (!container) return;
-            if (label) label.innerText = selectedBook;
+            document.getElementById('selected-book-label').innerText = selectedBook;
             container.innerHTML = '';
-            Object.keys(bibleData[selectedBook] || {}).forEach(chap => {
+
+            const chapters = Object.keys(bibleData[selectedBook] || {});
+            chapters.forEach(chap => {
                 const btn = document.createElement('button');
                 const isSelected = chap === selectedChapter;
                 btn.className = `aspect-square rounded-xl text-xs font-extrabold transition flex items-center justify-center border ${
@@ -813,7 +1028,9 @@
                 btn.onclick = () => {
                     selectedChapter = chap;
                     selectedVerseIdx = null;
-                    renderChapters(); renderVerses(); saveOperatorState();
+                    renderChapters();
+                    renderVerses();
+                    saveOperatorState();
                 };
                 container.appendChild(btn);
             });
@@ -822,14 +1039,20 @@
         function renderVerses() {
             const container = document.getElementById('verses-container');
             const titleEl = document.getElementById('current-title');
-            if (!container) return;
-            if (titleEl) titleEl.innerText = `${selectedBook} ${selectedChapter}`;
+            titleEl.innerText = `${selectedBook} ${selectedChapter}`;
             container.innerHTML = '';
+
             const verses = bibleData[selectedBook]?.[selectedChapter] || [];
+            if (verses.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-gray-500 text-xs"><i class="fa-solid fa-folder-open text-2xl mb-2 block"></i>No hay versículos en este capítulo.</div>`;
+                return;
+            }
+
             verses.forEach((verseText, idx) => {
                 const num = idx + 1;
                 const isSelected = selectedVerseIdx === idx;
                 const citation = `${selectedBook} ${selectedChapter}:${num}`;
+
                 const card = document.createElement('div');
                 card.className = `p-3 rounded-xl border transition cursor-pointer flex gap-3 ${
                     isSelected ? 'bg-blue-950/70 border-blue-500/80 text-white shadow-lg shadow-blue-950/50' : 'bg-gray-900/90 border-gray-800/80 text-gray-200 hover:bg-gray-850 hover:border-gray-700'
@@ -843,6 +1066,7 @@
                         </button>
                     </div>
                 `;
+
                 card.onclick = (e) => {
                     if (e.target.closest('.btn-add-culto')) {
                         e.stopPropagation();
@@ -861,6 +1085,10 @@
             if (idx !== null) selectedVerseIdx = idx;
             isBlackout = false;
             isClearText = false;
+
+            document.getElementById('btn-blackout').className = "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5";
+            document.getElementById('btn-cleartext').className = "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5";
+
             renderVerses();
             syncToProjector();
             showToast(`Proyectando: ${citation}`, "success");
@@ -875,12 +1103,12 @@
 
         function renderCultoList() {
             const container = document.getElementById('culto-list-items');
-            if (!container) return;
             container.innerHTML = '';
             if (cultoList.length === 0) {
                 container.innerHTML = `<p class="text-center text-gray-500 text-xs py-8">La lista del culto está vacía.</p>`;
                 return;
             }
+
             cultoList.forEach((item, index) => {
                 const card = document.createElement('div');
                 card.className = "bg-gray-900 border border-gray-800 p-2.5 rounded-xl flex items-center justify-between gap-2 group hover:border-blue-500/50 transition";
@@ -890,8 +1118,12 @@
                         <p class="text-xs text-gray-300 truncate">${item.text}</p>
                     </div>
                     <div class="flex items-center gap-1">
-                        <button class="btn-play text-emerald-400 hover:text-emerald-300 p-1.5 rounded-lg bg-emerald-950/40 border border-emerald-900/50 text-xs font-bold" title="Proyectar ahora"><i class="fa-solid fa-play"></i></button>
-                        <button class="btn-del-item text-gray-500 hover:text-red-400 p-1.5 rounded-lg text-xs" title="Quitar"><i class="fa-solid fa-trash"></i></button>
+                        <button class="btn-play text-emerald-400 hover:text-emerald-300 p-1.5 rounded-lg bg-emerald-950/40 border border-emerald-900/50 text-xs font-bold" title="Proyectar ahora">
+                            <i class="fa-solid fa-play"></i>
+                        </button>
+                        <button class="btn-del-item text-gray-500 hover:text-red-400 p-1.5 rounded-lg text-xs" title="Quitar">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
                     </div>
                 `;
                 card.querySelector('.flex-1').onclick = () => projectVerse(item.text, item.citation, null);
@@ -917,6 +1149,7 @@
                 isVideoPlaying: isVideoPlaying,
                 timestamp: Date.now()
             };
+
             try { broadcastChannel.postMessage(payload); } catch (e) {}
             try { localStorage.setItem('biblical_projector_data', JSON.stringify(payload)); } catch (e) {}
 
@@ -930,17 +1163,54 @@
 
         function updateProjectorDOM(docObj, data, isLocalFs = false) {
             const prefix = isLocalFs ? 'local-fs-' : (docObj === document ? 'preview-' : 'proj-');
+
             const textEl = docObj.getElementById(prefix + 'text');
             const citationEl = docObj.getElementById(prefix + 'citation');
             const backdropEl = docObj.getElementById(prefix + 'backdrop');
             const overlayEl = docObj.getElementById(prefix + 'overlay');
+            const videoEl = docObj.getElementById(prefix + 'video');
+            const youtubeEl = docObj.getElementById(prefix + 'youtube');
+            const logoStandbyEl = docObj.getElementById(prefix + 'logo-standby');
+            const logoCornerEl = docObj.getElementById(prefix + 'logo-corner');
+
             if (!textEl) return;
 
             if (data.isBlackout) {
                 if (backdropEl) backdropEl.style.background = '#000000';
                 if (textEl) textEl.innerText = '';
                 if (citationEl) citationEl.innerText = '';
+                if (logoStandbyEl) logoStandbyEl.classList.add('hidden');
+                if (logoCornerEl) logoCornerEl.classList.add('hidden');
+                if (videoEl) videoEl.classList.add('hidden');
+                if (youtubeEl) youtubeEl.classList.add('hidden');
                 return;
+            }
+
+            if (youtubeEl) {
+                if (data.mediaMode === 'youtube' && data.videoUrl) {
+                    if (youtubeEl.src !== data.videoUrl) youtubeEl.src = data.videoUrl;
+                    youtubeEl.classList.remove('hidden');
+                } else {
+                    youtubeEl.classList.add('hidden');
+                    if (youtubeEl.src) youtubeEl.src = '';
+                }
+            }
+
+            if (videoEl) {
+                if (data.mediaMode === 'screen' && window.screenStream) {
+                    if (videoEl.srcObject !== window.screenStream) videoEl.srcObject = window.screenStream;
+                    videoEl.classList.remove('hidden');
+                    videoEl.play().catch(() => {});
+                } else if (data.mediaMode === 'video' && data.videoUrl) {
+                    videoEl.srcObject = null;
+                    if (videoEl.src !== data.videoUrl) videoEl.src = data.videoUrl;
+                    videoEl.classList.remove('hidden');
+                    if (data.isVideoPlaying) videoEl.play().catch(() => {});
+                    else videoEl.pause();
+                } else {
+                    videoEl.classList.add('hidden');
+                    if (videoEl.srcObject) videoEl.srcObject = null;
+                }
             }
 
             if (textEl) {
@@ -951,6 +1221,7 @@
                 textEl.style.fontStyle = data.styles.isItalic ? 'italic' : 'normal';
                 textEl.style.textAlign = data.styles.align;
                 textEl.style.color = data.styles.textcolor;
+
                 if (data.styles.hasShadow) textEl.classList.add('text-projection-shadow');
                 else textEl.classList.remove('text-projection-shadow');
             }
@@ -960,6 +1231,7 @@
                 citationEl.style.fontFamily = `"${data.styles.font}", sans-serif`;
                 citationEl.style.color = data.styles.textcolor;
                 citationEl.style.textAlign = data.styles.align;
+
                 if (data.styles.hasShadow) citationEl.classList.add('text-projection-shadow');
                 else citationEl.classList.remove('text-projection-shadow');
             }
@@ -982,9 +1254,38 @@
             if (overlayEl) {
                 overlayEl.style.backgroundColor = `rgba(0, 0, 0, ${data.styles.bgOpacity / 100})`;
             }
+
+            const hasText = data.text.trim().length > 0;
+            if (logoStandbyEl) {
+                if (!hasText && data.styles.logoUrl && data.mediaMode === 'none') {
+                    logoStandbyEl.src = data.styles.logoUrl;
+                    logoStandbyEl.classList.remove('hidden');
+                } else {
+                    logoStandbyEl.classList.add('hidden');
+                }
+            }
+
+            if (logoCornerEl) {
+                if (hasText && data.styles.logoUrl && data.styles.showLogoCorner) {
+                    logoCornerEl.src = data.styles.logoUrl;
+                    logoCornerEl.classList.remove('hidden');
+                    
+                    logoCornerEl.className = "absolute max-w-[12%] max-h-[15%] object-contain z-30 transition-all ";
+                    const pos = data.styles.logoPosition || 'top-left';
+                    
+                    if (pos === 'top-left') logoCornerEl.classList.add('top-4', 'left-4');
+                    else if (pos === 'top-center') logoCornerEl.classList.add('top-4', 'left-1/2', '-translate-x-1/2');
+                    else if (pos === 'top-right') logoCornerEl.classList.add('top-4', 'right-4');
+                    else if (pos === 'bottom-left') logoCornerEl.classList.add('bottom-4', 'left-4');
+                    else if (pos === 'bottom-center') logoCornerEl.classList.add('bottom-4', 'left-1/2', '-translate-x-1/2');
+                    else logoCornerEl.classList.add('bottom-4', 'right-4');
+                } else {
+                    logoCornerEl.classList.add('hidden');
+                }
+            }
         }
 
-        function updateBgTypeUI(type) {
+        function updateBgTypeUI(type, options = {}) {
             projectionStyles.bgType = type;
             const btnColor = document.getElementById('btn-bg-color');
             const btnGrad = document.getElementById('btn-bg-grad');
@@ -995,38 +1296,74 @@
             const palImg = document.getElementById('palette-image-container');
             const overlayOp = document.getElementById('overlay-opacity-container');
 
-            const activeClass = "bg-blue-600 text-white border-blue-500 font-bold";
+            const activeClass = "bg-blue-600 text-white border-blue-500";
             const inactiveClass = "border-gray-800 text-gray-300 hover:bg-gray-800";
 
-            if (btnColor) btnColor.className = `transition py-2 rounded-xl border text-xs ${type === 'color' ? activeClass : inactiveClass}`;
-            if (btnGrad) btnGrad.className = `transition py-2 rounded-xl border text-xs ${type === 'gradient' ? activeClass : inactiveClass}`;
-            if (btnImg) btnImg.className = `transition py-2 rounded-xl border text-xs ${type === 'image' ? activeClass : inactiveClass}`;
+            if (btnColor) btnColor.className = `transition py-2 rounded-xl border text-xs font-bold ${type === 'color' ? activeClass : inactiveClass}`;
+            if (btnGrad) btnGrad.className = `transition py-2 rounded-xl border text-xs font-bold ${type === 'gradient' ? activeClass : inactiveClass}`;
+            if (btnImg) btnImg.className = `transition py-2 rounded-xl border text-xs font-bold ${type === 'image' ? activeClass : inactiveClass}`;
 
-            if (palColor) palColor.classList.add('hidden');
-            if (palGrad) palGrad.classList.add('hidden');
-            if (palImg) palImg.classList.add('hidden');
-            if (overlayOp) overlayOp.classList.add('hidden');
+            palColor.classList.add('hidden');
+            palGrad.classList.add('hidden');
+            palImg.classList.add('hidden');
+            overlayOp.classList.add('hidden');
 
-            if (type === 'color' && palColor) palColor.classList.remove('hidden');
-            else if (type === 'gradient' && palGrad) palGrad.classList.remove('hidden');
+            if (type === 'color') palColor.classList.remove('hidden');
+            else if (type === 'gradient') palGrad.classList.remove('hidden');
             else if (type === 'image') {
-                if (palImg) palImg.classList.remove('hidden');
-                if (overlayOp) overlayOp.classList.remove('hidden');
-                const searchInput = document.getElementById('google-img-search-input');
-                if (searchInput && !searchInput.value.trim()) {
-                    searchInput.value = "cielo estrellado";
+                palImg.classList.remove('hidden');
+                overlayOp.classList.remove('hidden');
+                if (!options.skipSearch) {
+                    const keywordVal = document.getElementById('internet-keyword-input')?.value || '';
+                    if (keywordVal.trim()) searchImagesOnline(keywordVal);
                 }
-                searchGoogleImages(searchInput ? searchInput.value : "cielo estrellado");
             }
             syncToProjector();
+        }
+
+        function updateLogoPositionUI() {
+            const pos = projectionStyles.logoPosition || 'top-left';
+            const buttons = {
+                'top-left': 'btn-logo-tl', 'top-center': 'btn-logo-tc', 'top-right': 'btn-logo-tr',
+                'bottom-left': 'btn-logo-bl', 'bottom-center': 'btn-logo-bc', 'bottom-right': 'btn-logo-br'
+            };
+            Object.keys(buttons).forEach(key => {
+                const btn = document.getElementById(buttons[key]);
+                if (btn) btn.className = (key === pos) ? "py-1 px-1.5 rounded-lg bg-blue-600 border border-blue-500 text-white font-bold transition text-[10px] truncate" : "py-1 px-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 text-gray-300 transition text-[10px] truncate";
+            });
+        }
+
+        async function startScreenCapture() {
+            try {
+                window.screenStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: "always" }, audio: false });
+                mediaMode = 'screen';
+                document.getElementById('btn-start-screen-capture').classList.add('hidden');
+                document.getElementById('btn-stop-screen-capture').classList.remove('hidden');
+                window.screenStream.getVideoTracks()[0].onended = stopScreenCapture;
+                syncToProjector();
+                showToast("Captura de pantalla activa", "success");
+            } catch (err) {
+                showToast("No se pudo iniciar la captura de pantalla", "error");
+            }
+        }
+
+        function stopScreenCapture() {
+            if (window.screenStream) {
+                window.screenStream.getTracks().forEach(track => track.stop());
+                window.screenStream = null;
+            }
+            document.getElementById('btn-start-screen-capture').classList.remove('hidden');
+            document.getElementById('btn-stop-screen-capture').classList.add('hidden');
+            mediaMode = 'none';
+            syncToProjector();
+            showToast("Transmisión de pantalla detenida", "info");
         }
 
         function toggleExternalProjector() {
             if (externalWindow && !externalWindow.closed) {
                 externalWindow.close();
                 externalWindow = null;
-                const extText = document.getElementById('ext-win-text');
-                if (extText) extText.innerText = "Proyectar (Ventana)";
+                document.getElementById('ext-win-text').innerText = "Proyectar (Ventana)";
                 showToast("Ventana externa cerrada", "info");
             } else {
                 externalWindow = window.open("", "BiblicalProjectorWindow", "width=1280,height=720,menubar=no,toolbar=no,location=no,status=no");
@@ -1038,7 +1375,7 @@
                             <meta charset="UTF-8">
                             <title>Proyección en Vivo - Pantalla Externa</title>
                             <script src="https://cdn.tailwindcss.com"><\/script>
-                            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+                            <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Merriweather:wght@300;400;700&family=Montserrat:wght@400;600;800&family=Open+Sans:wght@300;400;600;700&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Poppins:wght@300;400;600;700&family=Quicksand:wght@400;600;700&family=Raleway:wght@300;400;600;700&family=Roboto+Slab:wght@400;700&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
                             <style>
                                 body { margin: 0; padding: 0; overflow: hidden; background: #000; }
                                 .text-projection-shadow { text-shadow: 0 2px 12px rgba(0,0,0,0.95), 0 4px 24px rgba(0,0,0,0.85); }
@@ -1046,7 +1383,11 @@
                         </head>
                         <body class="h-screen w-screen overflow-hidden relative flex flex-col justify-between p-16 select-none bg-black">
                             <div id="proj-backdrop" class="absolute inset-0 z-0 bg-cover bg-center transition-all duration-300"></div>
+                            <video id="proj-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay muted></video>
+                            <iframe id="proj-youtube" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
                             <div id="proj-overlay" class="absolute inset-0 z-20 bg-black/40 transition-all duration-300"></div>
+                            <img id="proj-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-30 hidden" alt="Standby Logo" />
+                            <img id="proj-logo-corner" class="absolute max-w-[12%] max-h-[15%] object-contain z-30 hidden" alt="Corner Logo" />
                             <div class="z-30 text-center w-full my-auto px-12">
                                 <p id="proj-text" class="text-white leading-relaxed"></p>
                             </div>
@@ -1057,296 +1398,324 @@
                         </html>
                     `);
                     externalWindow.document.close();
-                    const extText = document.getElementById('ext-win-text');
-                    if (extText) extText.innerText = "Cerrar Ventana";
+                    document.getElementById('ext-win-text').innerText = "Cerrar Ventana";
                     showToast("Ventana de proyección externa abierta", "success");
                     setTimeout(() => { syncToProjector(); }, 300);
                 }
             }
         }
 
-        window.onload = function() {
+        function setupEventListeners() {
+            // Ventana Externa y Simulador
+            document.getElementById('btn-toggle-ext-projector').onclick = toggleExternalProjector;
+            document.getElementById('btn-toggle-local-fs').onclick = () => {
+                document.getElementById('local-fullscreen-container').classList.remove('hidden');
+                syncToProjector();
+            };
+            document.getElementById('btn-close-local-fs').onclick = () => {
+                document.getElementById('local-fullscreen-container').classList.add('hidden');
+            };
+
+            // Lectura de Archivo JSON Bíblico
+            document.getElementById('json-bible-input').onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const parsed = JSON.parse(event.target.result);
+                            if (typeof parsed === 'object' && parsed !== null) {
+                                bibleData = parsed;
+                                const firstBook = Object.keys(bibleData)[0];
+                                if (firstBook) {
+                                    selectedBook = firstBook;
+                                    selectedChapter = Object.keys(bibleData[firstBook] || {})[0] || "1";
+                                    selectedVerseIdx = null;
+                                    renderBooks();
+                                    renderChapters();
+                                    renderVerses();
+                                    saveOperatorState();
+                                    showToast("Biblia JSON cargada con éxito", "success");
+                                }
+                            }
+                        } catch (err) {
+                            showToast("Formato JSON inválido", "error");
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+
+            document.getElementById('search-book').oninput = renderBooks;
+            document.getElementById('btn-prev-chapter').onclick = () => {
+                const chapters = Object.keys(bibleData[selectedBook] || {});
+                const currentIdx = chapters.indexOf(selectedChapter);
+                if (currentIdx > 0) {
+                    selectedChapter = chapters[currentIdx - 1];
+                    selectedVerseIdx = null;
+                    renderChapters(); renderVerses(); saveOperatorState();
+                }
+            };
+            document.getElementById('btn-next-chapter').onclick = () => {
+                const chapters = Object.keys(bibleData[selectedBook] || {});
+                const currentIdx = chapters.indexOf(selectedChapter);
+                if (currentIdx >= 0 && currentIdx < chapters.length - 1) {
+                    selectedChapter = chapters[currentIdx + 1];
+                    selectedVerseIdx = null;
+                    renderChapters(); renderVerses(); saveOperatorState();
+                }
+            };
+
+            // Acciones Inmediatas
+            document.getElementById('btn-blackout').onclick = () => {
+                isBlackout = !isBlackout;
+                const btn = document.getElementById('btn-blackout');
+                if (isBlackout) btn.className = "bg-red-600 hover:bg-red-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-red-950/50";
+                else btn.className = "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5";
+                syncToProjector();
+            };
+            document.getElementById('btn-cleartext').onclick = () => {
+                isClearText = !isClearText;
+                const btn = document.getElementById('btn-cleartext');
+                if (isClearText) btn.className = "bg-amber-600 hover:bg-amber-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-amber-950/50";
+                else btn.className = "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5";
+                syncToProjector();
+            };
+            document.getElementById('btn-clear-projection').onclick = () => {
+                currentText = ""; currentCitation = ""; selectedVerseIdx = null; renderVerses(); syncToProjector(); showToast("Proyección limpiada", "info");
+            };
+
+            // Navegación de Pestañas
+            const tabElements = {
+                culto: { btn: document.getElementById('btn-tab-culto'), content: document.getElementById('tab-culto') },
+                video: { btn: document.getElementById('btn-tab-video'), content: document.getElementById('tab-video') },
+                estilos: { btn: document.getElementById('btn-tab-estilos'), content: document.getElementById('tab-estilos') }
+            };
+
+            Object.keys(tabElements).forEach(key => {
+                tabElements[key].btn.onclick = () => {
+                    Object.keys(tabElements).forEach(k => {
+                        tabElements[k].content.classList.add('hidden');
+                        tabElements[k].btn.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-white transition";
+                    });
+                    tabElements[key].content.classList.remove('hidden');
+                    tabElements[key].btn.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-blue-500 text-blue-400 transition";
+                };
+            });
+
+            // Lista de Culto
+            document.getElementById('btn-add-custom-culto').onclick = () => {
+                const input = document.getElementById('custom-culto-text');
+                const val = input.value.trim();
+                if (val) {
+                    addToCultoList(val, "Nota / Canto");
+                    input.value = '';
+                }
+            };
+            document.getElementById('btn-clear-culto-list').onclick = () => {
+                cultoList = [];
+                renderCultoList();
+                saveOperatorState();
+                showToast("Lista de culto limpiada", "info");
+            };
+
+            // Videos
+            document.getElementById('btn-load-youtube').onclick = () => {
+                const url = document.getElementById('video-url-input').value.trim();
+                const embedUrl = getYouTubeEmbedUrl(url);
+                if (embedUrl) {
+                    activeVideoUrl = embedUrl;
+                    mediaMode = 'youtube';
+                    syncToProjector();
+                    showToast("Video de YouTube cargado", "success");
+                } else {
+                    showToast("Enlace de YouTube no válido", "error");
+                }
+            };
+            document.getElementById('btn-start-screen-capture').onclick = startScreenCapture;
+            document.getElementById('btn-stop-screen-capture').onclick = stopScreenCapture;
+            document.getElementById('video-file-input').onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    activeVideoUrl = URL.createObjectURL(file);
+                    mediaMode = 'video';
+                    isVideoPlaying = true;
+                    syncToProjector();
+                    showToast("Video local cargado", "success");
+                }
+            };
+
+            // Estilos y Diseño
+            document.getElementById('style-font').onchange = (e) => {
+                projectionStyles.font = e.target.value;
+                syncToProjector();
+            };
+            document.getElementById('btn-format-bold').onclick = () => {
+                projectionStyles.isBold = !projectionStyles.isBold;
+                updateFormatButtons();
+                syncToProjector();
+            };
+            document.getElementById('btn-format-italic').onclick = () => {
+                projectionStyles.isItalic = !projectionStyles.isItalic;
+                updateFormatButtons();
+                syncToProjector();
+            };
+            document.getElementById('btn-format-shadow').onclick = () => {
+                projectionStyles.hasShadow = !projectionStyles.hasShadow;
+                updateFormatButtons();
+                syncToProjector();
+            };
+            document.getElementById('btn-align-left').onclick = () => { projectionStyles.align = 'left'; updateFormatButtons(); syncToProjector(); };
+            document.getElementById('btn-align-center').onclick = () => { projectionStyles.align = 'center'; updateFormatButtons(); syncToProjector(); };
+            document.getElementById('btn-align-right').onclick = () => { projectionStyles.align = 'right'; updateFormatButtons(); syncToProjector(); };
+
+            document.getElementById('style-size').oninput = (e) => {
+                projectionStyles.size = e.target.value;
+                document.getElementById('val-font-size').innerText = e.target.value + "vw";
+                syncToProjector();
+            };
+
+            document.getElementById('btn-bg-color').onclick = () => updateBgTypeUI('color');
+            document.getElementById('btn-bg-grad').onclick = () => updateBgTypeUI('gradient');
+            document.getElementById('btn-bg-img').onclick = () => updateBgTypeUI('image');
+
+            document.getElementById('style-bgcolor').oninput = (e) => {
+                projectionStyles.bgcolor = e.target.value;
+                if(projectionStyles.bgType === 'color') syncToProjector();
+            };
+            document.querySelectorAll('.btn-color-preset').forEach(btn => {
+                btn.onclick = () => {
+                    const col = btn.getAttribute('data-color');
+                    document.getElementById('style-bgcolor').value = col;
+                    projectionStyles.bgcolor = col;
+                    if(projectionStyles.bgType === 'color') syncToProjector();
+                };
+            });
+
+            document.querySelectorAll('.btn-grad-preset').forEach(btn => {
+                btn.onclick = () => {
+                    projectionStyles.gradient = btn.getAttribute('data-grad');
+                    if(projectionStyles.bgType === 'gradient') syncToProjector();
+                };
+            });
+
+            // Buscador de Imágenes en Internet por Palabras Clave
+            document.getElementById('btn-search-keyword-images').onclick = () => {
+                const keyword = document.getElementById('internet-keyword-input').value.trim();
+                searchImagesOnline(keyword);
+            };
+            document.getElementById('internet-keyword-input').onkeypress = (e) => {
+                if (e.key === 'Enter') {
+                    searchImagesOnline(e.target.value.trim());
+                }
+            };
+            document.querySelectorAll('.keyword-suggestion').forEach(btn => {
+                btn.onclick = () => {
+                    const kw = btn.getAttribute('data-keyword');
+                    document.getElementById('internet-keyword-input').value = kw;
+                    searchImagesOnline(kw);
+                };
+            });
+
+            document.getElementById('bg-image-uploader').onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        projectionStyles.bgType = 'image';
+                        projectionStyles.bgImage = event.target.result;
+                        updateBgTypeUI('image');
+                        syncToProjector();
+                        showToast("Imagen local aplicada como fondo", "success");
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            document.getElementById('style-overlay-opacity').oninput = (e) => {
+                projectionStyles.bgOpacity = e.target.value;
+                document.getElementById('val-overlay-opacity').innerText = e.target.value + "%";
+                syncToProjector();
+            };
+
+            document.getElementById('style-textcolor').oninput = (e) => {
+                projectionStyles.textcolor = e.target.value;
+                syncToProjector();
+            };
+            document.querySelectorAll('.btn-textcolor-preset').forEach(btn => {
+                btn.onclick = () => {
+                    const col = btn.getAttribute('data-textcolor');
+                    document.getElementById('style-textcolor').value = col;
+                    projectionStyles.textcolor = col;
+                    syncToProjector();
+                };
+            });
+
+            // Logo Institucional
+            document.getElementById('logo-image-uploader').onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        projectionStyles.logoUrl = event.target.result;
+                        document.getElementById('logo-thumbnail-img').src = projectionStyles.logoUrl;
+                        document.getElementById('logo-thumbnail-img').classList.remove('hidden');
+                        document.getElementById('logo-placeholder-icon').classList.add('hidden');
+                        document.getElementById('btn-remove-logo').classList.remove('hidden');
+                        document.getElementById('logo-options-box').classList.remove('hidden');
+                        syncToProjector();
+                        showToast("Logo institucional cargado", "success");
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            document.getElementById('btn-remove-logo').onclick = () => {
+                projectionStyles.logoUrl = '';
+                document.getElementById('logo-thumbnail-img').classList.add('hidden');
+                document.getElementById('logo-placeholder-icon').classList.remove('hidden');
+                document.getElementById('btn-remove-logo').classList.add('hidden');
+                document.getElementById('logo-options-box').classList.add('hidden');
+                syncToProjector();
+                showToast("Logo eliminado", "info");
+            };
+            document.getElementById('toggle-logo-corner').onchange = (e) => {
+                projectionStyles.showLogoCorner = e.target.checked;
+                syncToProjector();
+            };
+
+            const logoPositions = ['top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-center', 'bottom-right'];
+            logoPositions.forEach(pos => {
+                const btnId = 'btn-logo-' + pos.split('-').map(s=>s[0]).join('');
+                const btn = document.getElementById(btnId);
+                if (btn) {
+                    btn.onclick = () => {
+                        projectionStyles.logoPosition = pos;
+                        updateLogoPositionUI();
+                        syncToProjector();
+                    };
+                }
+            });
+
+            // Atajos de Teclado Globales
+            window.onkeydown = (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+                if (e.key.toLowerCase() === 'b') {
+                    document.getElementById('btn-blackout').click();
+                } else if (e.key.toLowerCase() === 'c') {
+                    document.getElementById('btn-cleartext').click();
+                } else if (e.key === 'Escape') {
+                    document.getElementById('local-fullscreen-container').classList.add('hidden');
+                }
+            };
+        }
+
+        window.onload = () => {
             loadOperatorState();
             renderBooks();
             renderChapters();
             renderVerses();
             renderCultoList();
-
-            // Buscador de libros
-            const searchBookInput = document.getElementById('search-book');
-            if (searchBookInput) {
-                searchBookInput.oninput = () => renderBooks();
-            }
-
-            // Pestañas principales
-            const btnTabCulto = document.getElementById('btn-tab-culto');
-            const btnTabVideo = document.getElementById('btn-tab-video');
-            const btnTabEstilos = document.getElementById('btn-tab-estilos');
-            const tabCulto = document.getElementById('tab-culto');
-            const tabVideo = document.getElementById('tab-video');
-            const tabEstilos = document.getElementById('tab-estilos');
-
-            if (btnTabCulto) {
-                btnTabCulto.onclick = () => {
-                    if(tabCulto) tabCulto.classList.remove('hidden');
-                    if(tabVideo) tabVideo.classList.add('hidden');
-                    if(tabEstilos) tabEstilos.classList.add('hidden');
-                    btnTabCulto.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-blue-500 text-blue-400 transition";
-                    if(btnTabVideo) btnTabVideo.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-white transition";
-                    if(btnTabEstilos) btnTabEstilos.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-white transition";
-                };
-            }
-            if (btnTabVideo) {
-                btnTabVideo.onclick = () => {
-                    if(tabCulto) tabCulto.classList.add('hidden');
-                    if(tabVideo) tabVideo.classList.remove('hidden');
-                    if(tabEstilos) tabEstilos.classList.add('hidden');
-                    if(btnTabCulto) btnTabCulto.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-white transition";
-                    btnTabVideo.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-blue-500 text-blue-400 transition";
-                    if(btnTabEstilos) btnTabEstilos.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-white transition";
-                };
-            }
-            if (btnTabEstilos) {
-                btnTabEstilos.onclick = () => {
-                    if(tabCulto) tabCulto.classList.add('hidden');
-                    if(tabVideo) tabVideo.classList.add('hidden');
-                    if(tabEstilos) tabEstilos.classList.remove('hidden');
-                    if(btnTabCulto) btnTabCulto.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-white transition";
-                    if(btnTabVideo) btnTabVideo.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-white transition";
-                    btnTabEstilos.className = "flex-1 py-2.5 text-xs font-bold border-b-2 border-blue-500 text-blue-400 transition";
-                };
-            }
-
-            // Botones Estilo de Fondo
-            const btnBgColor = document.getElementById('btn-bg-color');
-            const btnBgGrad = document.getElementById('btn-bg-grad');
-            const btnBgImg = document.getElementById('btn-bg-img');
-            if (btnBgColor) btnBgColor.onclick = () => updateBgTypeUI('color');
-            if (btnBgGrad) btnBgGrad.onclick = () => updateBgTypeUI('gradient');
-            if (btnBgImg) btnBgImg.onclick = () => updateBgTypeUI('image');
-
-            // Eventos Google Imágenes HD
-            const googleInput = document.getElementById('google-img-search-input');
-            const googleBtn = document.getElementById('btn-google-img-search');
-
-            if (googleBtn) {
-                googleBtn.onclick = () => {
-                    searchGoogleImages(googleInput ? googleInput.value : 'cielo estrellado');
-                };
-            }
-            if (googleInput) {
-                googleInput.onkeydown = (e) => {
-                    if (e.key === 'Enter') {
-                        searchGoogleImages(googleInput.value);
-                    }
-                };
-            }
-
-            // Filtros rápidos estilo Google
-            document.querySelectorAll('.google-filter-pill').forEach(pill => {
-                pill.onclick = () => {
-                    document.querySelectorAll('.google-filter-pill').forEach(p => {
-                        p.className = "google-filter-pill px-2.5 py-1 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-300 shrink-0 transition";
-                    });
-                    pill.className = "google-filter-pill px-2.5 py-1 rounded-full bg-blue-600 text-white font-bold shrink-0 transition";
-                    const tag = pill.getAttribute('data-tag');
-                    if (googleInput) googleInput.value = tag;
-                    searchGoogleImages(tag);
-                };
-            });
-
-            // Colores Sólidos
-            document.querySelectorAll('.btn-color-preset').forEach(btn => {
-                btn.onclick = () => {
-                    const col = btn.getAttribute('data-color');
-                    projectionStyles.bgcolor = col;
-                    const styleBgColor = document.getElementById('style-bgcolor');
-                    if (styleBgColor) styleBgColor.value = col;
-                    updateBgTypeUI('color');
-                };
-            });
-            const styleBgColorInput = document.getElementById('style-bgcolor');
-            if (styleBgColorInput) {
-                styleBgColorInput.oninput = (e) => {
-                    projectionStyles.bgcolor = e.target.value;
-                    syncToProjector();
-                };
-            }
-
-            // Degradados
-            document.querySelectorAll('.btn-grad-preset').forEach(btn => {
-                btn.onclick = () => {
-                    projectionStyles.gradient = btn.getAttribute('data-grad');
-                    updateBgTypeUI('gradient');
-                };
-            });
-
-            // Tamaños y opacidad
-            const styleSize = document.getElementById('style-size');
-            if (styleSize) {
-                styleSize.oninput = (e) => {
-                    projectionStyles.size = e.target.value;
-                    const valSize = document.getElementById('val-font-size');
-                    if (valSize) valSize.innerText = e.target.value + "vw";
-                    syncToProjector();
-                };
-            }
-            const styleOpacity = document.getElementById('style-overlay-opacity');
-            if (styleOpacity) {
-                styleOpacity.oninput = (e) => {
-                    projectionStyles.bgOpacity = e.target.value;
-                    const valOp = document.getElementById('val-overlay-opacity');
-                    if (valOp) valOp.innerText = e.target.value + "%";
-                    syncToProjector();
-                };
-            }
-            const styleFont = document.getElementById('style-font');
-            if (styleFont) {
-                styleFont.onchange = (e) => {
-                    projectionStyles.font = e.target.value;
-                    syncToProjector();
-                };
-            }
-
-            // Color de Texto
-            document.querySelectorAll('.btn-textcolor-preset').forEach(btn => {
-                btn.onclick = () => {
-                    projectionStyles.textcolor = btn.getAttribute('data-textcolor');
-                    const styleTextCol = document.getElementById('style-textcolor');
-                    if (styleTextCol) styleTextCol.value = projectionStyles.textcolor;
-                    syncToProjector();
-                };
-            });
-            const styleTextColInput = document.getElementById('style-textcolor');
-            if (styleTextColInput) {
-                styleTextColInput.oninput = (e) => {
-                    projectionStyles.textcolor = e.target.value;
-                    syncToProjector();
-                };
-            }
-
-            // Formato de texto
-            const btnBold = document.getElementById('btn-format-bold');
-            if (btnBold) btnBold.onclick = () => { projectionStyles.isBold = !projectionStyles.isBold; updateFormatButtons(); syncToProjector(); };
-            const btnItalic = document.getElementById('btn-format-italic');
-            if (btnItalic) btnItalic.onclick = () => { projectionStyles.isItalic = !projectionStyles.isItalic; updateFormatButtons(); syncToProjector(); };
-            const btnShadow = document.getElementById('btn-format-shadow');
-            if (btnShadow) btnShadow.onclick = () => { projectionStyles.hasShadow = !projectionStyles.hasShadow; updateFormatButtons(); syncToProjector(); };
-
-            const btnAlignL = document.getElementById('btn-align-left');
-            if (btnAlignL) btnAlignL.onclick = () => { projectionStyles.align = 'left'; updateFormatButtons(); syncToProjector(); };
-            const btnAlignC = document.getElementById('btn-align-center');
-            if (btnAlignC) btnAlignC.onclick = () => { projectionStyles.align = 'center'; updateFormatButtons(); syncToProjector(); };
-            const btnAlignR = document.getElementById('btn-align-right');
-            if (btnAlignR) btnAlignR.onclick = () => { projectionStyles.align = 'right'; updateFormatButtons(); syncToProjector(); };
-
-            // Subir imagen personalizada
-            const bgUploader = document.getElementById('bg-image-uploader');
-            if (bgUploader) {
-                bgUploader.onchange = (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                            projectionStyles.bgType = 'image';
-                            projectionStyles.bgImage = event.target.result;
-                            updateBgTypeUI('image');
-                            syncToProjector();
-                            showToast("Imagen personalizada cargada", "success");
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                };
-            }
-
-            // Botones de Acción en vivo (Apagar, Ocultar Texto, Limpiar)
-            const btnBlackout = document.getElementById('btn-blackout');
-            if (btnBlackout) {
-                btnBlackout.onclick = () => {
-                    isBlackout = !isBlackout;
-                    const lbl = document.getElementById('lbl-blackout');
-                    if (lbl) lbl.innerText = isBlackout ? "Encender (B)" : "Apagar (B)";
-                    syncToProjector();
-                };
-            }
-
-            const btnClearText = document.getElementById('btn-cleartext');
-            if (btnClearText) {
-                btnClearText.onclick = () => {
-                    isClearText = !isClearText;
-                    const lbl = document.getElementById('lbl-cleartext');
-                    if (lbl) lbl.innerText = isClearText ? "Mostrar Texto (C)" : "Ocultar Texto (C)";
-                    syncToProjector();
-                };
-            }
-
-            const btnClearProj = document.getElementById('btn-clear-projection');
-            if (btnClearProj) {
-                btnClearProj.onclick = () => {
-                    currentText = "";
-                    currentCitation = "";
-                    isClearText = true;
-                    syncToProjector();
-                    showToast("Proyección limpiada", "info");
-                };
-            }
-
-            // Agregar nota personalizada al culto
-            const btnAddCustom = document.getElementById('btn-add-custom-culto');
-            if (btnAddCustom) {
-                btnAddCustom.onclick = () => {
-                    const input = document.getElementById('custom-culto-text');
-                    if (input && input.value.trim()) {
-                        addToCultoList(input.value.trim(), "Nota / Canto");
-                        input.value = "";
-                    }
-                };
-            }
-
-            const btnClearCultoList = document.getElementById('btn-clear-culto-list');
-            if (btnClearCultoList) {
-                btnClearCultoList.onclick = () => {
-                    cultoList = [];
-                    renderCultoList();
-                    saveOperatorState();
-                    showToast("Lista de culto vaciada", "info");
-                };
-            }
-
-            // Atajos de teclado (B para Blackout, C para Clear text)
-            document.addEventListener('keydown', (e) => {
-                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
-                if (e.key.toLowerCase() === 'b') {
-                    if (btnBlackout) btnBlackout.click();
-                } else if (e.key.toLowerCase() === 'c') {
-                    if (btnClearText) btnClearText.click();
-                } else if (e.key === 'Escape') {
-                    const localFs = document.getElementById('local-fullscreen-container');
-                    if (localFs) localFs.classList.add('hidden');
-                }
-            });
-
-            // Ventana Externa y Pantalla Completa
-            const btnExtProj = document.getElementById('btn-toggle-ext-projector');
-            if (btnExtProj) btnExtProj.onclick = toggleExternalProjector;
-
-            const btnLocalFs = document.getElementById('btn-toggle-local-fs');
-            if (btnLocalFs) {
-                btnLocalFs.onclick = () => {
-                    const localFs = document.getElementById('local-fullscreen-container');
-                    if (localFs) localFs.classList.remove('hidden');
-                    syncToProjector();
-                };
-            }
-
-            const btnCloseLocalFs = document.getElementById('btn-close-local-fs');
-            if (btnCloseLocalFs) {
-                btnCloseLocalFs.onclick = () => {
-                    const localFs = document.getElementById('local-fullscreen-container');
-                    if (localFs) localFs.classList.add('hidden');
-                };
-            }
-
+            setupEventListeners();
             syncToProjector();
         };
     </script>
