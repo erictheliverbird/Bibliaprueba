@@ -36,6 +36,15 @@
                                             channel = new BroadcastChannel(CHANNEL_NAME);
                                             channel.addEventListener('message', event => {
                                                 const data = event.data;
+                                                if (data && data.type === '__youtube_command') {
+                                                    handleYouTubeCommand(data.command);
+                                                    [180, 500, 950].forEach(delay => setTimeout(() => handleYouTubeCommand(data.command), delay));
+                                                    return;
+                                                }
+                                                if (data && data.type === '__controller_hello') {
+                                                    sendProjectorHeartbeat();
+                                                    return;
+                                                }
                                                 if (data && data.type === '__screen_frame') {
                                                     const frame = document.getElementById('proj-screen-frame');
                                                     if (frame && data.frame) { frame.src = data.frame; frame.classList.remove('hidden'); }
@@ -45,6 +54,18 @@
                                             });
                                         }
                                     } catch (error) { console.warn('BroadcastChannel no disponible', error); }
+
+                                    function sendProjectorHeartbeat() {
+                                        try {
+                                            if (channel) channel.postMessage({ type: '__projector_heartbeat', timestamp: Date.now(), page: location.pathname });
+                                        } catch (_) {}
+                                    }
+                                    // Latido periódico: el controlador sabe que esta página sigue viva
+                                    // incluso después de separar la pestaña a otra ventana/pantalla.
+                                    sendProjectorHeartbeat();
+                                    setInterval(sendProjectorHeartbeat, 2000);
+                                    window.addEventListener('pageshow', sendProjectorHeartbeat);
+                                    document.addEventListener('visibilitychange', () => { if (!document.hidden) sendProjectorHeartbeat(); });
 
                                     function handleYouTubeCommand(command) {
                                         const frame = document.getElementById('proj-youtube');

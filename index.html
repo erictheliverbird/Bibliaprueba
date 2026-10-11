@@ -253,7 +253,11 @@
                                         <i class="fa-solid fa-pause"></i> Pausar YouTube
                                     </button>
                                 </div>
-                                <p class="text-[10px] text-gray-500">Usa estos botones desde el iPad. La proyección se abre como una página independiente (proyector.html).</p>
+                                <div id="projector-connection-status" class="flex items-center gap-2 text-[10px] text-amber-300" role="status" aria-live="polite">
+                                    <span id="projector-connection-dot" class="inline-block w-2 h-2 rounded-full bg-amber-400"></span>
+                                    <span id="projector-connection-label">Comprobando conexión con el proyector…</span>
+                                </div>
+                                <p class="text-[10px] text-gray-500">La conexión se comprueba aunque separes la ventana del proyector. Abre una sola ventana de proyección y muévela al monitor externo.</p>
                             </div>
 
                             <div class="bg-gradient-to-br from-blue-950/60 to-purple-950/60 border border-blue-500/30 p-3.5 rounded-xl space-y-2">
@@ -700,6 +704,39 @@
         let cultoList = [];
         let externalWindow = null;
         let broadcastChannel = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('biblical-projector-channel') : null;
+        let projectorLastHeartbeat = 0;
+        let projectorConnectionCheckTimer = null;
+
+        function isProjectorConnected() {
+            return Date.now() - projectorLastHeartbeat < 9000;
+        }
+
+        function updateProjectorConnectionStatus() {
+            const dot = document.getElementById('projector-connection-dot');
+            const label = document.getElementById('projector-connection-label');
+            const connected = isProjectorConnected();
+            if (dot) dot.className = 'inline-block w-2 h-2 rounded-full ' + (connected ? 'bg-emerald-400' : 'bg-amber-400');
+            if (label) label.textContent = connected ? 'Proyector conectado · ventana detectada' : 'Proyector no detectado · abre “Proyectar (Ventana)”';
+        }
+
+        if (broadcastChannel) {
+            broadcastChannel.addEventListener('message', event => {
+                const data = event.data;
+                if (!data || typeof data !== 'object') return;
+                if (data.type === '__projector_heartbeat') {
+                    projectorLastHeartbeat = Date.now();
+                    updateProjectorConnectionStatus();
+                }
+                // La respuesta no depende de externalWindow: BroadcastChannel sigue funcionando
+                // cuando Safari separa la pestaña del proyector en otra ventana.
+            });
+            try { broadcastChannel.postMessage({ type: '__controller_hello', timestamp: Date.now() }); } catch (_) {}
+        }
+        projectorConnectionCheckTimer = setInterval(updateProjectorConnectionStatus, 1500);
+        window.addEventListener('focus', () => {
+            try { if (broadcastChannel) broadcastChannel.postMessage({ type: '__controller_hello', timestamp: Date.now() }); } catch (_) {}
+            updateProjectorConnectionStatus();
+        });
         
         window.screenStream = null;
         let screenFrameInterval = null;
@@ -1123,35 +1160,40 @@
         // La vista previa se deja congelada/oculta para evitar dos reproductores compitiendo
         // por audio, decodificación y políticas de reproducción automática en Safari.
         function sendYouTubeCommand(command) {
-            const projection = (typeof externalWindow !== 'undefined' && externalWindow && !externalWindow.closed) ? externalWindow : null;
-            if (!projection) {
-                showToast('Abre la ventana de proyección antes de controlar YouTube.', 'warning');
+            // Primero comprobamos el latido de la página proyector.html. No dependemos
+            // de externalWindow, porque Safari puede separar la ventana y dejar obsoleta la referencia.
+            if (!isProjectorConnected()) {
+                updateProjectorConnectionStatus();
+                showToast('No detecto una ventana de proyección activa. Pulsa “Proyectar (Ventana)” una sola vez y luego vuelve a intentarlo.', 'warning');
                 return;
             }
-            const sendToProjectionFrame = () => {
-                try {
-                    const frame = projection.document.getElementById('proj-youtube');
-                    if (!frame || !frame.src || !frame.src.includes('youtube.com/embed/')) return false;
-                    const message = JSON.stringify({ event: 'command', func: command, args: [] });
-                    frame.contentWindow.postMessage(message, 'https://www.youtube.com');
-                    return true;
-                } catch (error) {
-                    // Si no se puede acceder directamente al iframe, el receptor de la
-                    // ventana de proyección ejecutará el comando en su propio contexto.
-                    try { projection.postMessage({ type: '__youtube_command', command }, '*'); } catch (_) {}
-                    return false;
+
+            const message = { type: '__youtube_command', command, timestamp: Date.now() };
+            let sent = false;
+            try {
+                if (broadcastChannel) {
+                    broadcastChannel.postMessage(message);
+                    sent = true;
                 }
-            };
-            const firstSent = sendToProjectionFrame();
-            // Mensaje al receptor y reintentos cubren la carga inicial del iframe.
-            try { projection.postMessage({ type: '__youtube_command', command }, '*'); } catch (_) {}
+            } catch (_) {}
+
+            // Canal directo adicional, solo como respaldo; el canal principal es BroadcastChannel.
+            try {
+                if (externalWindow && !externalWindow.closed) {
+                    externalWindow.postMessage(message, '*');
+                    sent = true;
+                }
+            } catch (_) {}
+
+            // Reintentos para esperar que el iframe de YouTube termine de inicializarse.
             [250, 700, 1400, 2200].forEach(delay => setTimeout(() => {
-                sendToProjectionFrame();
-                try { projection.postMessage({ type: '__youtube_command', command }, '*'); } catch (_) {}
+                try { if (broadcastChannel) broadcastChannel.postMessage({ ...message, timestamp: Date.now() }); } catch (_) {}
+                try { if (externalWindow && !externalWindow.closed) externalWindow.postMessage(message, '*'); } catch (_) {}
             }, delay));
+
             showToast(command === 'playVideo'
-                ? 'Orden de reproducción enviada a la pantalla de proyección.'
-                : 'Orden de pausa enviada a la pantalla de proyección.', 'info');
+                ? 'Orden enviada al reproductor de la ventana de proyección.'
+                : 'Orden de pausa enviada al reproductor de la ventana de proyección.', 'info');
         }
 
         function formatVideoTime(seconds) {
@@ -1675,6 +1717,12 @@
         }
 
         function toggleExternalProjector() {
+            // Si la ventana fue separada manualmente y Safari perdió la referencia,
+            // el heartbeat permite evitar abrir una segunda proyección duplicada.
+            if ((!externalWindow || externalWindow.closed) && isProjectorConnected()) {
+                showToast('La ventana de proyección ya está abierta. Busca la ventana “Proyección en Vivo” y muévela al monitor externo; no abras otra.', 'info');
+                return;
+            }
             if (externalWindow && !externalWindow.closed) {
                 externalWindow.close();
                 externalWindow = null;
