@@ -12,7 +12,8 @@
                         </head>
                         <body class="h-screen w-screen overflow-hidden relative flex flex-col justify-between p-16 select-none bg-black">
                             <div id="proj-backdrop" class="absolute inset-0 z-0 bg-cover bg-center transition-all duration-300"></div>
-                            <video id="proj-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay muted></video>
+                            <video id="proj-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay></video>
+                            <button id="proj-enable-audio" type="button" class="absolute z-50 hidden left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-black/85 border border-white/40 px-6 py-4 text-white text-lg font-bold shadow-2xl" style="pointer-events:auto">▶ Toca para reproducir con sonido</button>
                             <img id="proj-screen-frame" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" alt="Captura de pantalla en vivo" />
                             <div id="proj-youtube" data-youtube-api="1" title="Reproductor de YouTube (proyección)" class="absolute inset-0 w-full h-full bg-black z-10 hidden" aria-label="Reproductor de YouTube"></div>
                             <div id="proj-overlay" class="absolute inset-0 z-20 bg-black/40 transition-all duration-300"></div>
@@ -306,6 +307,7 @@
 
                                         const screenFrame = document.getElementById('proj-screen-frame');
                                         if (data.mediaMode === 'screen') {
+                                            video.pause();
                                             if (screenFrame) screenFrame.classList.remove('hidden');
                                             video.classList.add('hidden');
                                             if (video.srcObject) video.srcObject = null;
@@ -314,10 +316,20 @@
                                             if (screenFrame) screenFrame.classList.add('hidden');
                                             // YouTube se muestra y reproduce solo en youtube.html. Esta página es exclusivamente para versículos y medios no-YouTube.
                                             youtube.classList.add('hidden');
-                                            if (data.mediaMode === 'video' && data.videoUrl) { if (video.getAttribute('src') !== data.videoUrl) { video.setAttribute('src', data.videoUrl); video.load(); } video.loop = !!data.videoLoop; if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null && String(video.dataset.lastSeekId || '') !== String(data.videoSeekId ?? 'legacy')) { video.dataset.lastSeekId = String(data.videoSeekId ?? 'legacy'); queueProjectionSeek(video, data.videoSeekTo); } video.classList.remove('hidden'); if (data.isVideoPlaying) video.play().catch(() => {}); else video.pause(); }
-                                            else { video.classList.add('hidden'); if (video.srcObject) video.srcObject = null; }
+                                            if (data.mediaMode === 'video' && data.videoUrl) { if (video.getAttribute('src') !== data.videoUrl) { video.setAttribute('src', data.videoUrl); video.load(); } video.loop = !!data.videoLoop; video.muted = false; video.volume = 1; if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null && String(video.dataset.lastSeekId || '') !== String(data.videoSeekId ?? 'legacy')) { video.dataset.lastSeekId = String(data.videoSeekId ?? 'legacy'); queueProjectionSeek(video, data.videoSeekTo); } video.classList.remove('hidden'); if (data.isVideoPlaying) video.play().then(() => { const prompt = document.getElementById('proj-enable-audio'); if (prompt) prompt.classList.add('hidden'); }).catch(() => { const prompt = document.getElementById('proj-enable-audio'); if (prompt) prompt.classList.remove('hidden'); }); else video.pause(); }
+                                            else { video.pause(); video.classList.add('hidden'); if (video.srcObject) video.srcObject = null; }
                                         }
                                     }
+
+                                    // Safari puede bloquear audio iniciado desde otra ventana. Si sucede,
+                                    // permite activar el video con un gesto dentro de esta ventana.
+                                    const audioPrompt = document.getElementById('proj-enable-audio');
+                                    if (audioPrompt) audioPrompt.addEventListener('click', () => {
+                                        const video = document.getElementById('proj-video');
+                                        if (!video) return;
+                                        video.muted = false; video.volume = 1;
+                                        video.play().then(() => audioPrompt.classList.add('hidden')).catch(() => { audioPrompt.textContent = 'No se pudo iniciar el video'; });
+                                    });
 
                                     // Recupera el último estado al abrir o recargar la ventana de proyección.
                                     try {

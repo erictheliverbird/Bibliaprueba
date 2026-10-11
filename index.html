@@ -189,6 +189,9 @@
                             <span id="lbl-cleartext">Ocultar Texto (C)</span>
                         </button>
                     </div>
+                    <button id="btn-standby" type="button" title="Mostrar el logo de la iglesia centrado como pantalla de espera" class="w-full mt-2 bg-amber-950/70 hover:bg-amber-900/80 text-amber-200 border border-amber-800/70 py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-church"></i> Pantalla de espera (logo centrado)
+                    </button>
                 </div>
 
                 <div class="flex-1 min-h-0 bg-gray-900 border border-gray-800 rounded-2xl flex flex-col overflow-hidden shadow-xl">
@@ -595,7 +598,7 @@
     <div id="local-fullscreen-container" class="fixed inset-0 z-50 hidden flex flex-col justify-between p-12 transition-all duration-300 bg-slate-950">
         <div id="local-fs-backdrop" class="absolute inset-0 z-0 bg-slate-950 bg-cover bg-center"></div>
         
-        <video id="local-fs-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay muted></video>
+        <video id="local-fs-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay></video>
         <iframe id="local-fs-youtube" referrerpolicy="strict-origin-when-cross-origin" title="Reproductor de YouTube" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>
 
         <div id="local-fs-overlay" class="absolute inset-0 z-20 bg-black/40"></div>
@@ -1521,6 +1524,7 @@
 
             if (videoEl) {
                 if (data.mediaMode === 'screen' && window.screenStream) {
+                    videoEl.pause();
                     if (videoEl.srcObject !== window.screenStream) videoEl.srcObject = window.screenStream;
                     videoEl.classList.remove('hidden');
                     videoEl.play().catch(() => {});
@@ -1528,11 +1532,20 @@
                     videoEl.srcObject = null;
                     if (videoEl.getAttribute('src') !== data.videoUrl) { videoEl.setAttribute('src', data.videoUrl); videoEl.load(); }
                     videoEl.loop = !!data.videoLoop;
+                    // La vista previa del controlador permanece silenciada para evitar doble audio;
+                    // el reproductor de salida debe reproducir también el sonido.
+                    if (videoEl.id !== 'preview-video') { videoEl.muted = false; videoEl.volume = 1; }
                     if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null) queueVideoSeek(videoEl, data.videoSeekTo);
                     videoEl.classList.remove('hidden');
-                    if (data.isVideoPlaying) videoEl.play().catch(() => {});
-                    else videoEl.pause();
+                    if (data.isVideoPlaying) {
+                        const playAttempt = videoEl.play();
+                        if (playAttempt && typeof playAttempt.catch === 'function') playAttempt.catch(() => {
+                            const prompt = docObj.getElementById('proj-enable-audio');
+                            if (prompt) prompt.classList.remove('hidden');
+                        });
+                    } else videoEl.pause();
                 } else {
+                    videoEl.pause();
                     videoEl.classList.add('hidden');
                     if (videoEl.srcObject) videoEl.srcObject = null;
                 }
@@ -1893,6 +1906,25 @@
                 if (isClearText) btn.className = "bg-amber-600 hover:bg-amber-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-amber-950/50";
                 else btn.className = "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5";
                 syncToProjector();
+            };
+            document.getElementById('btn-standby').onclick = () => {
+                // Pantalla de espera: fondo + logo centrado, sin texto, cita ni medios.
+                currentText = "";
+                currentCitation = "";
+                selectedVerseIdx = null;
+                isBlackout = false;
+                isClearText = true;
+                isVideoPlaying = false;
+                mediaMode = 'none';
+                const previewVideo = document.getElementById('preview-video');
+                try { previewVideo.pause(); } catch (_) {}
+                const localFsVideo = document.getElementById('local-fs-video');
+                try { if (localFsVideo) localFsVideo.pause(); } catch (_) {}
+                document.getElementById('btn-blackout').className = "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5";
+                document.getElementById('btn-cleartext').className = "bg-amber-600 hover:bg-amber-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-amber-950/50";
+                renderVerses();
+                syncToProjector();
+                showToast('Pantalla de espera activada', 'success');
             };
             document.getElementById('btn-clear-projection').onclick = () => {
                 currentText = ""; currentCitation = ""; selectedVerseIdx = null; renderVerses(); syncToProjector(); showToast("Proyección limpiada", "info");
