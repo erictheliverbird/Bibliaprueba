@@ -727,6 +727,12 @@
                     projectorLastHeartbeat = Date.now();
                     updateProjectorConnectionStatus();
                 }
+                if (data.type === '__youtube_status') {
+                    const label = document.getElementById('projector-connection-label');
+                    if (label && data.status === 'autoplay-blocked') {
+                        label.textContent = 'Proyector conectado · YouTube requiere pulsar reproducir';
+                    }
+                }
                 // La respuesta no depende de externalWindow: BroadcastChannel sigue funcionando
                 // cuando Safari separa la pestaña del proyector en otra ventana.
             });
@@ -1483,15 +1489,16 @@
             }
 
             if (youtubeEl) {
-                // YouTube se reproduce únicamente en la ventana externa de proyección.
-                // La vista previa y el reproductor local quedan inactivos para que no compitan.
+                // En proyector.html el elemento es propiedad de la API oficial YT.Player.
+                // No asignar .src ni recrear el iframe desde la ventana controladora.
                 const isExternalProjection = !isLocalFs && docObj !== document;
+                const apiManagedPlayer = youtubeEl.dataset && youtubeEl.dataset.youtubeApi === '1';
                 if (data.mediaMode === 'youtube' && data.videoUrl && isExternalProjection) {
-                    if (youtubeEl.src !== data.videoUrl) youtubeEl.src = data.videoUrl;
+                    if (!apiManagedPlayer && youtubeEl.src !== data.videoUrl) youtubeEl.src = data.videoUrl;
                     youtubeEl.classList.remove('hidden');
                 } else {
                     youtubeEl.classList.add('hidden');
-                    if (youtubeEl.src) youtubeEl.src = '';
+                    if (!apiManagedPlayer && youtubeEl.src) youtubeEl.src = '';
                 }
             }
 
