@@ -264,6 +264,26 @@
                                 </div>
                             </div>
 
+                            <div id="video-playback-controls" class="bg-gray-900 border border-gray-800 p-3 rounded-xl space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-extrabold text-gray-200 uppercase tracking-wider"><i class="fa-solid fa-sliders mr-1.5 text-blue-400"></i>Controles de reproducción</span>
+                                    <span id="video-playback-status" class="text-[10px] text-gray-500">Sin video local</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button id="btn-video-play-pause" type="button" class="bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg px-3 py-2 text-xs font-bold" disabled>
+                                        <i id="video-play-pause-icon" class="fa-solid fa-play mr-1"></i><span id="video-play-pause-label">Reproducir</span>
+                                    </button>
+                                    <span id="video-current-time" class="text-[10px] text-gray-400 tabular-nums">00:00</span>
+                                    <input id="video-seek-slider" aria-label="Posición del video" type="range" min="0" max="1000" value="0" class="flex-1 accent-blue-500 disabled:opacity-40" disabled>
+                                    <span id="video-duration" class="text-[10px] text-gray-400 tabular-nums">00:00</span>
+                                </div>
+                                <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer select-none">
+                                    <input id="video-loop-toggle" type="checkbox" class="accent-blue-500 w-4 h-4">
+                                    <i class="fa-solid fa-repeat text-blue-400"></i> Reproducir en bucle
+                                </label>
+                                <p class="text-[10px] text-gray-500">Los controles de avance y pausa son para videos locales. YouTube tiene sus propios controles dentro del reproductor.</p>
+                            </div>
+
                             <div class="space-y-2">
                                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Subir Archivo Local</label>
                                 <label class="w-full bg-gray-900 hover:bg-gray-850 border border-dashed border-gray-700 p-3 rounded-xl flex flex-col items-center justify-center cursor-pointer transition">
@@ -661,6 +681,8 @@
         let mediaMode = 'none';
         let activeVideoUrl = '';
         let isVideoPlaying = false;
+        let videoLoop = false;
+        let videoSeekTo = null;
 
         let cultoList = [];
         let externalWindow = null;
@@ -1053,9 +1075,54 @@
                     else if (/^\/(shorts|embed)\//.test(parsed.pathname)) videoId = parsed.pathname.split('/')[2] || '';
                 }
                 if (!/^[A-Za-z0-9_-]{11}$/.test(videoId)) return '';
-                return `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&rel=0`;
+                return `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&enablejsapi=1&rel=0`; 
             } catch (e) {
                 return '';
+            }
+        }
+
+        function withYouTubeLoop(url, enabled) {
+            if (!url) return url;
+            try {
+                const parsed = new URL(url);
+                const videoId = parsed.pathname.split('/').filter(Boolean).pop();
+                parsed.searchParams.set('controls', '1');
+                if (enabled) { parsed.searchParams.set('loop', '1'); parsed.searchParams.set('playlist', videoId); }
+                else { parsed.searchParams.delete('loop'); parsed.searchParams.delete('playlist'); }
+                return parsed.toString();
+            } catch (_) { return url; }
+        }
+
+        function formatVideoTime(seconds) {
+            if (!Number.isFinite(seconds) || seconds < 0) return '00:00';
+            const total = Math.floor(seconds);
+            const hours = Math.floor(total / 3600);
+            const mins = Math.floor((total % 3600) / 60);
+            const secs = total % 60;
+            return hours > 0 ? `${hours}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}` : `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function refreshVideoControls() {
+            const video = document.getElementById('preview-video');
+            const hasLocalVideo = mediaMode === 'video' && !!activeVideoUrl;
+            const playButton = document.getElementById('btn-video-play-pause');
+            const slider = document.getElementById('video-seek-slider');
+            const status = document.getElementById('video-playback-status');
+            if (playButton) playButton.disabled = !hasLocalVideo;
+            if (slider) slider.disabled = !hasLocalVideo || !Number.isFinite(video.duration) || video.duration <= 0;
+            if (status) status.textContent = hasLocalVideo ? (video.paused ? 'En pausa' : 'Reproduciendo') : (mediaMode === 'youtube' ? 'Controla en YouTube' : 'Sin video local');
+            const icon = document.getElementById('video-play-pause-icon');
+            const label = document.getElementById('video-play-pause-label');
+            if (icon) icon.className = `fa-solid ${video && !video.paused ? 'fa-pause' : 'fa-play'} mr-1`;
+            if (label) label.textContent = video && !video.paused ? 'Pausar' : 'Reproducir';
+            if (video) {
+                const duration = Number.isFinite(video.duration) ? video.duration : 0;
+                const current = Number.isFinite(video.currentTime) ? video.currentTime : 0;
+                const currentLabel = document.getElementById('video-current-time');
+                const durationLabel = document.getElementById('video-duration');
+                if (currentLabel) currentLabel.textContent = formatVideoTime(current);
+                if (durationLabel) durationLabel.textContent = formatVideoTime(duration);
+                if (slider && duration > 0 && !slider.matches(':active')) slider.value = String(Math.round(current / duration * 1000));
             }
         }
 
@@ -1246,6 +1313,8 @@
                 mediaMode: mediaMode,
                 videoUrl: activeVideoUrl,
                 isVideoPlaying: isVideoPlaying,
+                videoLoop: videoLoop,
+                videoSeekTo: videoSeekTo,
                 timestamp: Date.now()
             };
 
@@ -1260,6 +1329,8 @@
             }
             updateProjectorDOM(document, payload, true);
             saveOperatorState();
+            // El destino de búsqueda se envía una sola vez para evitar saltos posteriores.
+            videoSeekTo = null;
         }
 
         function updateProjectorDOM(docObj, data, isLocalFs = false) {
@@ -1305,6 +1376,8 @@
                 } else if (data.mediaMode === 'video' && data.videoUrl) {
                     videoEl.srcObject = null;
                     if (videoEl.src !== data.videoUrl) videoEl.src = data.videoUrl;
+                    videoEl.loop = !!data.videoLoop;
+                    if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null && Math.abs((videoEl.currentTime || 0) - data.videoSeekTo) > 1.25) { try { videoEl.currentTime = data.videoSeekTo; } catch (_) {} }
                     videoEl.classList.remove('hidden');
                     if (data.isVideoPlaying) videoEl.play().catch(() => {});
                     else videoEl.pause();
@@ -1672,7 +1745,7 @@
                                             if (screenFrame) screenFrame.classList.add('hidden');
                                             if (data.mediaMode === 'youtube' && data.videoUrl) { if (youtube.src !== data.videoUrl) youtube.src = data.videoUrl; youtube.classList.remove('hidden'); }
                                             else { youtube.classList.add('hidden'); youtube.src = ''; }
-                                            if (data.mediaMode === 'video' && data.videoUrl) { if (video.src !== data.videoUrl) video.src = data.videoUrl; video.classList.remove('hidden'); if (data.isVideoPlaying) video.play().catch(() => {}); else video.pause(); }
+                                            if (data.mediaMode === 'video' && data.videoUrl) { if (video.src !== data.videoUrl) video.src = data.videoUrl; video.loop = !!data.videoLoop; if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null && Math.abs((video.currentTime || 0) - data.videoSeekTo) > 1.25) { try { video.currentTime = data.videoSeekTo; } catch (_) {} } video.classList.remove('hidden'); if (data.isVideoPlaying) video.play().catch(() => {}); else video.pause(); }
                                             else { video.classList.add('hidden'); if (video.srcObject) video.srcObject = null; }
                                         }
                                     }
@@ -1840,7 +1913,8 @@
                 const url = document.getElementById('video-url-input').value.trim();
                 const embedUrl = getYouTubeEmbedUrl(url);
                 if (embedUrl) {
-                    activeVideoUrl = embedUrl;
+                    videoLoop = document.getElementById('video-loop-toggle').checked;
+                    activeVideoUrl = withYouTubeLoop(embedUrl, videoLoop);
                     mediaMode = 'youtube';
                     syncToProjector();
                     showToast("Video de YouTube cargado", "success");
@@ -1857,10 +1931,46 @@
                     activeVideoUrl = URL.createObjectURL(file);
                     mediaMode = 'video';
                     isVideoPlaying = true;
+                    videoSeekTo = 0;
+                    controlVideo.loop = videoLoop;
+                    controlVideo.src = activeVideoUrl;
+                    controlVideo.play().catch(() => {});
+                    refreshVideoControls();
                     syncToProjector();
                     showToast("Video local cargado", "success");
                 }
             };
+
+            const controlVideo = document.getElementById('preview-video');
+            ['loadedmetadata', 'timeupdate', 'play', 'pause', 'ended', 'durationchange'].forEach(eventName => controlVideo.addEventListener(eventName, refreshVideoControls));
+            document.getElementById('btn-video-play-pause').onclick = () => {
+                if (mediaMode !== 'video' || !activeVideoUrl) return;
+                if (controlVideo.paused) {
+                    isVideoPlaying = true;
+                    controlVideo.play().then(() => { syncToProjector(); refreshVideoControls(); }).catch(() => showToast('No se pudo reproducir el video', 'error'));
+                } else {
+                    controlVideo.pause();
+                    isVideoPlaying = false;
+                    syncToProjector();
+                    refreshVideoControls();
+                }
+            };
+            document.getElementById('video-seek-slider').oninput = (event) => {
+                if (mediaMode !== 'video' || !Number.isFinite(controlVideo.duration) || controlVideo.duration <= 0) return;
+                videoSeekTo = (Number(event.target.value) / 1000) * controlVideo.duration;
+                try { controlVideo.currentTime = videoSeekTo; } catch (_) {}
+                syncToProjector();
+            };
+            document.getElementById('video-loop-toggle').onchange = (event) => {
+                videoLoop = !!event.target.checked;
+                controlVideo.loop = videoLoop;
+                if (mediaMode === 'youtube' && activeVideoUrl) {
+                    activeVideoUrl = withYouTubeLoop(activeVideoUrl, videoLoop);
+                }
+                syncToProjector();
+                showToast(videoLoop ? 'Repetición en bucle activada' : 'Repetición en bucle desactivada', 'info');
+            };
+            refreshVideoControls();
 
             // Estilos y Diseño
             document.getElementById('style-font').onchange = (e) => {
