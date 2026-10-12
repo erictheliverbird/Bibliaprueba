@@ -58,6 +58,51 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Renovación visual v17.2: navegación inferior por espacios de trabajo.
+           No modifica la lógica de reproducción ni los identificadores de controles. */
+        :root { color-scheme: dark; }
+        #operator-interface { background: #0b1120; }
+        #operator-interface > header { background: linear-gradient(105deg, #101827, #151d2e 70%, #111827); border-color: rgba(148,163,184,.16); }
+        #operator-interface header h1 { letter-spacing: .075em; }
+        #operator-interface section.bg-gray-900, #workspace-control > div { border-color: rgba(148,163,184,.16); }
+        #operator-interface button { -webkit-tap-highlight-color: transparent; }
+        #operator-interface button:not(.workspace-nav-item) { transition: background-color .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease; }
+        #operator-interface button:not(:disabled):active { transform: scale(.985); }
+        .workspace-nav { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; padding: 9px max(12px, env(safe-area-inset-left)) calc(9px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-right)); background: rgba(9,14,26,.97); border-top: 1px solid rgba(148,163,184,.18); box-shadow: 0 -10px 28px rgba(0,0,0,.16); }
+        .workspace-nav-item { min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px 5px 8px; border:1px solid transparent; border-radius:14px; color:#8b98ad; background:transparent; position:relative; }
+        .workspace-nav-item i { font-size:19px; line-height:1; }
+        .workspace-nav-item span { font-size:12px; font-weight:750; letter-spacing:.01em; color:#d1d9e6; }
+        .workspace-nav-item small { font-size:9px; line-height:1.2; color:#718096; white-space:nowrap; }
+        .workspace-nav-item.is-active { color:#70a5ff; background:linear-gradient(180deg,rgba(59,130,246,.16),rgba(59,130,246,.06)); border-color:rgba(96,165,250,.25); box-shadow:inset 0 2px 0 #4385f5; }
+        .workspace-nav-item.is-active span, .workspace-nav-item.is-active i { color:#79adff; }
+        .workspace-nav-item.is-active small { color:#9bbdf4; }
+        body[data-workspace="local"] #workspace-bible-books, body[data-workspace="local"] #workspace-bible-verses,
+        body[data-workspace="youtube"] #workspace-bible-books, body[data-workspace="youtube"] #workspace-bible-verses,
+        body[data-workspace="design"] #workspace-bible-books, body[data-workspace="design"] #workspace-bible-verses { display:none !important; }
+        body[data-workspace="local"] #workspace-control, body[data-workspace="youtube"] #workspace-control, body[data-workspace="design"] #workspace-control { width:auto !important; flex:1 1 auto !important; min-width:0; }
+        body[data-workspace="local"] #workspace-control, body[data-workspace="youtube"] #workspace-control, body[data-workspace="design"] #workspace-control { display:flex; flex-direction:row; gap:16px; }
+        body[data-workspace="local"] #projector-preview-card, body[data-workspace="youtube"] #projector-preview-card, body[data-workspace="design"] #projector-preview-card { width:min(42%, 560px); flex:0 0 min(42%, 560px); align-self:flex-start; }
+        body[data-workspace="local"] #workspace-control > .control-panel, body[data-workspace="youtube"] #workspace-control > .control-panel, body[data-workspace="design"] #workspace-control > .control-panel { flex:1; min-width:0; }
+        body[data-workspace="local"] #youtube-controls-panel, body[data-workspace="youtube"] #screen-capture-controls-panel, body[data-workspace="youtube"] #video-playback-controls, body[data-workspace="youtube"] #local-video-file-panel, body[data-workspace="design"] #tab-culto, body[data-workspace="design"] #tab-video, body[data-workspace="local"] #tab-culto, body[data-workspace="youtube"] #tab-culto { display:none !important; }
+        body[data-workspace="local"] #tab-video, body[data-workspace="youtube"] #tab-video, body[data-workspace="design"] #tab-estilos { display:block !important; }
+        body[data-workspace="local"] #tab-video, body[data-workspace="youtube"] #tab-video, body[data-workspace="design"] #tab-estilos { height:100%; overflow-y:auto; }
+        body[data-workspace="local"] #tab-video, body[data-workspace="youtube"] #tab-video { display:flex !important; flex-direction:column; }
+        body[data-workspace="local"] #tab-video #youtube-controls-panel { display:none !important; }
+        body[data-workspace="youtube"] #tab-video #screen-capture-controls-panel, body[data-workspace="youtube"] #tab-video #video-playback-controls, body[data-workspace="youtube"] #tab-video #local-video-file-panel { display:none !important; }
+        body[data-workspace="local"] #tab-video #screen-capture-controls-panel, body[data-workspace="local"] #tab-video #video-playback-controls, body[data-workspace="local"] #tab-video #local-video-file-panel { display:block; }
+        body[data-workspace="design"] #workspace-control .flex-1.min-h-0.bg-gray-900 { min-width:0; }
+        body[data-workspace="design"] #tab-estilos { display:block !important; }
+        @media (max-width: 900px) {
+          .workspace-nav { gap:4px; padding-left:8px; padding-right:8px; }
+          .workspace-nav-item { padding:9px 2px 7px; border-radius:11px; }
+          .workspace-nav-item i { font-size:17px; }
+          .workspace-nav-item span { font-size:10px; }
+          .workspace-nav-item small { display:none; }
+          body[data-workspace="local"] #workspace-control, body[data-workspace="youtube"] #workspace-control, body[data-workspace="design"] #workspace-control { flex-direction:column; overflow-y:auto; }
+          body[data-workspace="local"] #projector-preview-card, body[data-workspace="youtube"] #projector-preview-card, body[data-workspace="design"] #projector-preview-card { width:100%; flex:0 0 auto; }
+        }
+        @media (prefers-reduced-motion: reduce) { .workspace-nav-item, #operator-interface button { transition:none !important; } }
     </style>
 </head>
 <body class="bg-gray-950 text-gray-100 h-screen overflow-hidden flex flex-col font-['Inter'] antialiased select-none">
@@ -112,7 +157,7 @@
         <main class="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden p-3 md:p-5 gap-3 md:gap-5">
 
             <!-- Columna 1: Libros y Capítulos -->
-            <section class="w-full lg:w-72 xl:w-80 h-64 lg:h-full flex flex-col bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-xl shrink-0">
+            <section id="workspace-bible-books" class="w-full lg:w-72 xl:w-80 h-64 lg:h-full flex flex-col bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-xl shrink-0">
                 <div class="p-3 border-b border-gray-800 bg-gray-900/80">
                     <div class="relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
@@ -136,7 +181,7 @@
             </section>
 
             <!-- Columna 2: Versículos Bíblicos del Capítulo Seleccionado -->
-            <section class="flex-1 h-72 lg:h-full flex flex-col bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-xl">
+            <section id="workspace-bible-verses" class="flex-1 h-72 lg:h-full flex flex-col bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-xl">
                 <div class="p-3 md:p-4 bg-gray-900 border-b border-gray-800 flex items-center justify-between shrink-0">
                     <div class="flex items-center gap-3">
                         <div class="bg-emerald-500/10 text-emerald-400 p-2 rounded-xl border border-emerald-500/20">
@@ -163,10 +208,10 @@
             </section>
 
             <!-- Columna 3: Vista Previa y Pestañas de Control -->
-            <section class="w-full lg:w-96 h-auto lg:h-full flex flex-col gap-4 shrink-0 overflow-hidden">
+            <section id="workspace-control" class="w-full lg:w-96 h-auto lg:h-full flex flex-col gap-4 shrink-0 overflow-hidden">
                 
                 <!-- PREVIEW EN VIVO -->
-                <div class="bg-gray-900 border border-gray-800 rounded-2xl p-3.5 shadow-xl shrink-0 flex flex-col">
+                <div id="projector-preview-card" class="bg-gray-900 border border-gray-800 rounded-2xl p-3.5 shadow-xl shrink-0 flex flex-col">
                     <div class="flex items-center justify-between mb-2.5">
                         <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
                             <i class="fa-solid fa-eye text-emerald-400"></i> Previo Proyección en Vivo
@@ -211,8 +256,8 @@
                     </button>
                 </div>
 
-                <div class="flex-1 min-h-0 bg-gray-900 border border-gray-800 rounded-2xl flex flex-col overflow-hidden shadow-xl">
-                    <div class="flex border-b border-gray-800 bg-gray-900/80 shrink-0 text-center">
+                <div class="control-panel flex-1 min-h-0 bg-gray-900 border border-gray-800 rounded-2xl flex flex-col overflow-hidden shadow-xl">
+                    <div id="legacy-control-tabs" class="hidden">
                         <button id="btn-tab-culto" class="flex-1 py-2.5 text-xs font-bold border-b-2 border-blue-500 text-blue-400 transition">
                             <i class="fa-solid fa-list-check mr-1"></i>Culto
                         </button>
@@ -253,7 +298,7 @@
 
                         <!-- TAB 2: VIDEOS Y MULTIMEDIA -->
                         <div id="tab-video" class="hidden space-y-4">
-                            <div class="bg-gray-900 border border-gray-800 p-3 rounded-xl space-y-2.5">
+                            <div id="youtube-controls-panel" class="bg-gray-900 border border-gray-800 p-3 rounded-xl space-y-2.5">
                                 <div class="flex items-center justify-between">
                                     <span class="text-xs font-extrabold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
                                         <i class="fa-brands fa-youtube text-red-500 text-base"></i> YouTube
@@ -297,7 +342,7 @@
                                 <p class="text-[10px] text-gray-500">La conexión se comprueba aunque separes la ventana del proyector. Abre una sola ventana de proyección y muévela al monitor externo.</p>
                             </div>
 
-                            <div class="bg-gradient-to-br from-blue-950/60 to-purple-950/60 border border-blue-500/30 p-3.5 rounded-xl space-y-2">
+                            <div id="screen-capture-controls-panel" class="bg-gradient-to-br from-blue-950/60 to-purple-950/60 border border-blue-500/30 p-3.5 rounded-xl space-y-2">
                                 <div class="flex items-center justify-between">
                                     <span class="text-xs font-extrabold text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
                                         <i class="fa-solid fa-desktop"></i> Captura de Pantalla
@@ -340,7 +385,7 @@
                                 <p class="text-[10px] text-gray-500">Los controles siguen el tiempo real del video proyectado. La pantalla externa no muestra estos controles.</p>
                             </div>
 
-                            <div class="space-y-2">
+                            <div id="local-video-file-panel" class="space-y-2">
                                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Subir Archivo Local</label>
                                 <label class="w-full bg-gray-900 hover:bg-gray-850 border border-dashed border-gray-700 p-3 rounded-xl flex flex-col items-center justify-center cursor-pointer transition">
                                     <i class="fa-solid fa-file-video text-emerald-400 text-xl mb-1"></i>
@@ -628,6 +673,22 @@
                 </div>
             </section>
         </main>
+
+        <!-- NAVEGACIÓN PRINCIPAL POR CATEGORÍAS: solo cambia la vista, no la lógica multimedia -->
+        <nav id="workspace-navigation" class="workspace-nav shrink-0" aria-label="Secciones principales">
+            <button type="button" class="workspace-nav-item is-active" data-workspace="bible" aria-current="page">
+                <i class="fa-solid fa-book-bible"></i><span>Biblia</span><small>Libros y versículos</small>
+            </button>
+            <button type="button" class="workspace-nav-item" data-workspace="local">
+                <i class="fa-solid fa-file-video"></i><span>Video local</span><small>Archivos del iPad</small>
+            </button>
+            <button type="button" class="workspace-nav-item" data-workspace="youtube">
+                <i class="fa-brands fa-youtube"></i><span>YouTube</span><small>Video en línea</small>
+            </button>
+            <button type="button" class="workspace-nav-item" data-workspace="design">
+                <i class="fa-solid fa-sliders"></i><span>Personalización</span><small>Diseño y logo</small>
+            </button>
+        </nav>
     </div>
 
     <!-- Modal Pantalla Completa Local -->
@@ -2336,6 +2397,27 @@
             document.getElementById('btn-clear-projection').onclick = () => {
                 currentText = ""; currentCitation = ""; selectedVerseIdx = null; renderVerses(); syncToProjector(); showToast("Proyección limpiada", "info");
             };
+
+            // Navegación estética principal: los controles originales conservan sus IDs y lógica.
+            const workspaceNavItems = Array.from(document.querySelectorAll('.workspace-nav-item'));
+            function activateWorkspace(workspace) {
+                document.body.dataset.workspace = workspace;
+                workspaceNavItems.forEach(item => {
+                    const active = item.dataset.workspace === workspace;
+                    item.classList.toggle('is-active', active);
+                    if (active) item.setAttribute('aria-current', 'page'); else item.removeAttribute('aria-current');
+                });
+                const internalTab = workspace === 'bible' ? 'btn-tab-culto' : (workspace === 'design' ? 'btn-tab-estilos' : 'btn-tab-video');
+                const tabButton = document.getElementById(internalTab);
+                if (tabButton) tabButton.click();
+                // En los espacios multimedia, conserva visible la vista previa y muestra solo los controles del modo elegido.
+                if (workspace === 'local' || workspace === 'youtube' || workspace === 'design') {
+                    const panel = document.getElementById('workspace-control');
+                    if (panel) panel.scrollTop = 0;
+                }
+            }
+            workspaceNavItems.forEach(item => item.addEventListener('click', () => activateWorkspace(item.dataset.workspace)));
+            activateWorkspace('bible');
 
             // Navegación de Pestañas
             const tabElements = {
