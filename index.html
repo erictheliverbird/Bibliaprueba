@@ -2,7 +2,14 @@
 <html lang="es" class="h-full">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#030712">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Proyector Bíblico">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <title>Proyector Bíblico Profesional & Buscador de Imágenes</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -88,6 +95,11 @@
                 <button id="btn-toggle-local-fs" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg shadow-emerald-950/40">
                     <i class="fa-solid fa-expand text-xs"></i>
                     <span class="hidden md:inline">Simular Pantalla</span>
+                </button>
+
+                <button id="btn-install-help" class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition" title="Cómo instalar como aplicación en iPad">
+                    <i class="fa-solid fa-mobile-screen-button text-xs"></i>
+                    <span class="hidden xl:inline">Instalar app</span>
                 </button>
             </div>
         </header>
@@ -1806,6 +1818,14 @@
         }
 
         function setupEventListeners() {
+            const installHelp = document.getElementById('install-help-modal');
+            const showInstallHelp = () => { installHelp.classList.remove('hidden'); installHelp.classList.add('flex'); };
+            const hideInstallHelp = () => { installHelp.classList.add('hidden'); installHelp.classList.remove('flex'); };
+            document.getElementById('btn-install-help').onclick = showInstallHelp;
+            document.getElementById('btn-close-install-help').onclick = hideInstallHelp;
+            document.getElementById('btn-close-install-help-bottom').onclick = hideInstallHelp;
+            installHelp.addEventListener('click', event => { if (event.target === installHelp) hideInstallHelp(); });
+
             // Ventana Externa y Simulador
             document.getElementById('btn-toggle-ext-projector').onclick = toggleExternalProjector;
             document.getElementById('btn-toggle-local-fs').onclick = () => {
@@ -2294,5 +2314,23 @@
             syncToProjector();
         };
     </script>
+    <div id="install-help-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 p-4" role="dialog" aria-modal="true" aria-labelledby="install-help-title">
+        <div class="w-full max-w-lg rounded-2xl border border-gray-700 bg-gray-900 p-6 shadow-2xl">
+            <div class="mb-3 flex items-center justify-between gap-3">
+                <h2 id="install-help-title" class="text-lg font-extrabold text-white"><i class="fa-solid fa-mobile-screen-button mr-2 text-blue-400"></i>Usar como aplicación en iPad</h2>
+                <button id="btn-close-install-help" class="rounded-lg px-3 py-1 text-gray-300 hover:bg-gray-800" aria-label="Cerrar">✕</button>
+            </div>
+            <p class="mb-4 text-sm leading-6 text-gray-300">Para abrir el panel de control sin la barra de direcciones de Safari, añade esta web a la pantalla de inicio.</p>
+            <ol class="mb-5 list-decimal space-y-2 pl-5 text-sm leading-6 text-gray-200">
+                <li>Abre esta página en <strong>Safari</strong> (no desde una pestaña de otro navegador).</li>
+                <li>Toca <strong>Compartir</strong> y selecciona <strong>Añadir a pantalla de inicio</strong>.</li>
+                <li>Si aparece la opción <strong>Abrir como app web</strong>, actívala y toca <strong>Añadir</strong>.</li>
+                <li>En adelante, inicia el proyector desde el nuevo icono de la pantalla de inicio.</li>
+            </ol>
+            <p class="mb-5 rounded-xl bg-amber-950/50 p-3 text-xs leading-5 text-amber-200">La ventana externa puede seguir mostrando controles de Safari según la versión de iPadOS. En esa ventana, toca «Pantalla completa» si aparece el aviso. iPadOS no permite que una página web fuerce siempre ese modo sin interacción.</p>
+            <button id="btn-close-install-help-bottom" class="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white hover:bg-blue-500">Entendido</button>
+        </div>
+    </div>
+
 </body>
 </html>

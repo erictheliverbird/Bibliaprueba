@@ -2,15 +2,23 @@
                         <html lang="es" class="h-full">
                         <head>
                             <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+                            <meta name="theme-color" content="#000000">
+                            <meta name="apple-mobile-web-app-capable" content="yes">
+                            <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
                             <title>Proyección en Vivo - Pantalla Externa</title>
                             <script src="https://cdn.tailwindcss.com"></script>
                             <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Merriweather:wght@300;400;700&family=Montserrat:wght@400;600;800&family=Open+Sans:wght@300;400;600;700&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Poppins:wght@300;400;600;700&family=Quicksand:wght@400;600;700&family=Raleway:wght@300;400;600;700&family=Roboto+Slab:wght@400;700&family=Ubuntu:wght@400;700&family=Fira+Sans:wght@400;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=Spectral:ital,wght@0,400;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,700;1,400&family=Cardo:wght@400;700&family=Josefin+Sans:wght@400;600;700&family=Nunito+Sans:wght@400;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Archivo+Black&display=swap" rel="stylesheet">
                             <style>
-                                body { margin: 0; padding: 0; overflow: hidden; background: #000; }
+                                :root { color-scheme: dark; }
+                                html, body { width: 100%; height: 100%; min-height: 100%; margin: 0; padding: 0; overflow: hidden; background: #000; }
+                                body { height: 100vh; height: 100dvh; padding: max(2.5vw, env(safe-area-inset-top)) max(2.5vw, env(safe-area-inset-right)) max(2.5vw, env(safe-area-inset-bottom)) max(2.5vw, env(safe-area-inset-left)) !important; box-sizing: border-box; }
+                                #proj-fullscreen-prompt { font-family: Inter, system-ui, sans-serif; }
                                 .text-projection-shadow { text-shadow: 0 2px 12px rgba(0,0,0,0.95), 0 4px 24px rgba(0,0,0,0.85); }
                             </style>
                         </head>
                         <body class="h-screen w-screen overflow-hidden relative flex flex-col justify-between p-16 select-none bg-black">
+                            <button id="proj-fullscreen-prompt" type="button" class="fixed left-1/2 top-4 z-[100] -translate-x-1/2 rounded-xl border border-white/30 bg-black/85 px-5 py-3 text-sm font-bold text-white shadow-2xl" style="display:none">⛶ Activar pantalla completa</button>
                             <div id="proj-backdrop" class="absolute inset-0 z-0 bg-cover bg-center transition-all duration-300"></div>
                             <video id="proj-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay></video>
                             <button id="proj-enable-audio" type="button" class="absolute z-50 hidden left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-black/85 border border-white/40 px-6 py-4 text-white text-lg font-bold shadow-2xl" style="pointer-events:auto">▶ Toca para reproducir con sonido</button>
@@ -32,6 +40,29 @@
                                     const CHANNEL_NAME = 'biblical-projector-channel';
                                     const STORAGE_KEY = 'biblical_projector_data';
                                     let channel = null;
+
+                                    // Pantalla completa: Safari solo permite solicitarla de forma fiable
+                                    // tras un gesto del usuario. En modo app instalado, no hace falta el aviso.
+                                    const fullscreenPrompt = document.getElementById('proj-fullscreen-prompt');
+                                    const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+                                    const updateFullscreenPrompt = () => {
+                                        if (!fullscreenPrompt) return;
+                                        fullscreenPrompt.style.display = (!isStandalone() && !document.fullscreenElement) ? 'block' : 'none';
+                                    };
+                                    if (fullscreenPrompt) fullscreenPrompt.addEventListener('click', async () => {
+                                        try {
+                                            const target = document.documentElement;
+                                            if (target.requestFullscreen) await target.requestFullscreen();
+                                            else if (document.body.requestFullscreen) await document.body.requestFullscreen();
+                                        } catch (error) {
+                                            fullscreenPrompt.textContent = 'Safari no permite pantalla completa aquí. Añade la app a Inicio.';
+                                        }
+                                        updateFullscreenPrompt();
+                                    });
+                                    document.addEventListener('fullscreenchange', updateFullscreenPrompt);
+                                    window.addEventListener('resize', updateFullscreenPrompt);
+                                    window.addEventListener('orientationchange', updateFullscreenPrompt);
+                                    updateFullscreenPrompt();
 
                                     // Un solo reproductor YT.Player persistente en la página de proyección.
                                     // Los nuevos videos se ponen en cola hasta que el player confirme CUED,
