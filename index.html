@@ -273,6 +273,21 @@
                                         <i class="fa-solid fa-pause"></i> Pausar YouTube
                                     </button>
                                 </div>
+                                <div id="youtube-advanced-controls" class="mt-3 rounded-xl border border-red-900/50 bg-gray-950/80 p-3 space-y-2.5">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <span class="text-[10px] font-bold uppercase tracking-wider text-gray-300"><i class="fa-brands fa-youtube text-red-500 mr-1"></i>Controles de YouTube</span>
+                                        <span id="youtube-playback-status" class="text-[10px] text-gray-400">Carga un video</span>
+                                    </div>
+                                    <div class="flex items-center justify-center gap-2">
+                                        <button id="btn-youtube-back" type="button" title="Retroceder 10 segundos" class="bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-gray-200 rounded-lg px-3 py-2 text-xs font-bold" disabled><i class="fa-solid fa-backward-step"></i><span class="ml-1">10 s</span></button>
+                                        <button id="btn-youtube-forward" type="button" title="Avanzar 10 segundos" class="bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-gray-200 rounded-lg px-3 py-2 text-xs font-bold" disabled><span class="mr-1">10 s</span><i class="fa-solid fa-forward-step"></i></button>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <div class="flex items-center justify-between text-[10px] text-gray-400 tabular-nums"><span id="youtube-current-time">00:00</span><span id="youtube-duration">00:00</span></div>
+                                        <input id="youtube-seek-slider" aria-label="Posición del video de YouTube" type="range" min="0" max="1000" value="0" class="w-full accent-red-500 disabled:opacity-40" disabled>
+                                    </div>
+                                    <p class="text-[10px] text-gray-500">La barra y los saltos controlan el video de la pantalla externa. La vista previa no reproduce YouTube.</p>
+                                </div>
                                 <button id="btn-open-youtube-window" type="button" class="hidden" aria-hidden="true" tabindex="-1">Ventana YouTube independiente desactivada</button>
                                 <p class="text-[10px] text-gray-400">YouTube se mostrará automáticamente en la misma ventana del proyector. Usa estos controles desde el iPad; la proyección no mostrará el panel de control.</p>
                                 <div id="projector-connection-status" class="flex items-center gap-2 text-[10px] text-amber-300" role="status" aria-live="polite">
@@ -749,7 +764,11 @@
         };
         const CLOUD_PROJECTION_PATH = 'rooms/casa-bendiciones/state';
         const CLOUD_YOUTUBE_COMMAND_PATH = 'rooms/casa-bendiciones/youtubeCommands';
+        const CLOUD_YOUTUBE_STATUS_PATH = 'rooms/casa-bendiciones/youtubeStatus';
         let youtubeCommandCounter = 0;
+        let youtubeRemoteStatus = null;
+        let youtubeSeekInProgress = false;
+        let youtubeSeekPendingUntil = 0;
         let cloudDatabase = null;
         let cloudProjectionRef = null;
         let cloudAuthReady = false;
@@ -992,6 +1011,11 @@
                 firebase.auth().signInAnonymously().then(() => {
                     cloudAuthReady = true;
                     setupControllerVideoTransfer();
+                    cloudDatabase.ref(CLOUD_YOUTUBE_STATUS_PATH).on('value', snapshot => {
+                        const status = snapshot.val();
+                        youtubeRemoteStatus = status && typeof status === 'object' ? status : null;
+                        refreshYouTubeControls();
+                    }, error => console.warn('No se pudo leer el estado de YouTube:', error));
                     if (latestCloudPayload) writeCloudProjection(latestCloudPayload);
                     const label = document.getElementById('projector-connection-label');
                     if (label && !isProjectorConnected() && !isYouTubeWindowConnected()) label.textContent = 'Sincronización en nube lista · abre el proyector';
@@ -1493,8 +1517,9 @@
         // YouTube: priorizar SIEMPRE el reproductor de la ventana de proyección.
         // La vista previa se deja congelada/oculta para evitar dos reproductores compitiendo
         // por audio, decodificación y políticas de reproducción automática en Safari.
-        function sendYouTubeCommand(command) {
-            if (!['playVideo', 'pauseVideo', 'stopVideo'].includes(command)) return;
+        function sendYouTubeCommand(command, target = null) {
+            if (!['playVideo', 'pauseVideo', 'stopVideo', 'seekTo'].includes(command)) return;
+            if (command === 'seekTo' && (!Number.isFinite(Number(target)) || Number(target) < 0)) return;
             if (mediaMode !== 'youtube') {
                 showToast('Carga primero un enlace de YouTube para controlar ese reproductor.', 'warning');
                 return;
@@ -1502,15 +1527,17 @@
             const timestamp = Date.now();
             const commandData = {
                 command,
+                ...(command === 'seekTo' ? { target: Number(target) } : {}),
                 commandId: `${timestamp}-${++youtubeCommandCounter}`,
                 timestamp
             };
 
-            // En la PWA instalada y Safari, BroadcastChannel puede estar aislado.
-            // Firebase es el canal principal para enviar órdenes al único reproductor externo.
+            // Firebase es el canal principal entre Safari y la app instalada.
             if (cloudAuthReady && cloudDatabase) {
                 cloudDatabase.ref(CLOUD_YOUTUBE_COMMAND_PATH).push(commandData)
-                    .then(() => showToast(command === 'playVideo' ? 'Reproducción enviada al proyector.' : (command === 'pauseVideo' ? 'Pausa enviada al proyector.' : 'Detención enviada al proyector.'), 'info'))
+                    .then(() => {
+                        if (command !== 'seekTo') showToast(command === 'playVideo' ? 'Reproducción enviada al proyector.' : (command === 'pauseVideo' ? 'Pausa enviada al proyector.' : 'Orden enviada al proyector.'), 'info');
+                    })
                     .catch(error => {
                         console.error('No se pudo enviar el comando de YouTube por Firebase:', error);
                         showToast('No se pudo enviar la orden a YouTube. Revisa la conexión con Firebase.', 'error');
@@ -1518,7 +1545,6 @@
                 return;
             }
 
-            // Respaldo local si Firebase aún no ha terminado de autenticarse.
             if (!isProjectorConnected()) {
                 updateProjectorConnectionStatus();
                 showToast('Abre primero la ventana del proyector y espera a que conecte.', 'warning');
@@ -1529,9 +1555,46 @@
             try { if (externalWindow && !externalWindow.closed) externalWindow.postMessage(message, '*'); } catch (_) {}
             [300, 800, 1500].forEach(delay => setTimeout(() => {
                 try { if (broadcastChannel) broadcastChannel.postMessage({ ...message, timestamp: Date.now() }); } catch (_) {}
-                try { if (externalWindow && !externalWindow.closed) externalWindow.postMessage(message, '*'); } catch (_) {}
+                try { if (externalWindow && !externalWindow.closed) externalWindow.postMessage({ ...message, timestamp: Date.now() }, '*'); } catch (_) {}
             }, delay));
-            showToast(command === 'playVideo' ? 'Reproducción enviada al proyector.' : 'Orden enviada al proyector.', 'info');
+            if (command !== 'seekTo') showToast(command === 'playVideo' ? 'Reproducción enviada al proyector.' : 'Orden enviada al proyector.', 'info');
+        }
+
+        function refreshYouTubeControls() {
+            const slider = document.getElementById('youtube-seek-slider');
+            const back = document.getElementById('btn-youtube-back');
+            const forward = document.getElementById('btn-youtube-forward');
+            const statusLabel = document.getElementById('youtube-playback-status');
+            const currentLabel = document.getElementById('youtube-current-time');
+            const durationLabel = document.getElementById('youtube-duration');
+            const status = youtubeRemoteStatus;
+            const fresh = !!(status && Number.isFinite(Number(status.timestamp)) && Date.now() - Number(status.timestamp) < 8000);
+            const active = mediaMode === 'youtube';
+            const duration = fresh && Number(status.duration) > 0 ? Number(status.duration) : 0;
+            const current = fresh && Number.isFinite(Number(status.currentTime)) ? Math.max(0, Number(status.currentTime)) : 0;
+            const enabled = active && fresh && duration > 0;
+            if (slider) slider.disabled = !enabled;
+            if (back) back.disabled = !enabled;
+            if (forward) forward.disabled = !enabled;
+            if (statusLabel) {
+                if (!active) statusLabel.textContent = 'YouTube inactivo';
+                else if (!fresh) statusLabel.textContent = 'Conectando…';
+                else if (Number(status.playerState) === 1) statusLabel.textContent = 'Reproduciendo';
+                else if (Number(status.playerState) === 2) statusLabel.textContent = 'En pausa';
+                else if (Number(status.playerState) === 0) statusLabel.textContent = 'Finalizado';
+                else statusLabel.textContent = duration > 0 ? 'Listo' : 'Cargando video…';
+            }
+            const seeking = youtubeSeekInProgress || Date.now() < youtubeSeekPendingUntil;
+            if (currentLabel) currentLabel.textContent = formatVideoTime(seeking && slider && duration > 0 ? Number(slider.value) / 1000 * duration : current);
+            if (durationLabel) durationLabel.textContent = formatVideoTime(duration);
+            if (slider && duration > 0 && !seeking) slider.value = String(Math.round(Math.min(current, duration) / duration * 1000));
+        }
+
+        function getYouTubeVideoDurationStatus() {
+            const status = youtubeRemoteStatus;
+            if (!status || Date.now() - Number(status.timestamp || 0) >= 8000) return null;
+            if (!Number.isFinite(Number(status.duration)) || Number(status.duration) <= 0) return null;
+            return status;
         }
 
         function formatVideoTime(seconds) {
@@ -1776,6 +1839,7 @@
             // Canal directo adicional: útil mientras la referencia de la ventana siga disponible.
             try { if (externalWindow && !externalWindow.closed) externalWindow.postMessage(payload, '*'); } catch (e) {}
             scheduleCloudProjectionSync(payload);
+            refreshYouTubeControls();
 
             updateProjectorDOM(document, payload, false);
             if (externalWindow && !externalWindow.closed) {
@@ -2311,6 +2375,34 @@
             document.getElementById('btn-youtube-play').onclick = () => sendYouTubeCommand('playVideo');
             document.getElementById('btn-youtube-pause').onclick = () => sendYouTubeCommand('pauseVideo');
             document.getElementById('btn-open-youtube-window').onclick = openInteractiveYouTubeWindow;
+            document.getElementById('btn-youtube-back').onclick = () => {
+                const remote = getYouTubeVideoDurationStatus();
+                if (remote) sendYouTubeCommand('seekTo', Math.max(0, Number(remote.currentTime || 0) - 10));
+            };
+            document.getElementById('btn-youtube-forward').onclick = () => {
+                const remote = getYouTubeVideoDurationStatus();
+                if (remote) sendYouTubeCommand('seekTo', Math.min(Number(remote.duration), Number(remote.currentTime || 0) + 10));
+            };
+            const youtubeSeekSlider = document.getElementById('youtube-seek-slider');
+            youtubeSeekSlider.addEventListener('pointerdown', () => { youtubeSeekInProgress = true; });
+            youtubeSeekSlider.addEventListener('touchstart', () => { youtubeSeekInProgress = true; }, { passive: true });
+            youtubeSeekSlider.addEventListener('input', () => {
+                const remote = getYouTubeVideoDurationStatus();
+                if (!remote) return;
+                const target = Number(youtubeSeekSlider.value) / 1000 * Number(remote.duration);
+                const currentLabel = document.getElementById('youtube-current-time');
+                if (currentLabel) currentLabel.textContent = formatVideoTime(target);
+            });
+            youtubeSeekSlider.addEventListener('change', () => {
+                const remote = getYouTubeVideoDurationStatus();
+                youtubeSeekInProgress = false;
+                if (!remote || mediaMode !== 'youtube') { refreshYouTubeControls(); return; }
+                const target = Math.max(0, Math.min(Number(remote.duration), Number(youtubeSeekSlider.value) / 1000 * Number(remote.duration)));
+                youtubeSeekPendingUntil = Date.now() + 1800;
+                sendYouTubeCommand('seekTo', target);
+                refreshYouTubeControls();
+                setTimeout(() => { youtubeSeekPendingUntil = 0; refreshYouTubeControls(); }, 1900);
+            });
             document.getElementById('btn-load-youtube').onclick = () => {
                 const url = document.getElementById('video-url-input').value.trim();
                 const embedUrl = getYouTubeEmbedUrl(url);

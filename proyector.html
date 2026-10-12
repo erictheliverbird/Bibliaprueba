@@ -83,6 +83,8 @@
                                     let ytLoopEnabled = false;
                                     let ytSeparateWindowMode = false; // YouTube comparte la ventana del proyector con los versículos.
                                     let ytLastStatus = '';
+                                    let ytPendingTarget = null;
+                                    let ytCloudStatusRef = null;
 
                                     function getYouTubeId(value) {
                                         try {
@@ -94,13 +96,30 @@
                                             return '';
                                         } catch (_) { return ''; }
                                     }
+                                    function publishYouTubePlaybackStatus() {
+                                        if (!ytCloudStatusRef || !ytPlayerReady || !ytPlayer || !ytDesiredVideoId) return;
+                                        let currentTime = 0, duration = 0, playerState = ytPlayerState;
+                                        try { currentTime = Number(ytPlayer.getCurrentTime()) || 0; } catch (_) {}
+                                        try { duration = Number(ytPlayer.getDuration()) || 0; } catch (_) {}
+                                        try { playerState = Number(ytPlayer.getPlayerState()); } catch (_) {}
+                                        ytCloudStatusRef.set({
+                                            videoId: ytDesiredVideoId,
+                                            currentTime: Math.max(0, currentTime),
+                                            duration: Math.max(0, duration),
+                                            playerState,
+                                            playing: playerState === 1,
+                                            paused: playerState === 2,
+                                            timestamp: Date.now()
+                                        }).catch(error => console.warn('No se pudo publicar el estado de YouTube:', error));
+                                    }
                                     function sendYouTubeStatus(status, extra = {}) {
-                                        if (status === ytLastStatus && !extra.force) return;
+                                        if (status === ytLastStatus && !extra.force) { publishYouTubePlaybackStatus(); return; }
                                         ytLastStatus = status;
                                         try { if (channel) channel.postMessage({ type: '__youtube_status', status, timestamp: Date.now(), ...extra }); } catch (_) {}
+                                        publishYouTubePlaybackStatus();
                                     }
-                                    function executeYouTubeCommand(command) {
-                                        if (!ytPlayerReady || !ytPlayer || !command) { ytPendingCommand = command || ytPendingCommand; return; }
+                                    function executeYouTubeCommand(command, target = null) {
+                                        if (!ytPlayerReady || !ytPlayer || !command) { ytPendingCommand = command || ytPendingCommand; ytPendingTarget = target; return; }
                                         if (command === 'playVideo') {
                                             if (ytPlayerState === -1 || !ytCueIssuedId) { ytPendingCommand = command; return; }
                                             ytPendingCommand = '';
@@ -110,7 +129,14 @@
                                             try { ytPlayer.pauseVideo(); } catch (_) {}
                                         } else if (command === 'stopVideo') {
                                             ytPendingCommand = '';
+                                            ytPendingTarget = null;
                                             try { ytPlayer.stopVideo(); } catch (_) {}
+                                        } else if (command === 'seekTo') {
+                                            const seekTarget = Number(target);
+                                            if (!Number.isFinite(seekTarget) || seekTarget < 0) return;
+                                            ytPendingCommand = '';
+                                            ytPendingTarget = null;
+                                            try { ytPlayer.seekTo(seekTarget, true); publishYouTubePlaybackStatus(); } catch (_) {}
                                         }
                                     }
                                     function cueYouTubeVideo(videoId) {
@@ -154,8 +180,10 @@
                                                         // 5 = CUED: ahora sí se puede ejecutar el Play que llegó antes.
                                                         if (event.data === 5 && ytPendingCommand) {
                                                             const queued = ytPendingCommand;
+                                                            const queuedTarget = ytPendingTarget;
                                                             ytPendingCommand = '';
-                                                            executeYouTubeCommand(queued);
+                                                            ytPendingTarget = null;
+                                                            executeYouTubeCommand(queued, queuedTarget);
                                                         }
                                                         if (event.data === 1) sendYouTubeStatus('playing', { videoId: ytDesiredVideoId });
                                                         else if (event.data === 2) sendYouTubeStatus('paused', { videoId: ytDesiredVideoId });
@@ -176,14 +204,17 @@
                                     // Un único reproductor YouTube dentro de la ventana real de proyección.
                                     // La vista previa del panel no crea ningún iframe ni reproduce audio.
                                     initializeYouTubeAPI();
+                                    // El reproductor proyectado es la única fuente de tiempo/duración.
+                                    // Se publica un estado ligero cada segundo para la barra del iPad.
+                                    setInterval(publishYouTubePlaybackStatus, 1000);
                                     try {
                                         if ('BroadcastChannel' in window) {
                                             channel = new BroadcastChannel(CHANNEL_NAME);
                                             channel.addEventListener('message', event => {
                                                 const data = event.data;
                                                 if (data && data.type === '__youtube_command') {
-                                                    handleYouTubeCommand(data.command);
-                                                    [180, 500, 950].forEach(delay => setTimeout(() => handleYouTubeCommand(data.command), delay));
+                                                    handleYouTubeCommand(data.command, data.target);
+                                                    [180, 500, 950].forEach(delay => setTimeout(() => handleYouTubeCommand(data.command, data.target), delay));
                                                     return;
                                                 }
                                                 if (data && data.type === '__controller_hello') {
@@ -212,18 +243,18 @@
                                     window.addEventListener('pageshow', sendProjectorHeartbeat);
                                     document.addEventListener('visibilitychange', () => { if (!document.hidden) sendProjectorHeartbeat(); });
 
-                                    function handleYouTubeCommand(command) {
+                                    function handleYouTubeCommand(command, target = null) {
                                         if (ytSeparateWindowMode) return; // Seguridad: no aceptar comandos si el modo independiente está activado.
-                                        if (command !== 'playVideo' && command !== 'pauseVideo' && command !== 'stopVideo') return;
+                                        if (command !== 'playVideo' && command !== 'pauseVideo' && command !== 'stopVideo' && command !== 'seekTo') return;
                                         // Si el video está cargando o esperando CUED, guardar la orden.
-                                        executeYouTubeCommand(command);
+                                        executeYouTubeCommand(command, target);
                                     }
                                     window.addEventListener('message', event => {
                                         const data = event.data;
                                         if (data && data.type === '__youtube_command') {
-                                            handleYouTubeCommand(data.command);
+                                            handleYouTubeCommand(data.command, data.target);
                                             // Reintentar si el iframe aún está terminando de inicializarse.
-                                            [150, 450, 900].forEach(delay => setTimeout(() => handleYouTubeCommand(data.command), delay));
+                                            [150, 450, 900].forEach(delay => setTimeout(() => handleYouTubeCommand(data.command, data.target), delay));
                                             return;
                                         }
                                         if (data && data.type === '__screen_frame') {
@@ -656,12 +687,14 @@
                                     };
                                     const CLOUD_PROJECTION_PATH = 'rooms/casa-bendiciones/state';
                                     const CLOUD_YOUTUBE_COMMAND_PATH = 'rooms/casa-bendiciones/youtubeCommands';
+                                    const CLOUD_YOUTUBE_STATUS_PATH = 'rooms/casa-bendiciones/youtubeStatus';
                                     let lastCloudYouTubeCommandId = '';
                                     try {
                                         if (window.firebase && firebase.database && firebase.auth) {
                                             if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
                                             firebase.auth().signInAnonymously().then(() => {
                                                 const transferDatabase = firebase.database();
+                                                ytCloudStatusRef = transferDatabase.ref(CLOUD_YOUTUBE_STATUS_PATH);
                                                 setupProjectorVideoTransfer(transferDatabase);
                                                 transferDatabase.ref(CLOUD_PROJECTION_PATH).on('value', snapshot => {
                                                     const cloudData = snapshot.val();
@@ -675,7 +708,7 @@
                                                     const age = Date.now() - Number(item.timestamp || 0);
                                                     if (item.commandId !== lastCloudYouTubeCommandId && age >= 0 && age < 15000) {
                                                         lastCloudYouTubeCommandId = item.commandId;
-                                                        handleYouTubeCommand(item.command);
+                                                        handleYouTubeCommand(item.command, item.target);
                                                     }
                                                     snapshot.ref.remove().catch(error => console.warn('No se pudo limpiar un comando de YouTube:', error));
                                                 }, error => console.error('Firebase no pudo recibir los comandos de YouTube:', error));
