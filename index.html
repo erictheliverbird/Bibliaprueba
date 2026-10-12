@@ -825,15 +825,27 @@
             } finally { videoTransferInProgress = false; }
         }
 
-        async function sendLocalVideoToProjection(file) {
-            if (!cloudDatabase || !cloudAuthReady || !videoTransferReadyId || !file) {
-                showToast('Abre primero la ventana de proyección y vuelve a seleccionar el video.', 'warning');
+        async function sendLocalVideoToProjection(file, attempt = 0) {
+            if (!file) return;
+            // La autenticación y el aviso de proyector pueden llegar unos instantes después
+            // de que el usuario elija el archivo. Esperamos automáticamente en vez de perderlo.
+            if (!cloudDatabase || !cloudAuthReady || !videoTransferReadyId) {
+                if (attempt < 24) {
+                    setTimeout(() => {
+                        if (activeVideoFile === file && mediaMode === 'video') sendLocalVideoToProjection(file, attempt + 1);
+                    }, 500);
+                    return;
+                }
+                showToast('No se encontró la ventana de proyección. Ábrela y vuelve a cargar el video.', 'warning');
                 return;
             }
             if (videoTransferChannel && videoTransferChannel.readyState === 'open') {
                 await transferVideoFileOverChannel(file, activeVideoUrl);
                 return;
             }
+            // Si hay una conexión viva en negociación, no crear otra oferta que la sustituya.
+            // Si la anterior falló o se cerró, limpiarla para permitir un nuevo intento.
+            if (videoTransferPeer && videoTransferSessionId && ['new', 'connecting', 'connected'].includes(videoTransferPeer.connectionState)) return;
             closeVideoTransferPeer();
             const sessionId = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
             videoTransferSessionId = sessionId;
@@ -2211,7 +2223,10 @@
                     controlVideo.play().catch(() => {});
                     refreshVideoControls();
                     syncToProjector();
-                    showToast("Video local cargado", "success");
+                    showToast("Video local cargado; enviándolo al proyector…", "success");
+                    // CRÍTICO: Firebase sincroniza el estado, pero el archivo blob: no se puede
+                    // abrir en la otra app. Transferimos el archivo binario por WebRTC explícitamente.
+                    sendLocalVideoToProjection(file);
                 }
             };
 
