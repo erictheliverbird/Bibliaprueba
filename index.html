@@ -832,11 +832,22 @@
             try { message = JSON.parse(event.data); } catch (_) { return; }
             if (message.type !== 'video-status') return;
             if (message.sourceKey && activeVideoUrl && message.sourceKey !== activeVideoUrl) return;
+            // La ventana proyectada es la única autoridad de reproducción. El panel solo refleja
+            // su estado y reproduce una copia local silenciada para mostrar una vista previa.
             remoteVideoStatus = message;
+            isVideoPlaying = !!message.playing;
+            if (typeof message.loop === 'boolean') videoLoop = message.loop;
             const video = document.getElementById('preview-video');
-            if (mediaMode === 'video' && video && Number.isFinite(message.currentTime) && video.readyState >= 1 && !videoSeekInProgress) {
-                const drift = Math.abs((video.currentTime || 0) - message.currentTime);
-                if (drift > 0.85) { try { video.currentTime = Math.max(0, message.currentTime); } catch (_) {} }
+            if (mediaMode === 'video' && video) {
+                video.muted = true;
+                video.volume = 0;
+                if (Number.isFinite(message.currentTime) && video.readyState >= 1 && !videoSeekInProgress) {
+                    const drift = Math.abs((video.currentTime || 0) - message.currentTime);
+                    // Corregir solo diferencias perceptibles para no provocar saltos continuos.
+                    if (drift > (message.playing ? 1.0 : 0.25)) {
+                        try { video.currentTime = Math.max(0, message.currentTime); } catch (_) {}
+                    }
+                }
                 if (message.playing && video.paused) video.play().catch(() => {});
                 else if (!message.playing && !video.paused) video.pause();
             }
@@ -865,14 +876,18 @@
 
         function seekLocalVideoTo(target) {
             const video = document.getElementById('preview-video');
-            if (mediaMode !== 'video' || !activeVideoFile || !video || !Number.isFinite(video.duration) || video.duration <= 0) return;
-            const clamped = Math.max(0, Math.min(video.duration, target));
-            try { video.currentTime = clamped; } catch (_) {}
-            videoSeekTo = clamped;
+            if (mediaMode !== 'video' || !activeVideoFile || !video) return;
+            const duration = remoteVideoStatus && Number.isFinite(remoteVideoStatus.duration) && remoteVideoStatus.duration > 0
+                ? remoteVideoStatus.duration : video.duration;
+            if (!Number.isFinite(duration) || duration <= 0) return;
+            const clamped = Math.max(0, Math.min(duration, target));
             videoSeekId += 1;
-            isVideoPlaying = !video.paused;
-            sendVideoControlCommand('seek', { target: clamped, seekId: videoSeekId, playing: isVideoPlaying });
-            syncToProjector();
+            // No mover la vista previa ni publicar un segundo seek por Firebase: el proyector manda.
+            const sent = sendVideoControlCommand('seek', { target: clamped, seekId: videoSeekId });
+            if (!sent) {
+                showToast('El proyector aún no está conectado. Espera a que indique «Proyector conectado» y vuelve a intentar.', 'warning');
+                return;
+            }
             refreshVideoControls();
         }
 
@@ -1830,7 +1845,8 @@
                     videoEl.loop = !!data.videoLoop;
                     // La vista previa del controlador permanece silenciada para evitar doble audio;
                     // el reproductor de salida debe reproducir también el sonido.
-                    if (videoEl.id !== 'preview-video') { videoEl.muted = false; videoEl.volume = 1; }
+                    if (videoEl.id === 'preview-video') { videoEl.muted = true; videoEl.volume = 0; }
+                    else { videoEl.muted = false; videoEl.volume = 1; }
                     if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null) queueVideoSeek(videoEl, data.videoSeekTo);
                     videoEl.classList.remove('hidden');
                     if (data.isVideoPlaying) {
@@ -2307,6 +2323,8 @@
                     isVideoPlaying = true;
                     videoSeekTo = 0;
                     controlVideo.loop = videoLoop;
+                    controlVideo.muted = true;
+                    controlVideo.volume = 0;
                     controlVideo.src = activeVideoUrl;
                     controlVideo.play().catch(() => {});
                     refreshVideoControls();
@@ -2338,20 +2356,18 @@
             };
             document.getElementById('btn-video-play-pause').onclick = () => {
                 if (mediaMode !== 'video' || !activeVideoUrl) return;
-                const remotePlaying = remoteVideoStatus && remoteVideoStatus.sourceKey === activeVideoUrl ? !!remoteVideoStatus.playing : !controlVideo.paused;
-                if (remotePlaying) {
-                    controlVideo.pause();
-                    isVideoPlaying = false;
-                    sendVideoControlCommand('pause');
-                    syncToProjector();
-                    refreshVideoControls();
-                } else {
-                    isVideoPlaying = true;
-                    sendVideoControlCommand('play');
-                    controlVideo.play().catch(() => {});
-                    syncToProjector();
-                    refreshVideoControls();
+                // El botón nunca controla directamente la copia de vista previa ni usa Firebase
+                // para reproducir: envía una única orden al reproductor proyectado.
+                const remotePlaying = remoteVideoStatus && remoteVideoStatus.sourceKey === activeVideoUrl
+                    ? !!remoteVideoStatus.playing : !!isVideoPlaying;
+                const action = remotePlaying ? 'pause' : 'play';
+                const sent = sendVideoControlCommand(action);
+                if (!sent) {
+                    showToast('El proyector aún no está conectado. Espera a que indique «Proyector conectado».', 'warning');
+                    return;
                 }
+                isVideoPlaying = action === 'play';
+                refreshVideoControls();
             };
             document.getElementById('btn-video-back').onclick = () => {
                 const duration = remoteVideoStatus && Number.isFinite(remoteVideoStatus.duration) ? remoteVideoStatus.duration : controlVideo.duration;
@@ -2369,7 +2385,9 @@
             const beginVideoSeek = () => { videoSeekInProgress = true; };
             const endVideoSeek = () => { videoSeekInProgress = false; refreshVideoControls(); };
             const commitVideoSeek = () => {
-                if (mediaMode !== 'video' || !Number.isFinite(controlVideo.duration) || controlVideo.duration <= 0) { endVideoSeek(); return; }
+                const knownDuration = remoteVideoStatus && Number.isFinite(remoteVideoStatus.duration) && remoteVideoStatus.duration > 0
+                    ? remoteVideoStatus.duration : controlVideo.duration;
+                if (mediaMode !== 'video' || !Number.isFinite(knownDuration) || knownDuration <= 0) { endVideoSeek(); return; }
                 const sliderValue = Number(seekSlider.value);
                 const now = Date.now();
                 if (sliderValue === lastSeekCommitValue && now - lastSeekCommitAt < 500) { endVideoSeek(); return; }
@@ -2395,10 +2413,14 @@
             seekSlider.ontouchend = commitVideoSeek;
             document.getElementById('video-loop-toggle').onchange = (event) => {
                 videoLoop = !!event.target.checked;
-                controlVideo.loop = videoLoop;
-                sendVideoControlCommand('loop', { loop: videoLoop });
-                if (mediaMode === 'youtube' && activeVideoUrl) activeVideoUrl = withYouTubeLoop(activeVideoUrl, videoLoop);
-                syncToProjector();
+                if (mediaMode === 'video') {
+                    const sent = sendVideoControlCommand('loop', { loop: videoLoop });
+                    if (!sent) showToast('El proyector aún no está conectado para cambiar el bucle.', 'warning');
+                } else {
+                    controlVideo.loop = videoLoop;
+                    if (mediaMode === 'youtube' && activeVideoUrl) activeVideoUrl = withYouTubeLoop(activeVideoUrl, videoLoop);
+                    syncToProjector();
+                }
                 showToast(videoLoop ? 'Repetición en bucle activada' : 'Repetición en bucle desactivada', 'info');
             };
             refreshVideoControls();
