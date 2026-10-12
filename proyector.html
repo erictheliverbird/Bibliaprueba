@@ -381,13 +381,26 @@
                                                     }
                                                     usableUrl = localProjectionVideoUrl;
                                                 }
-                                                if (video.getAttribute('src') !== usableUrl) { video.setAttribute('src', usableUrl); video.load(); }
-                                                video.loop = !!data.videoLoop; video.muted = false; video.volume = 1;
-                                                if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null && String(video.dataset.lastSeekId || '') !== String(data.videoSeekId ?? 'legacy')) { video.dataset.lastSeekId = String(data.videoSeekId ?? 'legacy'); queueProjectionSeek(video, data.videoSeekTo); }
+                                                const sourceChanged = video.getAttribute('src') !== usableUrl;
+                                                if (sourceChanged) {
+                                                    // Firebase actualiza texto/estilos, no controla el transporte multimedia.
+                                                    // El reproductor solo se inicializa al recibir un archivo nuevo.
+                                                    video.setAttribute('src', usableUrl);
+                                                    video.load();
+                                                    video.loop = !!data.videoLoop;
+                                                    video.muted = false;
+                                                    video.volume = 1;
+                                                    if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null && String(video.dataset.lastSeekId || '') !== String(data.videoSeekId ?? 'legacy')) {
+                                                        video.dataset.lastSeekId = String(data.videoSeekId ?? 'legacy');
+                                                        queueProjectionSeek(video, data.videoSeekTo);
+                                                    }
+                                                }
                                                 video.classList.remove('hidden');
-                                                if (data.isVideoPlaying) {
-                                                    if (video.paused || video.ended) video.play().then(() => { if (audioPrompt) audioPrompt.classList.add('hidden'); }).catch(() => { if (audioPrompt) { audioPrompt.textContent = '▶ Toca para reproducir con sonido'; audioPrompt.classList.remove('hidden'); } });
-                                                } else if (!video.paused) video.pause();
+                                                if (sourceChanged && data.isVideoPlaying) {
+                                                    video.play().then(() => { if (audioPrompt) audioPrompt.classList.add('hidden'); }).catch(() => {
+                                                        if (audioPrompt) { audioPrompt.textContent = '▶ Toca para reproducir con sonido'; audioPrompt.classList.remove('hidden'); }
+                                                    });
+                                                }
                                             }
                                             else { video.pause(); video.classList.add('hidden'); if (video.srcObject) video.srcObject = null; const localPrompt = document.getElementById('proj-local-video-prompt'); if (localPrompt) localPrompt.classList.add('hidden'); }
                                         }
@@ -400,6 +413,9 @@
                                     let projectorTransferSessionId = '';
                                     let projectorReceiveChannel = null;
                                     let projectorControlChannel = null;
+                                    let projectorMirrorChannel = null;
+                                    let projectorMirrorTimer = null;
+                                    let projectorMirrorCanvas = null;
                                     let incomingVideoTransfer = null;
                                     let lastProjectorStatusAt = 0;
                                     let pendingProjectorVideoCommand = null;
@@ -420,6 +436,9 @@
                                     function closeProjectorTransferPeer() {
                                         try { if (projectorReceiveChannel) projectorReceiveChannel.close(); } catch (_) {}
                                         try { if (projectorControlChannel) projectorControlChannel.close(); } catch (_) {}
+                                        try { if (projectorMirrorChannel) projectorMirrorChannel.close(); } catch (_) {}
+                                        if (projectorMirrorTimer) clearInterval(projectorMirrorTimer);
+                                        projectorMirrorTimer = null; projectorMirrorChannel = null; projectorMirrorCanvas = null;
                                         try { if (projectorTransferPeer) projectorTransferPeer.close(); } catch (_) {}
                                         projectorReceiveChannel = null; projectorControlChannel = null; projectorTransferPeer = null; incomingVideoTransfer = null;
                                     }
@@ -503,6 +522,31 @@
                                         } catch (error) { console.error('No se pudo preparar el video recibido:', error); }
                                     }
 
+                                    function sendProjectorMirrorFrame(force = false) {
+                                        const channel = projectorMirrorChannel;
+                                        const video = document.getElementById('proj-video');
+                                        if (!channel || channel.readyState !== 'open' || !video || video.readyState < 2 || !video.videoWidth || !video.videoHeight) return;
+                                        if (!force && video.paused) return;
+                                        if (channel.bufferedAmount > 180000) return;
+                                        try {
+                                            if (!projectorMirrorCanvas) projectorMirrorCanvas = document.createElement('canvas');
+                                            const scale = Math.min(1, 640 / video.videoWidth, 360 / video.videoHeight);
+                                            projectorMirrorCanvas.width = Math.max(1, Math.round(video.videoWidth * scale));
+                                            projectorMirrorCanvas.height = Math.max(1, Math.round(video.videoHeight * scale));
+                                            const ctx = projectorMirrorCanvas.getContext('2d', { alpha: false });
+                                            if (!ctx) return;
+                                            ctx.drawImage(video, 0, 0, projectorMirrorCanvas.width, projectorMirrorCanvas.height);
+                                            channel.send(JSON.stringify({ type: 'preview-frame', frame: projectorMirrorCanvas.toDataURL('image/jpeg', 0.48), timestamp: Date.now() }));
+                                        } catch (error) { console.warn('No se pudo enviar el fotograma espejo:', error); }
+                                    }
+                                    function startProjectorMirror() {
+                                        if (projectorMirrorTimer) clearInterval(projectorMirrorTimer);
+                                        projectorMirrorTimer = setInterval(() => sendProjectorMirrorFrame(false), 250);
+                                        const video = document.getElementById('proj-video');
+                                        if (video) ['loadeddata', 'playing', 'pause', 'seeked', 'timeupdate'].forEach(name => video.addEventListener(name, () => sendProjectorMirrorFrame(true)));
+                                        sendProjectorMirrorFrame(true);
+                                    }
+
                                     async function handleVideoOffer(offer) {
                                         if (!offer || !offer.sessionId || !offer.sdp || offer.projectorId !== projectorInstanceId) return;
                                         if (offer.sessionId === projectorTransferSessionId) return;
@@ -518,6 +562,11 @@
                                                     projectorControlChannel.onmessage = handleProjectorVideoControl;
                                                     projectorControlChannel.onopen = () => sendProjectorVideoStatus(true);
                                                     projectorControlChannel.onerror = error => console.error('Canal de controles multimedia:', error);
+                                                } else if (incomingChannel.label === 'preview-mirror') {
+                                                    projectorMirrorChannel = incomingChannel;
+                                                    projectorMirrorChannel.onopen = startProjectorMirror;
+                                                    projectorMirrorChannel.onerror = error => console.error('Canal espejo de video:', error);
+                                                    if (projectorMirrorChannel.readyState === 'open') startProjectorMirror();
                                                 } else {
                                                     projectorReceiveChannel = incomingChannel;
                                                     projectorReceiveChannel.binaryType = 'arraybuffer';
