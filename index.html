@@ -301,23 +301,29 @@
                             </div>
 
                             <div id="video-playback-controls" class="bg-gray-900 border border-gray-800 p-3 rounded-xl space-y-3">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xs font-extrabold text-gray-200 uppercase tracking-wider"><i class="fa-solid fa-sliders mr-1.5 text-blue-400"></i>Controles de reproducción</span>
-                                    <span id="video-playback-status" class="text-[10px] text-gray-500">Sin video local</span>
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="text-xs font-extrabold text-gray-200 uppercase tracking-wider"><i class="fa-solid fa-sliders mr-1.5 text-blue-400"></i>Centro multimedia</span>
+                                    <span id="video-playback-status" class="text-[10px] text-gray-400">Sin video local</span>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <button id="btn-video-play-pause" type="button" class="bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg px-3 py-2 text-xs font-bold" disabled>
+                                <div class="flex items-center justify-center gap-2">
+                                    <button id="btn-video-back" type="button" title="Retroceder 10 segundos" class="bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-gray-200 rounded-lg px-3 py-2 text-xs font-bold" disabled><i class="fa-solid fa-backward-step"></i><span class="ml-1">10 s</span></button>
+                                    <button id="btn-video-play-pause" type="button" class="bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl px-4 py-2.5 text-sm font-bold" disabled>
                                         <i id="video-play-pause-icon" class="fa-solid fa-play mr-1"></i><span id="video-play-pause-label">Reproducir</span>
                                     </button>
-                                    <span id="video-current-time" class="text-[10px] text-gray-400 tabular-nums">00:00</span>
-                                    <input id="video-seek-slider" aria-label="Posición del video" type="range" min="0" max="1000" value="0" class="flex-1 accent-blue-500 disabled:opacity-40" disabled>
-                                    <span id="video-duration" class="text-[10px] text-gray-400 tabular-nums">00:00</span>
+                                    <button id="btn-video-forward" type="button" title="Avanzar 10 segundos" class="bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-gray-200 rounded-lg px-3 py-2 text-xs font-bold" disabled><span class="mr-1">10 s</span><i class="fa-solid fa-forward-step"></i></button>
                                 </div>
-                                <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer select-none">
-                                    <input id="video-loop-toggle" type="checkbox" class="accent-blue-500 w-4 h-4">
-                                    <i class="fa-solid fa-repeat text-blue-400"></i> Reproducir en bucle
-                                </label>
-                                <p class="text-[10px] text-gray-500">Estos controles de avance son para videos locales. Para YouTube, usa los botones Reproducir y Pausar de arriba o los controles del propio reproductor.</p>
+                                <div class="space-y-1">
+                                    <div class="flex items-center justify-between text-[10px] text-gray-400 tabular-nums"><span id="video-current-time">00:00</span><span id="video-duration">00:00</span></div>
+                                    <input id="video-seek-slider" aria-label="Posición del video" type="range" min="0" max="1000" value="0" class="w-full accent-blue-500 disabled:opacity-40" disabled>
+                                </div>
+                                <div class="flex items-center justify-between gap-2">
+                                    <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer select-none">
+                                        <input id="video-loop-toggle" type="checkbox" class="accent-blue-500 w-4 h-4">
+                                        <i class="fa-solid fa-repeat text-blue-400"></i> Bucle
+                                    </label>
+                                    <span id="video-sync-indicator" class="text-[10px] text-gray-500">Esperando video</span>
+                                </div>
+                                <p class="text-[10px] text-gray-500">Los controles siguen el tiempo real del video proyectado. La pantalla externa no muestra estos controles.</p>
                             </div>
 
                             <div class="space-y-2">
@@ -755,6 +761,9 @@
         let videoTransferReadyId = '';
         let videoTransferPeer = null;
         let videoTransferChannel = null;
+        let videoControlChannel = null;
+        let remoteVideoStatus = null;
+        let videoSeekInProgress = false;
         let videoTransferSessionId = '';
         let videoTransferAnswerListener = null;
         let videoTransferInProgress = false;
@@ -774,8 +783,11 @@
             try { if (videoTransferAnswerListener && cloudDatabase) cloudDatabase.ref(CLOUD_TRANSFER_PATH + '/answer').off('value', videoTransferAnswerListener); } catch (_) {}
             videoTransferAnswerListener = null;
             try { if (videoTransferChannel) videoTransferChannel.close(); } catch (_) {}
+            try { if (videoControlChannel) videoControlChannel.close(); } catch (_) {}
             try { if (videoTransferPeer) videoTransferPeer.close(); } catch (_) {}
             videoTransferChannel = null;
+            videoControlChannel = null;
+            remoteVideoStatus = null;
             videoTransferPeer = null;
             videoTransferSessionId = '';
         }
@@ -801,6 +813,67 @@
                 channel.addEventListener('bufferedamountlow', done, { once: true });
                 if (channel.bufferedAmount <= threshold) done();
             });
+        }
+
+        function sendVideoControlCommand(action, details = {}) {
+            const channel = videoControlChannel;
+            const message = { type: 'video-control', action, sourceKey: activeVideoUrl, timestamp: Date.now(), ...details };
+            if (channel && channel.readyState === 'open') {
+                try { channel.send(JSON.stringify(message)); return true; }
+                catch (error) { console.warn('No se pudo enviar el control multimedia:', error); }
+            }
+            // El estado Firebase sigue siendo respaldo para play/pausa; seek requiere el canal directo.
+            return false;
+        }
+
+        function handleRemoteVideoStatusMessage(event) {
+            if (typeof event.data !== 'string') return;
+            let message;
+            try { message = JSON.parse(event.data); } catch (_) { return; }
+            if (message.type !== 'video-status') return;
+            if (message.sourceKey && activeVideoUrl && message.sourceKey !== activeVideoUrl) return;
+            remoteVideoStatus = message;
+            const video = document.getElementById('preview-video');
+            if (mediaMode === 'video' && video && Number.isFinite(message.currentTime) && video.readyState >= 1 && !videoSeekInProgress) {
+                const drift = Math.abs((video.currentTime || 0) - message.currentTime);
+                if (drift > 0.85) { try { video.currentTime = Math.max(0, message.currentTime); } catch (_) {} }
+                if (message.playing && video.paused) video.play().catch(() => {});
+                else if (!message.playing && !video.paused) video.pause();
+            }
+            if (Number.isFinite(message.currentTime)) {
+                const currentLabel = document.getElementById('video-current-time');
+                if (currentLabel) currentLabel.textContent = formatVideoTime(message.currentTime);
+            }
+            if (Number.isFinite(message.duration) && message.duration > 0) {
+                const durationLabel = document.getElementById('video-duration');
+                const slider = document.getElementById('video-seek-slider');
+                if (durationLabel) durationLabel.textContent = formatVideoTime(message.duration);
+                if (slider) {
+                    slider.disabled = !(mediaMode === 'video' && activeVideoFile && message.duration > 0);
+                    if (!videoSeekInProgress) slider.value = String(Math.round(Math.max(0, Math.min(message.duration, message.currentTime || 0)) / message.duration * 1000));
+                }
+            }
+            const status = document.getElementById('video-playback-status');
+            if (status) status.textContent = message.playing ? 'Proyectando · reproduciendo' : (message.ended ? 'Video finalizado' : 'Proyectando · en pausa');
+            const icon = document.getElementById('video-play-pause-icon');
+            const label = document.getElementById('video-play-pause-label');
+            if (icon) icon.className = `fa-solid ${message.playing ? 'fa-pause' : 'fa-play'} mr-1`;
+            if (label) label.textContent = message.playing ? 'Pausar' : 'Reproducir';
+            const indicator = document.getElementById('video-sync-indicator');
+            if (indicator) indicator.textContent = videoControlChannel && videoControlChannel.readyState === 'open' ? 'Proyector conectado' : 'Sin enlace directo';
+        }
+
+        function seekLocalVideoTo(target) {
+            const video = document.getElementById('preview-video');
+            if (mediaMode !== 'video' || !activeVideoFile || !video || !Number.isFinite(video.duration) || video.duration <= 0) return;
+            const clamped = Math.max(0, Math.min(video.duration, target));
+            try { video.currentTime = clamped; } catch (_) {}
+            videoSeekTo = clamped;
+            videoSeekId += 1;
+            isVideoPlaying = !video.paused;
+            sendVideoControlCommand('seek', { target: clamped, seekId: videoSeekId, playing: isVideoPlaying });
+            syncToProjector();
+            refreshVideoControls();
         }
 
         async function transferVideoFileOverChannel(file, sourceKey) {
@@ -857,6 +930,15 @@
                 channel.binaryType = 'arraybuffer';
                 channel.onopen = () => transferVideoFileOverChannel(file, activeVideoUrl);
                 channel.onerror = error => console.error('Canal de transferencia de video:', error);
+                const controlChannel = pc.createDataChannel('video-control', { ordered: true });
+                videoControlChannel = controlChannel;
+                controlChannel.onopen = () => {
+                    const indicator = document.getElementById('video-sync-indicator');
+                    if (indicator) indicator.textContent = 'Proyector conectado';
+                    try { controlChannel.send(JSON.stringify({ type: 'video-control', action: 'get-status', sourceKey: activeVideoUrl })); } catch (_) {}
+                };
+                controlChannel.onmessage = handleRemoteVideoStatusMessage;
+                controlChannel.onerror = error => console.error('Canal de controles multimedia:', error);
                 pc.onconnectionstatechange = () => {
                     if (['failed', 'closed', 'disconnected'].includes(pc.connectionState)) console.warn('Conexión de video:', pc.connectionState);
                 };
@@ -1440,25 +1522,31 @@
         function refreshVideoControls() {
             const video = document.getElementById('preview-video');
             const hasLocalVideo = mediaMode === 'video' && !!activeVideoUrl;
+            const remote = (videoControlChannel && videoControlChannel.readyState === 'open' && remoteVideoStatus && (!remoteVideoStatus.sourceKey || remoteVideoStatus.sourceKey === activeVideoUrl)) ? remoteVideoStatus : null;
             const playButton = document.getElementById('btn-video-play-pause');
             const slider = document.getElementById('video-seek-slider');
+            const backButton = document.getElementById('btn-video-back');
+            const forwardButton = document.getElementById('btn-video-forward');
             const status = document.getElementById('video-playback-status');
             if (playButton) playButton.disabled = !hasLocalVideo;
-            if (slider) slider.disabled = !hasLocalVideo || !Number.isFinite(video.duration) || video.duration <= 0;
-            if (status) status.textContent = hasLocalVideo ? (video.paused ? 'En pausa' : 'Reproduciendo') : (mediaMode === 'youtube' ? 'Controla en YouTube' : 'Sin video local');
+            if (backButton) backButton.disabled = !hasLocalVideo || !Number.isFinite((remote && remote.duration) || (video && video.duration)) || ((remote && remote.duration) || (video && video.duration) || 0) <= 0;
+            if (forwardButton) forwardButton.disabled = !hasLocalVideo || !Number.isFinite((remote && remote.duration) || (video && video.duration)) || ((remote && remote.duration) || (video && video.duration) || 0) <= 0;
+            const duration = remote && Number.isFinite(remote.duration) && remote.duration > 0 ? remote.duration : (video && Number.isFinite(video.duration) ? video.duration : 0);
+            const current = remote && Number.isFinite(remote.currentTime) ? remote.currentTime : (video && Number.isFinite(video.currentTime) ? video.currentTime : 0);
+            const playing = remote ? !!remote.playing : !!(video && !video.paused);
+            if (slider) slider.disabled = !hasLocalVideo || duration <= 0;
+            if (status && !remote) status.textContent = hasLocalVideo ? (video.paused ? 'Vista previa local' : 'Reproduciendo') : (mediaMode === 'youtube' ? 'Controla en YouTube' : 'Sin video local');
             const icon = document.getElementById('video-play-pause-icon');
             const label = document.getElementById('video-play-pause-label');
-            if (icon) icon.className = `fa-solid ${video && !video.paused ? 'fa-pause' : 'fa-play'} mr-1`;
-            if (label) label.textContent = video && !video.paused ? 'Pausar' : 'Reproducir';
-            if (video) {
-                const duration = Number.isFinite(video.duration) ? video.duration : 0;
-                const current = Number.isFinite(video.currentTime) ? video.currentTime : 0;
-                const currentLabel = document.getElementById('video-current-time');
-                const durationLabel = document.getElementById('video-duration');
-                if (currentLabel) currentLabel.textContent = formatVideoTime(current);
-                if (durationLabel) durationLabel.textContent = formatVideoTime(duration);
-                if (slider && duration > 0 && !slider.matches(':active')) slider.value = String(Math.round(current / duration * 1000));
-            }
+            if (icon) icon.className = `fa-solid ${playing ? 'fa-pause' : 'fa-play'} mr-1`;
+            if (label) label.textContent = playing ? 'Pausar' : 'Reproducir';
+            const currentLabel = document.getElementById('video-current-time');
+            const durationLabel = document.getElementById('video-duration');
+            if (currentLabel) currentLabel.textContent = formatVideoTime(current);
+            if (durationLabel) durationLabel.textContent = formatVideoTime(duration);
+            if (slider && duration > 0 && !videoSeekInProgress) slider.value = String(Math.round(current / duration * 1000));
+            const indicator = document.getElementById('video-sync-indicator');
+            if (indicator && !remote) indicator.textContent = videoControlChannel && videoControlChannel.readyState === 'open' ? 'Proyector conectado' : 'Conectando proyector…';
         }
 
         function showToast(msg, type = "info") {
@@ -2237,6 +2325,7 @@
                 if (activeVideoUrl && activeVideoUrl.startsWith('blob:')) URL.revokeObjectURL(activeVideoUrl);
                 activeVideoUrl = '';
                 activeVideoFile = null;
+                remoteVideoStatus = null;
                 mediaMode = 'none';
                 isVideoPlaying = false;
                 videoSeekTo = null;
@@ -2249,50 +2338,66 @@
             };
             document.getElementById('btn-video-play-pause').onclick = () => {
                 if (mediaMode !== 'video' || !activeVideoUrl) return;
-                if (controlVideo.paused) {
-                    isVideoPlaying = true;
-                    controlVideo.play().then(() => { syncToProjector(); refreshVideoControls(); }).catch(() => showToast('No se pudo reproducir el video', 'error'));
-                } else {
+                const remotePlaying = remoteVideoStatus && remoteVideoStatus.sourceKey === activeVideoUrl ? !!remoteVideoStatus.playing : !controlVideo.paused;
+                if (remotePlaying) {
                     controlVideo.pause();
                     isVideoPlaying = false;
+                    sendVideoControlCommand('pause');
+                    syncToProjector();
+                    refreshVideoControls();
+                } else {
+                    isVideoPlaying = true;
+                    sendVideoControlCommand('play');
+                    controlVideo.play().catch(() => {});
                     syncToProjector();
                     refreshVideoControls();
                 }
             };
+            document.getElementById('btn-video-back').onclick = () => {
+                const duration = remoteVideoStatus && Number.isFinite(remoteVideoStatus.duration) ? remoteVideoStatus.duration : controlVideo.duration;
+                const current = remoteVideoStatus && Number.isFinite(remoteVideoStatus.currentTime) ? remoteVideoStatus.currentTime : controlVideo.currentTime;
+                seekLocalVideoTo(Math.max(0, current - 10));
+            };
+            document.getElementById('btn-video-forward').onclick = () => {
+                const duration = remoteVideoStatus && Number.isFinite(remoteVideoStatus.duration) ? remoteVideoStatus.duration : controlVideo.duration;
+                const current = remoteVideoStatus && Number.isFinite(remoteVideoStatus.currentTime) ? remoteVideoStatus.currentTime : controlVideo.currentTime;
+                seekLocalVideoTo(Math.min(Number.isFinite(duration) ? duration : current + 10, current + 10));
+            };
             const seekSlider = document.getElementById('video-seek-slider');
             let lastSeekCommitAt = 0;
             let lastSeekCommitValue = -1;
+            const beginVideoSeek = () => { videoSeekInProgress = true; };
+            const endVideoSeek = () => { videoSeekInProgress = false; refreshVideoControls(); };
             const commitVideoSeek = () => {
-                if (mediaMode !== 'video' || !Number.isFinite(controlVideo.duration) || controlVideo.duration <= 0) return;
+                if (mediaMode !== 'video' || !Number.isFinite(controlVideo.duration) || controlVideo.duration <= 0) { endVideoSeek(); return; }
                 const sliderValue = Number(seekSlider.value);
                 const now = Date.now();
-                // Safari puede disparar change, pointerup y touchend por un único gesto.
-                if (sliderValue === lastSeekCommitValue && now - lastSeekCommitAt < 450) return;
+                if (sliderValue === lastSeekCommitValue && now - lastSeekCommitAt < 500) { endVideoSeek(); return; }
                 lastSeekCommitValue = sliderValue; lastSeekCommitAt = now;
-                const target = Math.max(0, Math.min(controlVideo.duration, (sliderValue / 1000) * controlVideo.duration));
-                try { controlVideo.currentTime = target; } catch (_) {}
-                videoSeekTo = target;
-                videoSeekId += 1;
-                isVideoPlaying = !controlVideo.paused;
-                syncToProjector();
-                refreshVideoControls();
+                const duration = remoteVideoStatus && Number.isFinite(remoteVideoStatus.duration) && remoteVideoStatus.duration > 0 ? remoteVideoStatus.duration : controlVideo.duration;
+                const target = Math.max(0, Math.min(duration, (sliderValue / 1000) * duration));
+                seekLocalVideoTo(target);
+                endVideoSeek();
             };
+            seekSlider.addEventListener('pointerdown', beginVideoSeek);
+            seekSlider.addEventListener('touchstart', beginVideoSeek, { passive: true });
             seekSlider.oninput = (event) => {
-                if (mediaMode !== 'video' || !Number.isFinite(controlVideo.duration) || controlVideo.duration <= 0) return;
-                const target = Math.max(0, Math.min(controlVideo.duration, (Number(event.target.value) / 1000) * controlVideo.duration));
+                if (mediaMode !== 'video') return;
+                videoSeekInProgress = true;
+                const duration = remoteVideoStatus && Number.isFinite(remoteVideoStatus.duration) && remoteVideoStatus.duration > 0 ? remoteVideoStatus.duration : controlVideo.duration;
+                if (!Number.isFinite(duration) || duration <= 0) return;
+                const target = Math.max(0, Math.min(duration, (Number(event.target.value) / 1000) * duration));
                 const currentLabel = document.getElementById('video-current-time');
                 if (currentLabel) currentLabel.textContent = formatVideoTime(target);
             };
             seekSlider.onchange = commitVideoSeek;
-            // Algunos navegadores táctiles no disparan change de forma consistente al soltar el control.
             seekSlider.onpointerup = commitVideoSeek;
             seekSlider.ontouchend = commitVideoSeek;
             document.getElementById('video-loop-toggle').onchange = (event) => {
                 videoLoop = !!event.target.checked;
                 controlVideo.loop = videoLoop;
-                if (mediaMode === 'youtube' && activeVideoUrl) {
-                    activeVideoUrl = withYouTubeLoop(activeVideoUrl, videoLoop);
-                }
+                sendVideoControlCommand('loop', { loop: videoLoop });
+                if (mediaMode === 'youtube' && activeVideoUrl) activeVideoUrl = withYouTubeLoop(activeVideoUrl, videoLoop);
                 syncToProjector();
                 showToast(videoLoop ? 'Repetición en bucle activada' : 'Repetición en bucle desactivada', 'info');
             };

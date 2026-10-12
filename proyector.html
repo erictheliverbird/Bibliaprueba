@@ -399,7 +399,10 @@
                                     let projectorTransferPeer = null;
                                     let projectorTransferSessionId = '';
                                     let projectorReceiveChannel = null;
+                                    let projectorControlChannel = null;
                                     let incomingVideoTransfer = null;
+                                    let lastProjectorStatusAt = 0;
+                                    let pendingProjectorVideoCommand = null;
                                     let projectorTransferDatabase = null;
                                     const projectorInstanceId = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
 
@@ -416,8 +419,59 @@
 
                                     function closeProjectorTransferPeer() {
                                         try { if (projectorReceiveChannel) projectorReceiveChannel.close(); } catch (_) {}
+                                        try { if (projectorControlChannel) projectorControlChannel.close(); } catch (_) {}
                                         try { if (projectorTransferPeer) projectorTransferPeer.close(); } catch (_) {}
-                                        projectorReceiveChannel = null; projectorTransferPeer = null; incomingVideoTransfer = null;
+                                        projectorReceiveChannel = null; projectorControlChannel = null; projectorTransferPeer = null; incomingVideoTransfer = null;
+                                    }
+
+                                    function sendProjectorVideoStatus(force = false) {
+                                        const channel = projectorControlChannel;
+                                        const video = document.getElementById('proj-video');
+                                        if (!channel || channel.readyState !== 'open' || !video) return;
+                                        const now = Date.now();
+                                        if (!force && now - lastProjectorStatusAt < 450) return;
+                                        lastProjectorStatusAt = now;
+                                        try {
+                                            channel.send(JSON.stringify({ type: 'video-status', sourceKey: mappedRemoteBlobKey, currentTime: Number.isFinite(video.currentTime) ? video.currentTime : 0, duration: Number.isFinite(video.duration) ? video.duration : 0, playing: !video.paused && !video.ended, paused: video.paused, ended: video.ended, loop: !!video.loop, timestamp: now }));
+                                        } catch (error) { console.warn('No se pudo enviar el estado multimedia:', error); }
+                                    }
+
+                                    function handleProjectorVideoControl(event) {
+                                        if (typeof event.data !== 'string') return;
+                                        let command;
+                                        try { command = JSON.parse(event.data); } catch (_) { return; }
+                                        if (!command || command.type !== 'video-control') return;
+                                        if (command.action === 'get-status') { sendProjectorVideoStatus(true); return; }
+                                        if (command.sourceKey && mappedRemoteBlobKey && command.sourceKey !== mappedRemoteBlobKey) return;
+                                        const video = document.getElementById('proj-video');
+                                        if (!video) return;
+                                        if (!video.src || video.readyState === 0) {
+                                            pendingProjectorVideoCommand = command;
+                                            return;
+                                        }
+                                        if (command.action === 'play') {
+                                            video.muted = false; video.volume = 1;
+                                            video.play().then(() => sendProjectorVideoStatus(true)).catch(() => {
+                                                const prompt = document.getElementById('proj-enable-audio');
+                                                if (prompt) { prompt.textContent = '▶ Toca para reproducir con sonido'; prompt.classList.remove('hidden'); }
+                                            });
+                                        } else if (command.action === 'pause') {
+                                            video.pause(); sendProjectorVideoStatus(true);
+                                        } else if (command.action === 'seek' && Number.isFinite(Number(command.target))) {
+                                            const target = Math.max(0, Math.min(Number.isFinite(video.duration) ? video.duration : Number(command.target), Number(command.target)));
+                                            try { video.currentTime = target; } catch (_) { video.dataset.pendingSeek = String(target); }
+                                            if (command.seekId != null) video.dataset.lastSeekId = String(command.seekId);
+                                            sendProjectorVideoStatus(true);
+                                        } else if (command.action === 'loop') {
+                                            video.loop = !!command.loop; sendProjectorVideoStatus(true);
+                                        }
+                                    }
+
+                                    function flushPendingProjectorVideoCommand() {
+                                        const command = pendingProjectorVideoCommand;
+                                        if (!command) return;
+                                        pendingProjectorVideoCommand = null;
+                                        handleProjectorVideoControl({ data: JSON.stringify(command) });
                                     }
 
                                     function handleReceivedVideoMessage(event) {
@@ -443,6 +497,8 @@
                                             pendingRemoteBlobKey = '';
                                             incomingVideoTransfer = null;
                                             if (latestProjectionData) applyProjection(latestProjectionData, true);
+                                            setTimeout(flushPendingProjectorVideoCommand, 100);
+                                            sendProjectorVideoStatus(true);
                                             console.info('Video recibido desde el panel de control:', blob.size, 'bytes');
                                         } catch (error) { console.error('No se pudo preparar el video recibido:', error); }
                                     }
@@ -456,10 +512,18 @@
                                             const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
                                             projectorTransferPeer = pc;
                                             pc.ondatachannel = event => {
-                                                projectorReceiveChannel = event.channel;
-                                                projectorReceiveChannel.binaryType = 'arraybuffer';
-                                                projectorReceiveChannel.onmessage = handleReceivedVideoMessage;
-                                                projectorReceiveChannel.onerror = error => console.error('Canal de video:', error);
+                                                const incomingChannel = event.channel;
+                                                if (incomingChannel.label === 'video-control') {
+                                                    projectorControlChannel = incomingChannel;
+                                                    projectorControlChannel.onmessage = handleProjectorVideoControl;
+                                                    projectorControlChannel.onopen = () => sendProjectorVideoStatus(true);
+                                                    projectorControlChannel.onerror = error => console.error('Canal de controles multimedia:', error);
+                                                } else {
+                                                    projectorReceiveChannel = incomingChannel;
+                                                    projectorReceiveChannel.binaryType = 'arraybuffer';
+                                                    projectorReceiveChannel.onmessage = handleReceivedVideoMessage;
+                                                    projectorReceiveChannel.onerror = error => console.error('Canal de video:', error);
+                                                }
                                             };
                                             await pc.setRemoteDescription({ type: 'offer', sdp: offer.sdp });
                                             const answer = await pc.createAnswer();
@@ -478,6 +542,13 @@
                                             const offer = snapshot.val();
                                             if (offer) handleVideoOffer(offer);
                                         }, error => console.error('No se pudo escuchar la oferta de video:', error));
+                                    }
+
+                                    const projectedVideoElement = document.getElementById('proj-video');
+                                    if (projectedVideoElement) {
+                                        ['loadedmetadata', 'durationchange', 'play', 'playing', 'pause', 'seeked', 'ended', 'timeupdate', 'waiting'].forEach(eventName => {
+                                            projectedVideoElement.addEventListener(eventName, () => sendProjectorVideoStatus(eventName !== 'timeupdate'));
+                                        });
                                     }
 
                                     // Safari puede bloquear audio iniciado desde otra ventana. Si sucede,
