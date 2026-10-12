@@ -26,6 +26,13 @@
                             <div id="proj-backdrop" class="absolute inset-0 z-0 bg-cover bg-center transition-all duration-300"></div>
                             <video id="proj-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay></video>
                             <button id="proj-enable-audio" type="button" class="absolute z-50 hidden left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-black/85 border border-white/40 px-6 py-4 text-white text-lg font-bold shadow-2xl" style="pointer-events:auto">▶ Toca para reproducir con sonido</button>
+                            <div id="proj-local-video-prompt" class="fixed inset-x-4 top-4 z-[60] hidden mx-auto max-w-xl rounded-2xl border border-white/30 bg-black/95 p-5 text-center text-white shadow-2xl" style="pointer-events:auto">
+                                <p class="text-lg font-bold">Preparar video local</p>
+                                <p class="mt-2 text-sm text-white/80">Por seguridad, el archivo elegido en Safari no se puede abrir directamente desde la aplicación instalada. Selecciona aquí el mismo archivo de video para proyectarlo.</p>
+                                <button id="proj-select-local-video" type="button" class="mt-4 rounded-xl bg-blue-600 px-5 py-3 font-bold">Seleccionar el mismo video</button>
+                                <input id="proj-local-video-input" type="file" accept="video/*" class="hidden">
+                                <p id="proj-local-video-status" class="mt-3 text-xs text-white/60">Solo tienes que seleccionarlo una vez por cada video nuevo.</p>
+                            </div>
                             <img id="proj-screen-frame" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" alt="Captura de pantalla en vivo" />
                             <div id="proj-youtube" data-youtube-api="1" title="Reproductor de YouTube (proyección)" class="absolute inset-0 w-full h-full bg-black z-10 hidden" aria-label="Reproductor de YouTube"></div>
                             <div id="proj-overlay" class="absolute inset-0 z-20 bg-black/40 transition-all duration-300"></div>
@@ -267,11 +274,18 @@
                                         }
                                     }
                                     let latestProjectionTimestamp = 0;
+                                    let latestProjectionData = null;
+                                    // Un URL blob: solo existe en la página que seleccionó el archivo.
+                                    // La app de proyección necesita su propia selección local del mismo archivo.
+                                    let pendingRemoteBlobKey = '';
+                                    let mappedRemoteBlobKey = '';
+                                    let localProjectionVideoUrl = '';
                                     function applyProjection(data) {
                                         if (!data) return;
                                         const incomingTimestamp = Number(data.timestamp || 0);
                                         if (incomingTimestamp && incomingTimestamp <= latestProjectionTimestamp) return;
                                         if (incomingTimestamp) latestProjectionTimestamp = incomingTimestamp;
+                                        latestProjectionData = data;
                                         ytSeparateWindowMode = true; // La proyección bíblica nunca reproduce YouTube.
                                         const styles = data.styles;
                                         const text = document.getElementById('proj-text');
@@ -355,10 +369,60 @@
                                             if (screenFrame) screenFrame.classList.add('hidden');
                                             // YouTube se muestra y reproduce solo en youtube.html. Esta página es exclusivamente para versículos y medios no-YouTube.
                                             youtube.classList.add('hidden');
-                                            if (data.mediaMode === 'video' && data.videoUrl) { if (video.getAttribute('src') !== data.videoUrl) { video.setAttribute('src', data.videoUrl); video.load(); } video.loop = !!data.videoLoop; video.muted = false; video.volume = 1; if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null && String(video.dataset.lastSeekId || '') !== String(data.videoSeekId ?? 'legacy')) { video.dataset.lastSeekId = String(data.videoSeekId ?? 'legacy'); queueProjectionSeek(video, data.videoSeekTo); } video.classList.remove('hidden'); if (data.isVideoPlaying) video.play().then(() => { const prompt = document.getElementById('proj-enable-audio'); if (prompt) prompt.classList.add('hidden'); }).catch(() => { const prompt = document.getElementById('proj-enable-audio'); if (prompt) prompt.classList.remove('hidden'); }); else video.pause(); }
-                                            else { video.pause(); video.classList.add('hidden'); if (video.srcObject) video.srcObject = null; }
+                                            if (data.mediaMode === 'video' && data.videoUrl) {
+                                                const remoteUrl = String(data.videoUrl);
+                                                const isBlobUrl = remoteUrl.startsWith('blob:');
+                                                const localPrompt = document.getElementById('proj-local-video-prompt');
+                                                const audioPrompt = document.getElementById('proj-enable-audio');
+                                                let usableUrl = remoteUrl;
+                                                if (isBlobUrl) {
+                                                    if (mappedRemoteBlobKey !== remoteUrl || !localProjectionVideoUrl) {
+                                                        pendingRemoteBlobKey = remoteUrl;
+                                                        video.pause();
+                                                        video.classList.add('hidden');
+                                                        if (localPrompt) localPrompt.classList.remove('hidden');
+                                                        if (audioPrompt) audioPrompt.classList.add('hidden');
+                                                        if (screenFrame) screenFrame.classList.add('hidden');
+                                                        return;
+                                                    }
+                                                    usableUrl = localProjectionVideoUrl;
+                                                } else {
+                                                    if (localPrompt) localPrompt.classList.add('hidden');
+                                                }
+                                                if (video.getAttribute('src') !== usableUrl) { video.setAttribute('src', usableUrl); video.load(); }
+                                                video.loop = !!data.videoLoop; video.muted = false; video.volume = 1;
+                                                if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null && String(video.dataset.lastSeekId || '') !== String(data.videoSeekId ?? 'legacy')) { video.dataset.lastSeekId = String(data.videoSeekId ?? 'legacy'); queueProjectionSeek(video, data.videoSeekTo); }
+                                                video.classList.remove('hidden');
+                                                if (data.isVideoPlaying) video.play().then(() => { if (audioPrompt) audioPrompt.classList.add('hidden'); }).catch(() => { if (audioPrompt) { audioPrompt.textContent = '▶ Toca para reproducir con sonido'; audioPrompt.classList.remove('hidden'); } });
+                                                else video.pause();
+                                            }
+                                            else { video.pause(); video.classList.add('hidden'); if (video.srcObject) video.srcObject = null; const localPrompt = document.getElementById('proj-local-video-prompt'); if (localPrompt) localPrompt.classList.add('hidden'); }
                                         }
                                     }
+
+                                    // Para archivos locales, cada contexto necesita su propia URL blob.
+                                    // El usuario selecciona el mismo archivo en esta pantalla; los comandos
+                                    // de reproducción, pausa y búsqueda siguen llegando por Firebase.
+                                    const localVideoPrompt = document.getElementById('proj-local-video-prompt');
+                                    const localVideoInput = document.getElementById('proj-local-video-input');
+                                    const localVideoStatus = document.getElementById('proj-local-video-status');
+                                    const selectLocalVideoButton = document.getElementById('proj-select-local-video');
+                                    if (selectLocalVideoButton && localVideoInput) selectLocalVideoButton.addEventListener('click', () => localVideoInput.click());
+                                    if (localVideoInput) localVideoInput.addEventListener('change', () => {
+                                        const file = localVideoInput.files && localVideoInput.files[0];
+                                        if (!file || !pendingRemoteBlobKey) return;
+                                        if (!file.type.startsWith('video/')) {
+                                            if (localVideoStatus) localVideoStatus.textContent = 'Selecciona un archivo de video compatible.';
+                                            return;
+                                        }
+                                        if (localProjectionVideoUrl) { try { URL.revokeObjectURL(localProjectionVideoUrl); } catch (_) {} }
+                                        localProjectionVideoUrl = URL.createObjectURL(file);
+                                        mappedRemoteBlobKey = pendingRemoteBlobKey;
+                                        if (localVideoPrompt) localVideoPrompt.classList.add('hidden');
+                                        if (localVideoStatus) localVideoStatus.textContent = 'Video preparado: ' + file.name;
+                                        // Reaplica el último estado sin alterar la marca temporal de Firebase.
+                                        if (latestProjectionData) applyProjection({ ...latestProjectionData, timestamp: 0 });
+                                    });
 
                                     // Safari puede bloquear audio iniciado desde otra ventana. Si sucede,
                                     // permite activar el video con un gesto dentro de esta ventana.
