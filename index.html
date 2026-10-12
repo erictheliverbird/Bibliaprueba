@@ -719,6 +719,7 @@
 
         let mediaMode = 'none';
         let activeVideoUrl = '';
+        let activeVideoFile = null;
         let isVideoPlaying = false;
         let videoLoop = false;
         let videoSeekTo = null;
@@ -748,6 +749,123 @@
         let cloudWriteTimer = null;
         let cloudSyncWarningShown = false;
 
+        // Transferencia directa del archivo por WebRTC: el video no se guarda en Firebase.
+        // Firebase solo intercambia la señalización; el contenido viaja entre las dos ventanas.
+        const CLOUD_TRANSFER_PATH = 'rooms/casa-bendiciones/transfer';
+        let videoTransferReadyId = '';
+        let videoTransferPeer = null;
+        let videoTransferChannel = null;
+        let videoTransferSessionId = '';
+        let videoTransferAnswerListener = null;
+        let videoTransferInProgress = false;
+
+        function waitForIceGathering(pc, timeoutMs = 12000) {
+            return new Promise(resolve => {
+                if (pc.iceGatheringState === 'complete') return resolve();
+                let done = false;
+                const finish = () => { if (done) return; done = true; clearTimeout(timer); pc.removeEventListener('icegatheringstatechange', check); resolve(); };
+                const check = () => { if (pc.iceGatheringState === 'complete') finish(); };
+                const timer = setTimeout(finish, timeoutMs);
+                pc.addEventListener('icegatheringstatechange', check);
+            });
+        }
+
+        function closeVideoTransferPeer() {
+            try { if (videoTransferAnswerListener && cloudDatabase) cloudDatabase.ref(CLOUD_TRANSFER_PATH + '/answer').off('value', videoTransferAnswerListener); } catch (_) {}
+            videoTransferAnswerListener = null;
+            try { if (videoTransferChannel) videoTransferChannel.close(); } catch (_) {}
+            try { if (videoTransferPeer) videoTransferPeer.close(); } catch (_) {}
+            videoTransferChannel = null;
+            videoTransferPeer = null;
+            videoTransferSessionId = '';
+        }
+
+        function setupControllerVideoTransfer() {
+            if (!cloudDatabase) return;
+            cloudDatabase.ref(CLOUD_TRANSFER_PATH + '/projectorReady').on('value', snapshot => {
+                const ready = snapshot.val();
+                const nextId = ready && ready.id ? String(ready.id) : '';
+                if (!nextId || nextId === videoTransferReadyId) return;
+                videoTransferReadyId = nextId;
+                closeVideoTransferPeer();
+                // Si el proyector se recarga durante un video, vuelve a enviarlo sin pedirlo en la pantalla externa.
+                if (activeVideoFile && mediaMode === 'video') setTimeout(() => sendLocalVideoToProjection(activeVideoFile), 350);
+            });
+        }
+
+        async function waitForDataChannelCapacity(channel, threshold = 512 * 1024) {
+            if (channel.bufferedAmount <= threshold) return;
+            channel.bufferedAmountLowThreshold = threshold;
+            await new Promise(resolve => {
+                const done = () => { channel.removeEventListener('bufferedamountlow', done); resolve(); };
+                channel.addEventListener('bufferedamountlow', done, { once: true });
+                if (channel.bufferedAmount <= threshold) done();
+            });
+        }
+
+        async function transferVideoFileOverChannel(file, sourceKey) {
+            const channel = videoTransferChannel;
+            if (!channel || channel.readyState !== 'open' || !file) return;
+            if (videoTransferInProgress) return;
+            videoTransferInProgress = true;
+            const chunkSize = 48 * 1024;
+            const totalChunks = Math.ceil(file.size / chunkSize);
+            try {
+                channel.send(JSON.stringify({ type: 'video-file-meta', sourceKey, name: file.name || 'video', mime: file.type || 'video/mp4', size: file.size, totalChunks, timestamp: Date.now() }));
+                for (let offset = 0; offset < file.size; offset += chunkSize) {
+                    if (channel.readyState !== 'open') throw new Error('Se interrumpió el canal de video.');
+                    await waitForDataChannelCapacity(channel);
+                    const buffer = await file.slice(offset, Math.min(offset + chunkSize, file.size)).arrayBuffer();
+                    channel.send(buffer);
+                }
+                showToast('Video enviado al proyector; preparando reproducción…', 'success');
+            } catch (error) {
+                console.error('Transferencia directa del video fallida:', error);
+                showToast('No se pudo transferir el video. Mantén abiertas ambas ventanas y vuelve a cargarlo.', 'error');
+            } finally { videoTransferInProgress = false; }
+        }
+
+        async function sendLocalVideoToProjection(file) {
+            if (!cloudDatabase || !cloudAuthReady || !videoTransferReadyId || !file) {
+                showToast('Abre primero la ventana de proyección y vuelve a seleccionar el video.', 'warning');
+                return;
+            }
+            if (videoTransferChannel && videoTransferChannel.readyState === 'open') {
+                await transferVideoFileOverChannel(file, activeVideoUrl);
+                return;
+            }
+            closeVideoTransferPeer();
+            const sessionId = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+            videoTransferSessionId = sessionId;
+            try {
+                const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+                videoTransferPeer = pc;
+                const channel = pc.createDataChannel('local-video-transfer', { ordered: true });
+                videoTransferChannel = channel;
+                channel.binaryType = 'arraybuffer';
+                channel.onopen = () => transferVideoFileOverChannel(file, activeVideoUrl);
+                channel.onerror = error => console.error('Canal de transferencia de video:', error);
+                pc.onconnectionstatechange = () => {
+                    if (['failed', 'closed', 'disconnected'].includes(pc.connectionState)) console.warn('Conexión de video:', pc.connectionState);
+                };
+                const answerRef = cloudDatabase.ref(CLOUD_TRANSFER_PATH + '/answer');
+                videoTransferAnswerListener = snapshot => {
+                    const answer = snapshot.val();
+                    if (!answer || answer.sessionId !== sessionId || !answer.sdp || pc.signalingState !== 'have-local-offer') return;
+                    pc.setRemoteDescription({ type: 'answer', sdp: answer.sdp }).catch(error => console.error('No se pudo aceptar la respuesta WebRTC:', error));
+                };
+                answerRef.on('value', videoTransferAnswerListener);
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+                await waitForIceGathering(pc);
+                await cloudDatabase.ref(CLOUD_TRANSFER_PATH + '/offer').set({ sessionId, type: 'offer', sdp: pc.localDescription.sdp, timestamp: Date.now(), projectorId: videoTransferReadyId });
+                showToast('Conectando el video con la pantalla externa…', 'info');
+            } catch (error) {
+                console.error('No se pudo iniciar WebRTC para video:', error);
+                showToast('No se pudo conectar el video con la pantalla externa. Revisa las reglas de Firebase.', 'error');
+            }
+        }
+
         function initializeCloudProjectionSync() {
             if (!window.firebase || !firebase.database || !firebase.auth) {
                 console.warn('Firebase SDK no está disponible; se mantiene la sincronización local.');
@@ -759,6 +877,7 @@
                 cloudProjectionRef = cloudDatabase.ref(CLOUD_PROJECTION_PATH);
                 firebase.auth().signInAnonymously().then(() => {
                     cloudAuthReady = true;
+                    setupControllerVideoTransfer();
                     if (latestCloudPayload) writeCloudProjection(latestCloudPayload);
                     const label = document.getElementById('projector-connection-label');
                     if (label && !isProjectorConnected() && !isYouTubeWindowConnected()) label.textContent = 'Sincronización en nube lista · abre el proyector';
@@ -1615,12 +1734,16 @@
                     if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null) queueVideoSeek(videoEl, data.videoSeekTo);
                     videoEl.classList.remove('hidden');
                     if (data.isVideoPlaying) {
-                        const playAttempt = videoEl.play();
-                        if (playAttempt && typeof playAttempt.catch === 'function') playAttempt.catch(() => {
-                            const prompt = docObj.getElementById('proj-enable-audio');
-                            if (prompt) prompt.classList.remove('hidden');
-                        });
-                    } else videoEl.pause();
+                        // No volver a invocar play() en cada actualización de versículo/estilo:
+                        // Safari puede interrumpir la reproducción o dejar los controles desfasados.
+                        if (videoEl.paused || videoEl.ended) {
+                            const playAttempt = videoEl.play();
+                            if (playAttempt && typeof playAttempt.catch === 'function') playAttempt.catch(() => {
+                                const prompt = docObj.getElementById('proj-enable-audio');
+                                if (prompt) prompt.classList.remove('hidden');
+                            });
+                        }
+                    } else if (!videoEl.paused) videoEl.pause();
                 } else {
                     videoEl.pause();
                     videoEl.classList.add('hidden');
@@ -2077,6 +2200,7 @@
             document.getElementById('video-file-input').onchange = (e) => {
                 const file = e.target.files[0];
                 if (file) {
+                    activeVideoFile = file;
                     if (activeVideoUrl && activeVideoUrl.startsWith('blob:')) URL.revokeObjectURL(activeVideoUrl);
                     activeVideoUrl = URL.createObjectURL(file);
                     mediaMode = 'video';
@@ -2097,6 +2221,7 @@
                 if (mediaMode === 'screen') stopScreenCapture();
                 if (activeVideoUrl && activeVideoUrl.startsWith('blob:')) URL.revokeObjectURL(activeVideoUrl);
                 activeVideoUrl = '';
+                activeVideoFile = null;
                 mediaMode = 'none';
                 isVideoPlaying = false;
                 videoSeekTo = null;
@@ -2120,10 +2245,16 @@
                 }
             };
             const seekSlider = document.getElementById('video-seek-slider');
+            let lastSeekCommitAt = 0;
+            let lastSeekCommitValue = -1;
             const commitVideoSeek = () => {
                 if (mediaMode !== 'video' || !Number.isFinite(controlVideo.duration) || controlVideo.duration <= 0) return;
-                const target = Math.max(0, Math.min(controlVideo.duration, (Number(seekSlider.value) / 1000) * controlVideo.duration));
-                // En iPad/Safari, el evento change puede llegar antes de terminar el seek local.
+                const sliderValue = Number(seekSlider.value);
+                const now = Date.now();
+                // Safari puede disparar change, pointerup y touchend por un único gesto.
+                if (sliderValue === lastSeekCommitValue && now - lastSeekCommitAt < 450) return;
+                lastSeekCommitValue = sliderValue; lastSeekCommitAt = now;
+                const target = Math.max(0, Math.min(controlVideo.duration, (sliderValue / 1000) * controlVideo.duration));
                 try { controlVideo.currentTime = target; } catch (_) {}
                 videoSeekTo = target;
                 videoSeekId += 1;

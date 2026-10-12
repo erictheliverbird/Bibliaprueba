@@ -26,13 +26,7 @@
                             <div id="proj-backdrop" class="absolute inset-0 z-0 bg-cover bg-center transition-all duration-300"></div>
                             <video id="proj-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay></video>
                             <button id="proj-enable-audio" type="button" class="absolute z-50 hidden left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-black/85 border border-white/40 px-6 py-4 text-white text-lg font-bold shadow-2xl" style="pointer-events:auto">▶ Toca para reproducir con sonido</button>
-                            <div id="proj-local-video-prompt" class="fixed inset-x-4 top-4 z-[60] hidden mx-auto max-w-xl rounded-2xl border border-white/30 bg-black/95 p-5 text-center text-white shadow-2xl" style="pointer-events:auto">
-                                <p class="text-lg font-bold">Preparar video local</p>
-                                <p class="mt-2 text-sm text-white/80">Por seguridad, el archivo elegido en Safari no se puede abrir directamente desde la aplicación instalada. Selecciona aquí el mismo archivo de video para proyectarlo.</p>
-                                <button id="proj-select-local-video" type="button" class="mt-4 rounded-xl bg-blue-600 px-5 py-3 font-bold">Seleccionar el mismo video</button>
-                                <input id="proj-local-video-input" type="file" accept="video/*" class="hidden">
-                                <p id="proj-local-video-status" class="mt-3 text-xs text-white/60">Solo tienes que seleccionarlo una vez por cada video nuevo.</p>
-                            </div>
+
                             <img id="proj-screen-frame" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" alt="Captura de pantalla en vivo" />
                             <div id="proj-youtube" data-youtube-api="1" title="Reproductor de YouTube (proyección)" class="absolute inset-0 w-full h-full bg-black z-10 hidden" aria-label="Reproductor de YouTube"></div>
                             <div id="proj-overlay" class="absolute inset-0 z-20 bg-black/40 transition-all duration-300"></div>
@@ -280,11 +274,11 @@
                                     let pendingRemoteBlobKey = '';
                                     let mappedRemoteBlobKey = '';
                                     let localProjectionVideoUrl = '';
-                                    function applyProjection(data) {
+                                    function applyProjection(data, force = false) {
                                         if (!data) return;
                                         const incomingTimestamp = Number(data.timestamp || 0);
-                                        if (incomingTimestamp && incomingTimestamp <= latestProjectionTimestamp) return;
-                                        if (incomingTimestamp) latestProjectionTimestamp = incomingTimestamp;
+                                        if (!force && incomingTimestamp && incomingTimestamp <= latestProjectionTimestamp) return;
+                                        if (incomingTimestamp && (!force || incomingTimestamp > latestProjectionTimestamp)) latestProjectionTimestamp = incomingTimestamp;
                                         latestProjectionData = data;
                                         ytSeparateWindowMode = true; // La proyección bíblica nunca reproduce YouTube.
                                         const styles = data.styles;
@@ -372,57 +366,119 @@
                                             if (data.mediaMode === 'video' && data.videoUrl) {
                                                 const remoteUrl = String(data.videoUrl);
                                                 const isBlobUrl = remoteUrl.startsWith('blob:');
-                                                const localPrompt = document.getElementById('proj-local-video-prompt');
                                                 const audioPrompt = document.getElementById('proj-enable-audio');
                                                 let usableUrl = remoteUrl;
                                                 if (isBlobUrl) {
+                                                    // El blob de Safari no existe en esta app: esperar la transferencia WebRTC,
+                                                    // sin mostrar controles ni pedir que se seleccione el archivo en la proyección.
                                                     if (mappedRemoteBlobKey !== remoteUrl || !localProjectionVideoUrl) {
                                                         pendingRemoteBlobKey = remoteUrl;
                                                         video.pause();
                                                         video.classList.add('hidden');
-                                                        if (localPrompt) localPrompt.classList.remove('hidden');
                                                         if (audioPrompt) audioPrompt.classList.add('hidden');
                                                         if (screenFrame) screenFrame.classList.add('hidden');
                                                         return;
                                                     }
                                                     usableUrl = localProjectionVideoUrl;
-                                                } else {
-                                                    if (localPrompt) localPrompt.classList.add('hidden');
                                                 }
                                                 if (video.getAttribute('src') !== usableUrl) { video.setAttribute('src', usableUrl); video.load(); }
                                                 video.loop = !!data.videoLoop; video.muted = false; video.volume = 1;
                                                 if (Number.isFinite(data.videoSeekTo) && data.videoSeekTo !== null && String(video.dataset.lastSeekId || '') !== String(data.videoSeekId ?? 'legacy')) { video.dataset.lastSeekId = String(data.videoSeekId ?? 'legacy'); queueProjectionSeek(video, data.videoSeekTo); }
                                                 video.classList.remove('hidden');
-                                                if (data.isVideoPlaying) video.play().then(() => { if (audioPrompt) audioPrompt.classList.add('hidden'); }).catch(() => { if (audioPrompt) { audioPrompt.textContent = '▶ Toca para reproducir con sonido'; audioPrompt.classList.remove('hidden'); } });
-                                                else video.pause();
+                                                if (data.isVideoPlaying) {
+                                                    if (video.paused || video.ended) video.play().then(() => { if (audioPrompt) audioPrompt.classList.add('hidden'); }).catch(() => { if (audioPrompt) { audioPrompt.textContent = '▶ Toca para reproducir con sonido'; audioPrompt.classList.remove('hidden'); } });
+                                                } else if (!video.paused) video.pause();
                                             }
                                             else { video.pause(); video.classList.add('hidden'); if (video.srcObject) video.srcObject = null; const localPrompt = document.getElementById('proj-local-video-prompt'); if (localPrompt) localPrompt.classList.add('hidden'); }
                                         }
                                     }
 
-                                    // Para archivos locales, cada contexto necesita su propia URL blob.
-                                    // El usuario selecciona el mismo archivo en esta pantalla; los comandos
-                                    // de reproducción, pausa y búsqueda siguen llegando por Firebase.
-                                    const localVideoPrompt = document.getElementById('proj-local-video-prompt');
-                                    const localVideoInput = document.getElementById('proj-local-video-input');
-                                    const localVideoStatus = document.getElementById('proj-local-video-status');
-                                    const selectLocalVideoButton = document.getElementById('proj-select-local-video');
-                                    if (selectLocalVideoButton && localVideoInput) selectLocalVideoButton.addEventListener('click', () => localVideoInput.click());
-                                    if (localVideoInput) localVideoInput.addEventListener('change', () => {
-                                        const file = localVideoInput.files && localVideoInput.files[0];
-                                        if (!file || !pendingRemoteBlobKey) return;
-                                        if (!file.type.startsWith('video/')) {
-                                            if (localVideoStatus) localVideoStatus.textContent = 'Selecciona un archivo de video compatible.';
+                                    // Recibe el archivo desde Safari por WebRTC. El archivo nunca se sube a Firebase;
+                                    // la base de datos solo transporta la oferta/respuesta de conexión.
+                                    const CLOUD_TRANSFER_PATH = 'rooms/casa-bendiciones/transfer';
+                                    let projectorTransferPeer = null;
+                                    let projectorTransferSessionId = '';
+                                    let projectorReceiveChannel = null;
+                                    let incomingVideoTransfer = null;
+                                    let projectorTransferDatabase = null;
+                                    const projectorInstanceId = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+
+                                    function waitForIceGathering(pc, timeoutMs = 12000) {
+                                        return new Promise(resolve => {
+                                            if (pc.iceGatheringState === 'complete') return resolve();
+                                            let done = false;
+                                            const finish = () => { if (done) return; done = true; clearTimeout(timer); pc.removeEventListener('icegatheringstatechange', check); resolve(); };
+                                            const check = () => { if (pc.iceGatheringState === 'complete') finish(); };
+                                            const timer = setTimeout(finish, timeoutMs);
+                                            pc.addEventListener('icegatheringstatechange', check);
+                                        });
+                                    }
+
+                                    function closeProjectorTransferPeer() {
+                                        try { if (projectorReceiveChannel) projectorReceiveChannel.close(); } catch (_) {}
+                                        try { if (projectorTransferPeer) projectorTransferPeer.close(); } catch (_) {}
+                                        projectorReceiveChannel = null; projectorTransferPeer = null; incomingVideoTransfer = null;
+                                    }
+
+                                    function handleReceivedVideoMessage(event) {
+                                        if (typeof event.data === 'string') {
+                                            let message;
+                                            try { message = JSON.parse(event.data); } catch (_) { return; }
+                                            if (message.type !== 'video-file-meta') return;
+                                            incomingVideoTransfer = { sourceKey: message.sourceKey, name: message.name, mime: message.mime || 'video/mp4', size: Number(message.size) || 0, totalChunks: Number(message.totalChunks) || 0, chunks: [], receivedBytes: 0 };
                                             return;
                                         }
-                                        if (localProjectionVideoUrl) { try { URL.revokeObjectURL(localProjectionVideoUrl); } catch (_) {} }
-                                        localProjectionVideoUrl = URL.createObjectURL(file);
-                                        mappedRemoteBlobKey = pendingRemoteBlobKey;
-                                        if (localVideoPrompt) localVideoPrompt.classList.add('hidden');
-                                        if (localVideoStatus) localVideoStatus.textContent = 'Video preparado: ' + file.name;
-                                        // Reaplica el último estado sin alterar la marca temporal de Firebase.
-                                        if (latestProjectionData) applyProjection({ ...latestProjectionData, timestamp: 0 });
-                                    });
+                                        const transfer = incomingVideoTransfer;
+                                        if (!transfer) return;
+                                        const chunk = event.data instanceof ArrayBuffer ? event.data : (event.data && event.data.buffer ? event.data.buffer : null);
+                                        if (!chunk) return;
+                                        transfer.chunks.push(chunk);
+                                        transfer.receivedBytes += chunk.byteLength || 0;
+                                        if (transfer.chunks.length < transfer.totalChunks && transfer.receivedBytes < transfer.size) return;
+                                        try {
+                                            const blob = new Blob(transfer.chunks, { type: transfer.mime });
+                                            if (localProjectionVideoUrl) { try { URL.revokeObjectURL(localProjectionVideoUrl); } catch (_) {} }
+                                            localProjectionVideoUrl = URL.createObjectURL(blob);
+                                            mappedRemoteBlobKey = transfer.sourceKey;
+                                            pendingRemoteBlobKey = '';
+                                            incomingVideoTransfer = null;
+                                            if (latestProjectionData) applyProjection(latestProjectionData, true);
+                                            console.info('Video recibido desde el panel de control:', blob.size, 'bytes');
+                                        } catch (error) { console.error('No se pudo preparar el video recibido:', error); }
+                                    }
+
+                                    async function handleVideoOffer(offer) {
+                                        if (!offer || !offer.sessionId || !offer.sdp || offer.projectorId !== projectorInstanceId) return;
+                                        if (offer.sessionId === projectorTransferSessionId) return;
+                                        closeProjectorTransferPeer();
+                                        projectorTransferSessionId = offer.sessionId;
+                                        try {
+                                            const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+                                            projectorTransferPeer = pc;
+                                            pc.ondatachannel = event => {
+                                                projectorReceiveChannel = event.channel;
+                                                projectorReceiveChannel.binaryType = 'arraybuffer';
+                                                projectorReceiveChannel.onmessage = handleReceivedVideoMessage;
+                                                projectorReceiveChannel.onerror = error => console.error('Canal de video:', error);
+                                            };
+                                            await pc.setRemoteDescription({ type: 'offer', sdp: offer.sdp });
+                                            const answer = await pc.createAnswer();
+                                            await pc.setLocalDescription(answer);
+                                            await waitForIceGathering(pc);
+                                            await projectorTransferDatabase.ref(CLOUD_TRANSFER_PATH + '/answer').set({ sessionId: offer.sessionId, type: 'answer', sdp: pc.localDescription.sdp, timestamp: Date.now() });
+                                        } catch (error) { console.error('No se pudo aceptar la conexión de video:', error); }
+                                    }
+
+                                    function setupProjectorVideoTransfer(database) {
+                                        projectorTransferDatabase = database;
+                                        const transferRef = database.ref(CLOUD_TRANSFER_PATH);
+                                        transferRef.child('projectorReady').set({ id: projectorInstanceId, timestamp: Date.now() });
+                                        try { transferRef.child('projectorReady').onDisconnect().remove(); } catch (_) {}
+                                        transferRef.child('offer').on('value', snapshot => {
+                                            const offer = snapshot.val();
+                                            if (offer) handleVideoOffer(offer);
+                                        }, error => console.error('No se pudo escuchar la oferta de video:', error));
+                                    }
 
                                     // Safari puede bloquear audio iniciado desde otra ventana. Si sucede,
                                     // permite activar el video con un gesto dentro de esta ventana.
@@ -450,7 +506,9 @@
                                         if (window.firebase && firebase.database && firebase.auth) {
                                             if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
                                             firebase.auth().signInAnonymously().then(() => {
-                                                firebase.database().ref(CLOUD_PROJECTION_PATH).on('value', snapshot => {
+                                                const transferDatabase = firebase.database();
+                                                setupProjectorVideoTransfer(transferDatabase);
+                                                transferDatabase.ref(CLOUD_PROJECTION_PATH).on('value', snapshot => {
                                                     const cloudData = snapshot.val();
                                                     if (cloudData && typeof cloudData === 'object') applyProjection(cloudData);
                                                 }, error => console.error('Firebase no pudo recibir la proyección:', error));
