@@ -81,7 +81,7 @@
                                     let ytPendingCommand = '';
                                     let ytPlayerState = -1;
                                     let ytLoopEnabled = false;
-                                    let ytSeparateWindowMode = true; // YouTube está reservado exclusivamente para youtube.html.
+                                    let ytSeparateWindowMode = false; // YouTube comparte la ventana del proyector con los versículos.
                                     let ytLastStatus = '';
 
                                     function getYouTubeId(value) {
@@ -133,7 +133,7 @@
                                     function initializeYouTubeAPI() {
                                         window.onYouTubeIframeAPIReady = () => {
                                             ytApiReady = true;
-                                            const playerVars = { autoplay: 0, controls: 1, enablejsapi: 1, playsinline: 1, rel: 0, fs: 1 };
+                                            const playerVars = { autoplay: 0, controls: 0, disablekb: 1, enablejsapi: 1, playsinline: 1, rel: 0, fs: 0, modestbranding: 1 };
                                             if (location.protocol === 'https:' || location.protocol === 'http:') playerVars.origin = location.origin;
                                             ytPlayer = new YT.Player('proj-youtube', {
                                                 width: '100%', height: '100%', playerVars,
@@ -173,7 +173,9 @@
                                         script.onerror = () => sendYouTubeStatus('api-load-error', { force: true });
                                         document.head.appendChild(script);
                                     }
-                                    // No inicializar YT.Player aquí: YouTube se reproduce únicamente en youtube.html.
+                                    // Un único reproductor YouTube dentro de la ventana real de proyección.
+                                    // La vista previa del panel no crea ningún iframe ni reproduce audio.
+                                    initializeYouTubeAPI();
                                     try {
                                         if ('BroadcastChannel' in window) {
                                             channel = new BroadcastChannel(CHANNEL_NAME);
@@ -211,7 +213,7 @@
                                     document.addEventListener('visibilitychange', () => { if (!document.hidden) sendProjectorHeartbeat(); });
 
                                     function handleYouTubeCommand(command) {
-                                        if (ytSeparateWindowMode) return; // YouTube se reproduce en youtube.html para evitar reproductores duplicados.
+                                        if (ytSeparateWindowMode) return; // Seguridad: no aceptar comandos si el modo independiente está activado.
                                         if (command !== 'playVideo' && command !== 'pauseVideo' && command !== 'stopVideo') return;
                                         // Si el video está cargando o esperando CUED, guardar la orden.
                                         executeYouTubeCommand(command);
@@ -280,7 +282,6 @@
                                         if (!force && incomingTimestamp && incomingTimestamp <= latestProjectionTimestamp) return;
                                         if (incomingTimestamp && (!force || incomingTimestamp > latestProjectionTimestamp)) latestProjectionTimestamp = incomingTimestamp;
                                         latestProjectionData = data;
-                                        ytSeparateWindowMode = true; // La proyección bíblica nunca reproduce YouTube.
                                         const styles = data.styles;
                                         const text = document.getElementById('proj-text');
                                         const citation = document.getElementById('proj-citation');
@@ -293,6 +294,7 @@
                                         if (!text || !backdrop) return;
 
                                         if (data.isBlackout) {
+                                            if (ytPlayerReady && ytPlayer) { try { ytPlayer.pauseVideo(); } catch (_) {} }
                                             backdrop.style.background = '#000';
                                             text.textContent = '';
                                             citation.textContent = '';
@@ -355,14 +357,45 @@
                                         const screenFrame = document.getElementById('proj-screen-frame');
                                         if (data.mediaMode === 'screen') {
                                             video.pause();
+                                            if (ytPlayerReady && ytPlayer) { try { ytPlayer.pauseVideo(); } catch (_) {} }
                                             if (screenFrame) screenFrame.classList.remove('hidden');
                                             video.classList.add('hidden');
                                             if (video.srcObject) video.srcObject = null;
-                                            youtube.classList.add('hidden'); youtube.src = '';
-                                        } else {
-                                            if (screenFrame) screenFrame.classList.add('hidden');
-                                            // YouTube se muestra y reproduce solo en youtube.html. Esta página es exclusivamente para versículos y medios no-YouTube.
                                             youtube.classList.add('hidden');
+                                        } else if (data.mediaMode === 'youtube' && data.videoUrl) {
+                                            // Cambio automático al reproductor YouTube de esta misma ventana.
+                                            // El reproductor local se pausa y se oculta; nunca hay dos videos activos.
+                                            video.pause();
+                                            video.classList.add('hidden');
+                                            if (video.srcObject) video.srcObject = null;
+                                            const audioPrompt = document.getElementById('proj-enable-audio');
+                                            if (audioPrompt) audioPrompt.classList.add('hidden');
+                                            const localPrompt = document.getElementById('proj-local-video-prompt');
+                                            if (localPrompt) localPrompt.classList.add('hidden');
+                                            if (screenFrame) screenFrame.classList.add('hidden');
+                                            text.classList.add('hidden');
+                                            citation.classList.add('hidden');
+                                            backdrop.classList.add('hidden');
+                                            overlay.classList.add('hidden');
+                                            standby.classList.add('hidden');
+                                            corner.classList.add('hidden');
+                                            youtube.classList.remove('hidden');
+                                            youtube.style.pointerEvents = 'auto';
+                                            ytSeparateWindowMode = false;
+                                            ytLoopEnabled = !!data.videoLoop;
+                                            const ytId = getYouTubeId(data.videoUrl);
+                                            if (ytId && ytId !== ytDesiredVideoId) cueYouTubeVideo(ytId);
+                                            else if (!ytId) sendYouTubeStatus('invalid-url', { force: true });
+                                            return;
+                                        } else {
+                                            if (ytPlayerReady && ytPlayer) { try { ytPlayer.pauseVideo(); } catch (_) {} }
+                                            if (screenFrame) screenFrame.classList.add('hidden');
+                                            youtube.classList.add('hidden');
+                                            youtube.style.pointerEvents = 'none';
+                                            text.classList.remove('hidden');
+                                            citation.classList.remove('hidden');
+                                            backdrop.classList.remove('hidden');
+                                            overlay.classList.remove('hidden');
                                             if (data.mediaMode === 'video' && data.videoUrl) {
                                                 const remoteUrl = String(data.videoUrl);
                                                 const isBlobUrl = remoteUrl.startsWith('blob:');
@@ -622,6 +655,8 @@
                                         appId: '1:373203685730:web:c6ec20d684b6771b9edc3b'
                                     };
                                     const CLOUD_PROJECTION_PATH = 'rooms/casa-bendiciones/state';
+                                    const CLOUD_YOUTUBE_COMMAND_PATH = 'rooms/casa-bendiciones/youtubeCommands';
+                                    let lastCloudYouTubeCommandId = '';
                                     try {
                                         if (window.firebase && firebase.database && firebase.auth) {
                                             if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
@@ -632,6 +667,18 @@
                                                     const cloudData = snapshot.val();
                                                     if (cloudData && typeof cloudData === 'object') applyProjection(cloudData);
                                                 }, error => console.error('Firebase no pudo recibir la proyección:', error));
+                                                // Canal de comandos separado: play/pause no reescriben el estado visual
+                                                // ni reinicializan el video. Los comandos viejos se descartan.
+                                                transferDatabase.ref(CLOUD_YOUTUBE_COMMAND_PATH).on('child_added', snapshot => {
+                                                    const item = snapshot.val();
+                                                    if (!item || !item.commandId || !item.command) { snapshot.ref.remove(); return; }
+                                                    const age = Date.now() - Number(item.timestamp || 0);
+                                                    if (item.commandId !== lastCloudYouTubeCommandId && age >= 0 && age < 15000) {
+                                                        lastCloudYouTubeCommandId = item.commandId;
+                                                        handleYouTubeCommand(item.command);
+                                                    }
+                                                    snapshot.ref.remove().catch(error => console.warn('No se pudo limpiar un comando de YouTube:', error));
+                                                }, error => console.error('Firebase no pudo recibir los comandos de YouTube:', error));
                                             }).catch(error => console.error('Firebase Auth anónimo no disponible:', error));
                                         } else {
                                             console.warn('Firebase SDK no disponible; se mantiene sincronización local.');

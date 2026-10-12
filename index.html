@@ -273,10 +273,8 @@
                                         <i class="fa-solid fa-pause"></i> Pausar YouTube
                                     </button>
                                 </div>
-                                <button id="btn-open-youtube-window" type="button" class="w-full bg-red-700 hover:bg-red-600 text-white px-3 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
-                                    <i class="fa-brands fa-youtube"></i> Abrir ventana YouTube interactiva
-                                </button>
-                                <p class="text-[10px] text-gray-400">Esta ventana es independiente de la proyección bíblica e incluye los controles originales de YouTube para buscar, pausar y saltar anuncios cuando YouTube lo permita.</p>
+                                <button id="btn-open-youtube-window" type="button" class="hidden" aria-hidden="true" tabindex="-1">Ventana YouTube independiente desactivada</button>
+                                <p class="text-[10px] text-gray-400">YouTube se mostrará automáticamente en la misma ventana del proyector. Usa estos controles desde el iPad; la proyección no mostrará el panel de control.</p>
                                 <div id="projector-connection-status" class="flex items-center gap-2 text-[10px] text-amber-300" role="status" aria-live="polite">
                                     <span id="projector-connection-dot" class="inline-block w-2 h-2 rounded-full bg-amber-400"></span>
                                     <span id="projector-connection-label">Comprobando conexión con el proyector…</span>
@@ -750,6 +748,8 @@
             appId: '1:373203685730:web:c6ec20d684b6771b9edc3b'
         };
         const CLOUD_PROJECTION_PATH = 'rooms/casa-bendiciones/state';
+        const CLOUD_YOUTUBE_COMMAND_PATH = 'rooms/casa-bendiciones/youtubeCommands';
+        let youtubeCommandCounter = 0;
         let cloudDatabase = null;
         let cloudProjectionRef = null;
         let cloudAuthReady = false;
@@ -1494,40 +1494,44 @@
         // La vista previa se deja congelada/oculta para evitar dos reproductores compitiendo
         // por audio, decodificación y políticas de reproducción automática en Safari.
         function sendYouTubeCommand(command) {
-            // Primero comprobamos el latido de la página proyector.html. No dependemos
-            // de externalWindow, porque Safari puede separar la ventana y dejar obsoleta la referencia.
-            if (!isProjectorConnected() && !isYouTubeWindowConnected()) {
-                updateProjectorConnectionStatus();
-                showToast('Abre primero la ventana de proyección bíblica o la ventana YouTube interactiva.', 'warning');
+            if (!['playVideo', 'pauseVideo', 'stopVideo'].includes(command)) return;
+            if (mediaMode !== 'youtube') {
+                showToast('Carga primero un enlace de YouTube para controlar ese reproductor.', 'warning');
+                return;
+            }
+            const timestamp = Date.now();
+            const commandData = {
+                command,
+                commandId: `${timestamp}-${++youtubeCommandCounter}`,
+                timestamp
+            };
+
+            // En la PWA instalada y Safari, BroadcastChannel puede estar aislado.
+            // Firebase es el canal principal para enviar órdenes al único reproductor externo.
+            if (cloudAuthReady && cloudDatabase) {
+                cloudDatabase.ref(CLOUD_YOUTUBE_COMMAND_PATH).push(commandData)
+                    .then(() => showToast(command === 'playVideo' ? 'Reproducción enviada al proyector.' : (command === 'pauseVideo' ? 'Pausa enviada al proyector.' : 'Detención enviada al proyector.'), 'info'))
+                    .catch(error => {
+                        console.error('No se pudo enviar el comando de YouTube por Firebase:', error);
+                        showToast('No se pudo enviar la orden a YouTube. Revisa la conexión con Firebase.', 'error');
+                    });
                 return;
             }
 
-            const message = { type: '__youtube_command', command, timestamp: Date.now() };
-            let sent = false;
-            try {
-                if (broadcastChannel) {
-                    broadcastChannel.postMessage(message);
-                    sent = true;
-                }
-            } catch (_) {}
-
-            // Canal directo adicional, solo como respaldo; el canal principal es BroadcastChannel.
-            try {
-                if (externalWindow && !externalWindow.closed) {
-                    externalWindow.postMessage(message, '*');
-                    sent = true;
-                }
-            } catch (_) {}
-
-            // Reintentos para esperar que el iframe de YouTube termine de inicializarse.
-            [250, 700, 1400, 2200].forEach(delay => setTimeout(() => {
+            // Respaldo local si Firebase aún no ha terminado de autenticarse.
+            if (!isProjectorConnected()) {
+                updateProjectorConnectionStatus();
+                showToast('Abre primero la ventana del proyector y espera a que conecte.', 'warning');
+                return;
+            }
+            const message = { type: '__youtube_command', ...commandData };
+            try { if (broadcastChannel) broadcastChannel.postMessage(message); } catch (_) {}
+            try { if (externalWindow && !externalWindow.closed) externalWindow.postMessage(message, '*'); } catch (_) {}
+            [300, 800, 1500].forEach(delay => setTimeout(() => {
                 try { if (broadcastChannel) broadcastChannel.postMessage({ ...message, timestamp: Date.now() }); } catch (_) {}
                 try { if (externalWindow && !externalWindow.closed) externalWindow.postMessage(message, '*'); } catch (_) {}
             }, delay));
-
-            showToast(command === 'playVideo'
-                ? 'Orden enviada al reproductor de la ventana de proyección.'
-                : 'Orden de pausa enviada al reproductor de la ventana de proyección.', 'info');
+            showToast(command === 'playVideo' ? 'Reproducción enviada al proyector.' : 'Orden enviada al proyector.', 'info');
         }
 
         function formatVideoTime(seconds) {
@@ -1692,6 +1696,10 @@
             currentText = text;
             currentCitation = citation;
             if (idx !== null) selectedVerseIdx = idx;
+            // Seleccionar un versículo devuelve automáticamente la pantalla al modo Biblia,
+            // deteniendo el medio que estuviera activo (YouTube o video local).
+            mediaMode = 'none';
+            isVideoPlaying = false;
             isBlackout = false;
             isClearText = false;
 
@@ -2095,22 +2103,7 @@
         }
 
         function openInteractiveYouTubeWindow() {
-            // Abrir mediante gesto directo del usuario para que Safari no bloquee la ventana.
-            const youtubeUrl = new URL('youtube.html', window.location.href);
-            youtubeUrl.searchParams.set('youtubePlayer', '1');
-            youtubeSeparateWindowMode = true;
-            syncToProjector(); // La proyección bíblica deja de alojar YouTube para evitar reproductores duplicados.
-            if (youtubeWindow && !youtubeWindow.closed) {
-                try { youtubeWindow.focus(); } catch (_) {}
-                showToast('La ventana interactiva de YouTube ya está abierta. Puedes moverla al monitor externo.', 'info');
-                return;
-            }
-            youtubeWindow = window.open(youtubeUrl.href, 'BiblicalYouTubeWindow', 'width=1280,height=720');
-            if (!youtubeWindow) {
-                showToast('Safari bloqueó la ventana de YouTube. Permite las ventanas emergentes para este sitio y vuelve a intentarlo.', 'error');
-                return;
-            }
-            showToast('Ventana interactiva de YouTube abierta. Usa sus controles para iniciar el video y gestionar anuncios.', 'success');
+            showToast('YouTube ahora se proyecta automáticamente en la misma ventana que los versículos. No hace falta abrir otra ventana.', 'info');
         }
 
         function toggleExternalProjector() {
@@ -2325,13 +2318,15 @@
                     videoLoop = document.getElementById('video-loop-toggle').checked;
                     activeVideoUrl = withYouTubeLoop(embedUrl, videoLoop);
                     mediaMode = 'youtube';
-                    // YouTube vive exclusivamente en youtube.html; la ventana de versículos nunca debe cargarlo.
-                    youtubeSeparateWindowMode = true;
+                    // Modo automático: YouTube comparte la ventana del proyector con los versículos.
+                    // No se abre una segunda ventana ni se crea un reproductor en la vista previa.
+                    youtubeSeparateWindowMode = false;
+                    isVideoPlaying = false;
                     syncToProjector();
                     if (location.protocol === 'file:') {
-                        showToast("Aviso: abre la aplicación desde GitHub Pages (HTTPS) para sincronizar la ventana independiente de YouTube.", "warning");
+                        showToast('Abre la aplicación desde GitHub Pages (HTTPS) para proyectar YouTube.', 'warning');
                     } else {
-                        showToast("Enlace enviado a la ventana exclusiva de YouTube. La proyección bíblica no reproducirá este video. Abre la ventana YouTube interactiva si aún no está abierta.", "success");
+                        showToast('YouTube cargado en la ventana del proyector. Pulsa “Reproducir YouTube” desde el iPad.', 'success');
                     }
                 } else {
                     showToast("Enlace de YouTube no válido", "error");
