@@ -11,6 +11,10 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="apple-touch-icon" href="icon-192.png">
     <title>Proyector Bíblico Profesional & Buscador de Imágenes</title>
+    <!-- Firebase compat SDK para sincronización entre Safari y la app instalada -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -725,6 +729,66 @@
         let youtubeWindow = null;
         let youtubeSeparateWindowMode = false;
         let broadcastChannel = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('biblical-projector-channel') : null;
+
+        // Sincronización en la nube para comunicar Safari y la app instalada en iPadOS.
+        const FIREBASE_CONFIG = {
+            apiKey: 'AIzaSyAhEPSlcD45NiePlqC8tws4QGkEEeawwRM',
+            authDomain: 'proyector-iglesia.firebaseapp.com',
+            databaseURL: 'https://proyector-iglesia-default-rtdb.firebaseio.com',
+            projectId: 'proyector-iglesia',
+            storageBucket: 'proyector-iglesia.firebasestorage.app',
+            messagingSenderId: '373203685730',
+            appId: '1:373203685730:web:c6ec20d684b6771b9edc3b'
+        };
+        const CLOUD_PROJECTION_PATH = 'rooms/casa-bendiciones/state';
+        let cloudDatabase = null;
+        let cloudProjectionRef = null;
+        let cloudAuthReady = false;
+        let latestCloudPayload = null;
+        let cloudWriteTimer = null;
+        let cloudSyncWarningShown = false;
+
+        function initializeCloudProjectionSync() {
+            if (!window.firebase || !firebase.database || !firebase.auth) {
+                console.warn('Firebase SDK no está disponible; se mantiene la sincronización local.');
+                return;
+            }
+            try {
+                if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+                cloudDatabase = firebase.database();
+                cloudProjectionRef = cloudDatabase.ref(CLOUD_PROJECTION_PATH);
+                firebase.auth().signInAnonymously().then(() => {
+                    cloudAuthReady = true;
+                    if (latestCloudPayload) writeCloudProjection(latestCloudPayload);
+                    const label = document.getElementById('projector-connection-label');
+                    if (label && !isProjectorConnected() && !isYouTubeWindowConnected()) label.textContent = 'Sincronización en nube lista · abre el proyector';
+                }).catch(error => {
+                    console.error('Firebase Auth: no se pudo iniciar sesión anónima.', error);
+                    if (!cloudSyncWarningShown) {
+                        cloudSyncWarningShown = true;
+                        showToast('Sincronización remota pendiente: revisa que Firebase Authentication anónimo esté habilitado.', 'warning');
+                    }
+                });
+            } catch (error) { console.error('No se pudo iniciar Firebase:', error); }
+        }
+
+        function writeCloudProjection(payload) {
+            if (!cloudAuthReady || !cloudProjectionRef || !payload) return;
+            cloudProjectionRef.set(payload).catch(error => {
+                console.error('No se pudo sincronizar con Firebase:', error);
+                if (!cloudSyncWarningShown) {
+                    cloudSyncWarningShown = true;
+                    showToast('No se pudo sincronizar con la nube. Revisa las reglas de Realtime Database.', 'warning');
+                }
+            });
+        }
+
+        function scheduleCloudProjectionSync(payload) {
+            latestCloudPayload = payload;
+            if (cloudWriteTimer) clearTimeout(cloudWriteTimer);
+            cloudWriteTimer = setTimeout(() => writeCloudProjection(latestCloudPayload), 120);
+        }
+
         let projectorLastHeartbeat = 0;
         let youtubeWindowLastHeartbeat = 0;
         let projectorConnectionCheckTimer = null;
@@ -1464,6 +1528,7 @@
             try { localStorage.setItem('biblical_projector_data', JSON.stringify(payload)); } catch (e) {}
             // Canal directo adicional: útil mientras la referencia de la ventana siga disponible.
             try { if (externalWindow && !externalWindow.closed) externalWindow.postMessage(payload, '*'); } catch (e) {}
+            scheduleCloudProjectionSync(payload);
 
             updateProjectorDOM(document, payload, false);
             if (externalWindow && !externalWindow.closed) {
@@ -2311,6 +2376,7 @@
             renderVerses();
             renderCultoList();
             setupEventListeners();
+            initializeCloudProjectionSync();
             syncToProjector();
         };
     </script>
