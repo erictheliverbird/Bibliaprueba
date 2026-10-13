@@ -32,7 +32,7 @@
                             <div id="proj-overlay" class="absolute inset-0 z-20 bg-black/40 transition-all duration-300"></div>
                             <img id="proj-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-30 hidden" alt="Standby Logo" />
                             <img id="proj-logo-corner" class="absolute max-w-[12%] max-h-[15%] object-contain z-30 hidden" alt="Corner Logo" />
-                            <div id="proj-karaoke" class="absolute inset-0 z-40 hidden flex items-center justify-center px-[8%] py-[6%] pointer-events-none"><div id="proj-karaoke-stanza" class="w-full whitespace-pre-line leading-relaxed text-center"></div></div>
+                            <div id="proj-karaoke" class="absolute inset-0 z-[60] hidden flex items-center justify-center px-[8%] py-[6%] pointer-events-none" aria-live="polite"><div id="proj-karaoke-stanza" class="w-full whitespace-pre-line leading-relaxed text-center"></div></div>
                             <div class="z-30 text-center w-full my-auto px-12">
                                 <p id="proj-text" class="text-white leading-relaxed"></p>
                             </div>
@@ -315,7 +315,7 @@
                                         const corner = document.getElementById('proj-logo-corner');
                                         const karaokeBox = document.getElementById('proj-karaoke'); const karaokeText = document.getElementById('proj-karaoke-stanza');
                                         const karaoke = data.karaoke || {}; const karaokeStyle = karaoke.style || {};
-                                        if (karaoke.active && data.mediaMode !== 'screen') { karaokeBox.classList.remove('hidden'); karaokeText.textContent = karaoke.stanza || ''; karaokeText.style.fontFamily='\"'+(karaokeStyle.font||'Inter')+'\", sans-serif'; karaokeText.style.fontSize=(Number(karaokeStyle.size)||4.5)+'vw'; karaokeText.style.color=karaokeStyle.color||'#fff'; karaokeText.style.textAlign=karaokeStyle.align||'center'; karaokeText.style.fontWeight='700'; karaokeText.style.textShadow='0 2px 12px rgba(0,0,0,.95)'; if(karaokeStyle.transparent){backdrop.style.background='transparent';backdrop.style.backgroundImage='none';overlay.style.backgroundColor='transparent';} } else { karaokeBox.classList.add('hidden'); }
+                                        if (karaoke.active && (data.mediaMode === 'youtube' || data.mediaMode === 'video' || data.mediaMode === 'none')) { karaokeBox.classList.remove('hidden'); karaokeText.textContent = karaoke.stanza || ''; karaokeText.style.fontFamily='\"'+(karaokeStyle.font||'Inter')+'\", sans-serif'; karaokeText.style.fontSize=(Number(karaokeStyle.size)||4.5)+'vw'; karaokeText.style.color=karaokeStyle.color||'#fff'; karaokeText.style.textAlign=karaokeStyle.align||'center'; karaokeText.style.fontWeight='700'; karaokeText.style.textShadow='0 2px 12px rgba(0,0,0,.95)'; if(karaokeStyle.transparent){backdrop.style.background='transparent';backdrop.style.backgroundImage='none';overlay.style.backgroundColor='transparent';} } else { karaokeBox.classList.add('hidden'); }
                                         if (!text || !backdrop) return;
 
                                         if (data.isBlackout) {
