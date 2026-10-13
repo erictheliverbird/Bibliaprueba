@@ -98,6 +98,12 @@
         body[data-workspace="capture"] #tab-culto, body[data-workspace="capture"] #youtube-controls-panel, body[data-workspace="capture"] #video-playback-controls, body[data-workspace="capture"] #local-video-file-panel { display:none !important; }
         body[data-workspace="capture"] #tab-video { display:flex !important; flex-direction:column; height:100%; overflow-y:auto; }
         body[data-workspace="capture"] #screen-capture-controls-panel { display:block !important; width:100%; max-width:900px; margin:0 auto; background:linear-gradient(145deg,rgba(23,35,56,.95),rgba(15,23,42,.95)); border:1px solid rgba(96,165,250,.22); }
+        body[data-workspace="karaoke"] #workspace-bible-books, body[data-workspace="karaoke"] #workspace-bible-verses { display:none !important; }
+        body[data-workspace="karaoke"] #workspace-control { width:100% !important; flex:1 1 auto !important; min-width:0; display:flex; flex-direction:row; }
+        body[data-workspace="karaoke"] #projector-preview-card { display:none !important; }
+        body[data-workspace="karaoke"] #tab-culto, body[data-workspace="karaoke"] #youtube-controls-panel, body[data-workspace="karaoke"] #video-playback-controls, body[data-workspace="karaoke"] #local-video-file-panel, body[data-workspace="karaoke"] #screen-capture-controls-panel, body[data-workspace="karaoke"] #tab-estilos { display:none !important; }
+        body[data-workspace="karaoke"] #tab-video { display:flex !important; flex-direction:column; height:100%; overflow-y:auto; }
+        body[data-workspace="karaoke"] #karaoke-panel { display:block !important; width:100%; max-width:1100px; margin:0 auto; }
         #btn-quick-screen-share { display:none !important; }
         body[data-workspace="design"] #workspace-control .flex-1.min-h-0.bg-gray-900 { min-width:0; }
         body[data-workspace="design"] #tab-estilos { display:block !important; }
@@ -496,6 +502,19 @@
                         </div>
 
                         <!-- TAB 3: DISEÑO Y ESTILOS & BUSCADOR DE IMÁGENES EN INTERNET -->
+                        <div id="karaoke-panel" class="hidden bg-slate-900/90 border border-fuchsia-400/20 p-4 md:p-6 rounded-2xl space-y-4 shadow-xl">
+                          <div class="flex items-center justify-between gap-3"><div><h2 class="text-lg font-black text-fuchsia-200"><i class="fa-solid fa-music mr-2"></i>Karaoke Lyrics</h2><p class="text-xs text-gray-400 mt-1">Busca letras, edítalas y proyecta cada estrofa.</p></div><span id="karaoke-status" class="text-[10px] text-gray-400">Sin letras cargadas</span></div>
+                          <div class="grid grid-cols-1 md:grid-cols-3 gap-2"><input id="karaoke-track" class="bg-gray-950 border border-gray-700 rounded-xl p-3 text-sm" placeholder="Nombre de la canción"><input id="karaoke-artist" class="bg-gray-950 border border-gray-700 rounded-xl p-3 text-sm" placeholder="Artista"><button id="karaoke-search" class="bg-fuchsia-700 hover:bg-fuchsia-600 rounded-xl px-4 py-3 text-sm font-bold"><i class="fa-solid fa-magnifying-glass mr-2"></i>Buscar letras</button></div>
+                          <p class="text-[10px] text-gray-500">Búsqueda mediante LRCLIB. La disponibilidad depende de su catálogo y conexión a internet.</p><div id="karaoke-results" class="space-y-2"></div>
+                          <div class="space-y-2"><label class="text-xs font-bold text-gray-300">Escribir o pegar letras (separa las estrofas con una línea en blanco)</label><textarea id="karaoke-manual" rows="7" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-sm leading-relaxed" placeholder="Primera línea de la estrofa
+Segunda línea
+
+Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="karaoke-load-manual" class="bg-gray-700 hover:bg-gray-600 rounded-xl px-4 py-2.5 text-sm font-bold">Usar estas letras</button><button id="karaoke-clear" class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-sm">Limpiar</button></div></div>
+                          <div class="rounded-xl border border-gray-700 bg-gray-950/60 p-3 space-y-3"><div class="flex items-center justify-between"><h3 class="text-sm font-bold text-gray-200">Diseño de proyección</h3><label class="text-xs flex items-center gap-2"><input id="karaoke-transparent" type="checkbox" class="accent-fuchsia-500"> Fondo transparente</label></div>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3"><label class="text-xs text-gray-400">Tamaño (vw)<input id="karaoke-size" type="number" min="1.5" max="12" step="0.5" value="4.5" class="mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"></label><label class="text-xs text-gray-400">Color texto<input id="karaoke-color" type="color" value="#ffffff" class="mt-1 w-full h-10 bg-gray-900 border border-gray-700 rounded-lg p-1"></label><label class="text-xs text-gray-400">Fuente<select id="karaoke-font" class="mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"><option>Inter</option><option>Montserrat</option><option>Arial</option><option>Georgia</option><option>Roboto Slab</option><option>Playfair Display</option><option>Open Sans</option></select></label><label class="text-xs text-gray-400">Alineación<select id="karaoke-align" class="mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"><option value="center">Centro</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></label></div>
+                          </div>
+                          <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-800 pt-4"><span id="karaoke-stanza-count" class="text-xs text-gray-400">0 estrofas</span><div class="flex gap-2"><button id="karaoke-prev" class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 font-bold" disabled><i class="fa-solid fa-chevron-left mr-1"></i>Anterior</button><button id="karaoke-project" class="bg-fuchsia-700 hover:bg-fuchsia-600 rounded-xl px-4 py-3 font-bold">Proyectar estrofa</button><button id="karaoke-next" class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 font-bold" disabled>Siguiente<i class="fa-solid fa-chevron-right ml-1"></i></button></div></div>
+                        </div>
                         <div id="tab-estilos" class="hidden space-y-4">
                             
                             <!-- Tipografía -->
@@ -785,6 +804,7 @@
             <button type="button" class="workspace-nav-item" data-workspace="capture">
                 <i class="fa-solid fa-display"></i><span>Captura</span><small>Pantalla externa</small>
             </button>
+            <button type="button" class="workspace-nav-item" data-workspace="karaoke"><i class="fa-solid fa-music"></i><span>Karaoke Lyrics</span><small>Letras por estrofas</small></button>
             <button type="button" class="workspace-nav-item" data-workspace="design">
                 <i class="fa-solid fa-sliders"></i><span>Personalización</span><small>Diseño y logo</small>
             </button>
@@ -901,6 +921,8 @@
         };
 
         let mediaMode = 'none';
+        let karaokeStanzas = []; let karaokeIndex = 0; let karaokeActive = false; let karaokeTitle = '';
+        let karaokeStyle = { transparent:false, size:4.5, color:'#ffffff', font:'Inter', align:'center' };
         let activeVideoUrl = '';
         let activeVideoFile = null;
         let isVideoPlaying = false;
@@ -1986,6 +2008,7 @@
         function projectVerse(text, citation, idx = null) {
             currentText = text;
             currentCitation = citation;
+            karaokeActive = false;
             isStandby = false;
             if (idx !== null) selectedVerseIdx = idx;
             // Seleccionar un versículo devuelve automáticamente la pantalla al modo Biblia,
@@ -2054,6 +2077,7 @@
                 isClearText: isClearText,
                 isStandby: isStandby,
                 styles: projectionStyles,
+                karaoke: { active: karaokeActive, stanza: karaokeStanzas[karaokeIndex] || '', index: karaokeIndex, total: karaokeStanzas.length, title: karaokeTitle, style: karaokeStyle },
                 mediaMode: mediaMode,
                 videoUrl: activeVideoUrl,
                 isVideoPlaying: isVideoPlaying,
@@ -2579,7 +2603,7 @@
                 const tabButton = document.getElementById(internalTab);
                 if (tabButton) tabButton.click();
                 // En los espacios multimedia, conserva visible la vista previa y muestra solo los controles del modo elegido.
-                if (workspace === 'local' || workspace === 'youtube' || workspace === 'design' || workspace === 'capture') {
+                if (workspace === 'local' || workspace === 'youtube' || workspace === 'design' || workspace === 'capture' || workspace === 'karaoke') {
                     const panel = document.getElementById('workspace-control');
                     if (panel) panel.scrollTop = 0;
                 }
@@ -2674,6 +2698,20 @@
                     showToast("Enlace de YouTube no válido", "error");
                 }
             };
+            // Karaoke Lyrics: búsqueda de letras y proyección por estrofas.
+            const karaokeStatus = document.getElementById('karaoke-status');
+            function karaokeSplit(text) { return String(text || '').replace(/\r/g,'').trim().split(/\n\s*\n+/).map(x=>x.trim()).filter(Boolean); }
+            function karaokeRefreshNav() { document.getElementById('karaoke-stanza-count').textContent = karaokeStanzas.length ? `Estrofa ${karaokeIndex+1} de ${karaokeStanzas.length}` : '0 estrofas'; document.getElementById('karaoke-prev').disabled = !karaokeStanzas.length || karaokeIndex===0; document.getElementById('karaoke-next').disabled = !karaokeStanzas.length || karaokeIndex>=karaokeStanzas.length-1; }
+            function karaokeApplyStyle() { karaokeStyle = { transparent:document.getElementById('karaoke-transparent').checked, size:Math.max(1.5,Math.min(12,Number(document.getElementById('karaoke-size').value)||4.5)), color:document.getElementById('karaoke-color').value, font:document.getElementById('karaoke-font').value, align:document.getElementById('karaoke-align').value }; syncToProjector(); }
+            function karaokeLoad(text,title='') { karaokeStanzas=karaokeSplit(text); karaokeIndex=0; karaokeTitle=title; karaokeActive=karaokeStanzas.length>0; karaokeRefreshNav(); karaokeStatus.textContent=karaokeActive?'Letras listas':'No se encontraron estrofas'; syncToProjector(); }
+            document.getElementById('karaoke-search').onclick = async () => { const track=document.getElementById('karaoke-track').value.trim(), artist=document.getElementById('karaoke-artist').value.trim(), box=document.getElementById('karaoke-results'); if(!track&&!artist){karaokeStatus.textContent='Escribe canción o artista';return;} box.innerHTML=''; karaokeStatus.textContent='Buscando…'; try { const q=new URLSearchParams(); if(track)q.set('track_name',track); if(artist)q.set('artist_name',artist); const response=await fetch('https://lrclib.net/api/search?'+q.toString(),{headers:{'Accept':'application/json'}}); if(!response.ok)throw new Error('HTTP '+response.status); const results=await response.json(); if(!Array.isArray(results)||!results.length){karaokeStatus.textContent='Sin resultados. Puedes escribir las letras manualmente.';return;} karaokeStatus.textContent=results.length+' resultados'; results.slice(0,12).forEach((r,i)=>{const lyrics=r.plainLyrics || (r.syncedLyrics||'').replace(/\[\d{2}:\d{2}(?:\.\d{1,3})?\]/g,'').trim(); const card=document.createElement('div');card.className='flex items-center justify-between gap-3 rounded-xl border border-gray-700 bg-gray-950/70 p-3';const info=document.createElement('div');info.className='min-w-0';const title=document.createElement('div');title.className='text-sm font-bold text-white';title.textContent=r.trackName||'Canción sin título';const sub=document.createElement('div');sub.className='text-xs text-gray-400';sub.textContent=(r.artistName||'Artista desconocido')+' · '+(r.albumName||'Sin álbum')+(r.duration?' · '+Math.round(r.duration/60)+' min':'')+(r.syncedLyrics?' · sincronizadas':'');info.append(title,sub);const btn=document.createElement('button');btn.className='shrink-0 bg-fuchsia-700 rounded-lg px-3 py-2 text-xs font-bold';btn.textContent='Usar';btn.disabled=!lyrics;btn.onclick=()=>{document.getElementById('karaoke-manual').value=lyrics;karaokeLoad(lyrics,(r.trackName||track)+' — '+(r.artistName||artist));};card.append(info,btn);box.appendChild(card);}); } catch(e){karaokeStatus.textContent='No se pudo buscar en internet. Puedes pegar las letras manualmente.'; } };
+            document.getElementById('karaoke-load-manual').onclick=()=>karaokeLoad(document.getElementById('karaoke-manual').value,document.getElementById('karaoke-track').value.trim());
+            document.getElementById('karaoke-clear').onclick=()=>{karaokeStanzas=[];karaokeIndex=0;karaokeActive=false;karaokeTitle='';document.getElementById('karaoke-manual').value='';document.getElementById('karaoke-results').innerHTML='';karaokeRefreshNav();syncToProjector();karaokeStatus.textContent='Letras limpiadas';};
+            document.getElementById('karaoke-prev').onclick=()=>{if(karaokeIndex>0){karaokeIndex--;karaokeRefreshNav();syncToProjector();}};
+            document.getElementById('karaoke-next').onclick=()=>{if(karaokeIndex<karaokeStanzas.length-1){karaokeIndex++;karaokeRefreshNav();syncToProjector();}};
+            document.getElementById('karaoke-project').onclick=()=>{if(!karaokeStanzas.length){karaokeStatus.textContent='Primero busca o escribe las letras';return;}karaokeActive=true;karaokeApplyStyle();showToast('Estrofa enviada al proyector','success');};
+            ['karaoke-transparent','karaoke-size','karaoke-color','karaoke-font','karaoke-align'].forEach(id=>document.getElementById(id).addEventListener('change',karaokeApplyStyle));
+            karaokeRefreshNav();
             document.getElementById('btn-start-screen-capture').onclick = startScreenCapture;
             document.getElementById('btn-stop-screen-capture').onclick = stopScreenCapture;
             document.getElementById('video-file-input').onchange = (e) => {
