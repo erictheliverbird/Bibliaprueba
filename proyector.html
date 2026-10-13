@@ -321,7 +321,9 @@
                                         const karaokeBox = document.getElementById('proj-karaoke'); const karaokeText = document.getElementById('proj-karaoke-stanza');
                                         const karaoke = data.karaoke || {}; const karaokeStyle = karaoke.style || {};
                                         const karaokeLoaded = !!karaoke.active && !!String(karaoke.stanza || '').trim();
-                                        const youtubeLyricsLayout = data.mediaMode === 'youtube' && karaokeLoaded;
+                                        // Ocultar texto y pantalla de espera también deben ocultar las letras.
+                                        const karaokeVisible = karaokeLoaded && !data.isClearText && !data.isStandby && !data.isBlackout;
+                                        const youtubeLyricsLayout = data.mediaMode === 'youtube' && karaokeVisible;
                                         // La API de YouTube reemplaza el nodo objetivo por un iframe. Por eso el tamaño
                                         // se aplica al contenedor estable, no al iframe que controla YouTube.
                                         const karaokeBg = document.getElementById('proj-karaoke-bg');
@@ -340,7 +342,7 @@
                                             karaokeBox.style.inset=''; karaokeBox.style.padding=''; karaokeBox.style.zIndex='40';
                                             karaokeText.style.maxHeight=''; karaokeText.style.overflow='';
                                         }
-                                        if (karaokeLoaded && data.mediaMode !== 'screen') {
+                                        if (karaokeVisible && data.mediaMode !== 'screen') {
                                             karaokeBox.classList.remove('hidden'); karaokeText.textContent=karaoke.stanza || '';
                                             karaokeText.style.fontFamily='\"'+(karaokeStyle.font||'Inter')+'\", sans-serif';
                                             if (!youtubeLyricsLayout) karaokeText.style.fontSize=(Number(karaokeStyle.size)||4.5)+'vw';
@@ -379,7 +381,7 @@
                                         text.style.color = styles.textcolor || '#fff';
                                         text.classList.toggle('text-projection-shadow', !!styles.hasShadow);
 
-                                        if (karaoke.active) { text.textContent=''; citation.textContent=''; standby.classList.add('hidden'); corner.classList.add('hidden'); }
+                                        if (karaokeVisible) { text.textContent=''; citation.textContent=''; standby.classList.add('hidden'); corner.classList.add('hidden'); }
                                         citation.textContent = data.citation || '';
                                         citation.style.fontFamily = '"' + (styles.citationFont || styles.font || 'Inter') + '", sans-serif';
                                         citation.style.fontSize = (parseFloat(styles.citationSize) || 1.6) + 'vw';
