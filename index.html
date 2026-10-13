@@ -69,7 +69,7 @@
         #operator-interface button { -webkit-tap-highlight-color: transparent; }
         #operator-interface button:not(.workspace-nav-item) { transition: background-color .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease; }
         #operator-interface button:not(:disabled):active { transform: scale(.985); }
-        .workspace-nav { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; padding: 9px max(12px, env(safe-area-inset-left)) calc(9px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-right)); background: rgba(9,14,26,.97); border-top: 1px solid rgba(148,163,184,.18); box-shadow: 0 -10px 28px rgba(0,0,0,.16); }
+        .workspace-nav { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 8px; padding: 9px max(12px, env(safe-area-inset-left)) calc(9px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-right)); background: rgba(9,14,26,.97); border-top: 1px solid rgba(148,163,184,.18); box-shadow: 0 -10px 28px rgba(0,0,0,.16); }
         .workspace-nav-item { min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px 5px 8px; border:1px solid transparent; border-radius:14px; color:#8b98ad; background:transparent; position:relative; }
         .workspace-nav-item i { font-size:19px; line-height:1; }
         .workspace-nav-item span { font-size:12px; font-weight:750; letter-spacing:.01em; color:#d1d9e6; }
@@ -79,18 +79,26 @@
         .workspace-nav-item.is-active small { color:#9bbdf4; }
         body[data-workspace="local"] #workspace-bible-books, body[data-workspace="local"] #workspace-bible-verses,
         body[data-workspace="youtube"] #workspace-bible-books, body[data-workspace="youtube"] #workspace-bible-verses,
-        body[data-workspace="design"] #workspace-bible-books, body[data-workspace="design"] #workspace-bible-verses { display:none !important; }
-        body[data-workspace="local"] #workspace-control, body[data-workspace="youtube"] #workspace-control, body[data-workspace="design"] #workspace-control { width:auto !important; flex:1 1 auto !important; min-width:0; }
-        body[data-workspace="local"] #workspace-control, body[data-workspace="youtube"] #workspace-control, body[data-workspace="design"] #workspace-control { display:flex; flex-direction:row; gap:16px; }
+        body[data-workspace="design"] #workspace-bible-books, body[data-workspace="design"] #workspace-bible-verses,
+        body[data-workspace="capture"] #workspace-bible-books, body[data-workspace="capture"] #workspace-bible-verses { display:none !important; }
+        body[data-workspace="local"] #workspace-control, body[data-workspace="youtube"] #workspace-control, body[data-workspace="design"] #workspace-control, body[data-workspace="capture"] #workspace-control { width:auto !important; flex:1 1 auto !important; min-width:0; }
+        body[data-workspace="local"] #workspace-control, body[data-workspace="youtube"] #workspace-control, body[data-workspace="design"] #workspace-control, body[data-workspace="capture"] #workspace-control { display:flex; flex-direction:row; gap:16px; }
         body[data-workspace="local"] #projector-preview-card, body[data-workspace="youtube"] #projector-preview-card, body[data-workspace="design"] #projector-preview-card { width:min(42%, 560px); flex:0 0 min(42%, 560px); align-self:flex-start; }
         body[data-workspace="local"] #workspace-control > .control-panel, body[data-workspace="youtube"] #workspace-control > .control-panel, body[data-workspace="design"] #workspace-control > .control-panel { flex:1; min-width:0; }
-        body[data-workspace="local"] #youtube-controls-panel, body[data-workspace="youtube"] #screen-capture-controls-panel, body[data-workspace="youtube"] #video-playback-controls, body[data-workspace="youtube"] #local-video-file-panel, body[data-workspace="design"] #tab-culto, body[data-workspace="design"] #tab-video, body[data-workspace="local"] #tab-culto, body[data-workspace="youtube"] #tab-culto { display:none !important; }
+        body[data-workspace="local"] #youtube-controls-panel, body[data-workspace="youtube"] #screen-capture-controls-panel, body[data-workspace="youtube"] #video-playback-controls, body[data-workspace="youtube"] #local-video-file-panel, body[data-workspace="bible"] #screen-capture-controls-panel, body[data-workspace="design"] #screen-capture-controls-panel, body[data-workspace="design"] #tab-culto, body[data-workspace="design"] #tab-video, body[data-workspace="local"] #tab-culto, body[data-workspace="youtube"] #tab-culto { display:none !important; }
         body[data-workspace="local"] #tab-video, body[data-workspace="youtube"] #tab-video, body[data-workspace="design"] #tab-estilos { display:block !important; }
         body[data-workspace="local"] #tab-video, body[data-workspace="youtube"] #tab-video, body[data-workspace="design"] #tab-estilos { height:100%; overflow-y:auto; }
         body[data-workspace="local"] #tab-video, body[data-workspace="youtube"] #tab-video { display:flex !important; flex-direction:column; }
         body[data-workspace="local"] #tab-video #youtube-controls-panel { display:none !important; }
         body[data-workspace="youtube"] #tab-video #screen-capture-controls-panel, body[data-workspace="youtube"] #tab-video #video-playback-controls, body[data-workspace="youtube"] #tab-video #local-video-file-panel { display:none !important; }
         body[data-workspace="local"] #tab-video #screen-capture-controls-panel, body[data-workspace="local"] #tab-video #video-playback-controls, body[data-workspace="local"] #tab-video #local-video-file-panel { display:block; }
+        body[data-workspace="capture"] #projector-preview-card { display:none !important; }
+        body[data-workspace="capture"] #workspace-control { width:100% !important; flex:1 1 auto !important; min-width:0; display:flex; flex-direction:row; }
+        body[data-workspace="capture"] #workspace-control > .control-panel { width:100%; flex:1; min-width:0; }
+        body[data-workspace="capture"] #tab-culto, body[data-workspace="capture"] #youtube-controls-panel, body[data-workspace="capture"] #video-playback-controls, body[data-workspace="capture"] #local-video-file-panel { display:none !important; }
+        body[data-workspace="capture"] #tab-video { display:flex !important; flex-direction:column; height:100%; overflow-y:auto; }
+        body[data-workspace="capture"] #screen-capture-controls-panel { display:block !important; width:100%; max-width:900px; margin:0 auto; background:linear-gradient(145deg,rgba(23,35,56,.95),rgba(15,23,42,.95)); border:1px solid rgba(96,165,250,.22); }
+        #btn-quick-screen-share { display:none !important; }
         body[data-workspace="design"] #workspace-control .flex-1.min-h-0.bg-gray-900 { min-width:0; }
         body[data-workspace="design"] #tab-estilos { display:block !important; }
         @media (max-width: 900px) {
@@ -99,7 +107,7 @@
           .workspace-nav-item i { font-size:17px; }
           .workspace-nav-item span { font-size:10px; }
           .workspace-nav-item small { display:none; }
-          body[data-workspace="local"] #workspace-control, body[data-workspace="youtube"] #workspace-control, body[data-workspace="design"] #workspace-control { flex-direction:column; overflow-y:auto; }
+          body[data-workspace="local"] #workspace-control, body[data-workspace="youtube"] #workspace-control, body[data-workspace="design"] #workspace-control, body[data-workspace="capture"] #workspace-control { flex-direction:column; overflow-y:auto; }
           body[data-workspace="local"] #projector-preview-card, body[data-workspace="youtube"] #projector-preview-card, body[data-workspace="design"] #projector-preview-card { width:100%; flex:0 0 auto; }
         }
         @media (prefers-reduced-motion: reduce) { .workspace-nav-item, #operator-interface button { transition:none !important; } }
@@ -428,14 +436,16 @@
                                 <p class="text-[10px] text-gray-500">La conexión se comprueba aunque separes la ventana del proyector. Abre una sola ventana de proyección y muévela al monitor externo.</p>
                             </div>
 
-                            <div id="screen-capture-controls-panel" class="bg-gradient-to-br from-blue-950/60 to-purple-950/60 border border-blue-500/30 p-3.5 rounded-xl space-y-2">
+                            <div id="screen-capture-controls-panel" class="bg-slate-900/90 border border-blue-400/20 p-4 md:p-6 rounded-2xl space-y-4 shadow-xl">
+                                <video id="screen-capture-source" muted playsinline autoplay aria-hidden="true" style="position:fixed;width:1px;height:1px;left:-10px;top:-10px;opacity:0;pointer-events:none"></video>
                                 <div class="flex items-center justify-between">
-                                    <span class="text-xs font-extrabold text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
+                                    <span class="text-sm font-extrabold text-blue-200 uppercase tracking-wider flex items-center gap-2">
                                         <i class="fa-solid fa-desktop"></i> Captura de Pantalla
                                     </span>
                                 </div>
+                                <p class="text-xs text-gray-300 leading-relaxed">Comparte una pantalla o ventana desde el selector del navegador. La captura se envía directamente a la proyección; no utiliza la vista previa del panel.</p>
                                 <div class="flex gap-2 pt-1">
-                                    <button id="btn-start-screen-capture" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-blue-900/40">
+                                    <button id="btn-start-screen-capture" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-3 px-4 rounded-xl text-sm font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-blue-900/30">
                                         <i class="fa-solid fa-display"></i>
                                         <span>Iniciar Transmisión</span>
                                     </button>
@@ -443,6 +453,7 @@
                                         <i class="fa-solid fa-square"></i> Detener
                                     </button>
                                 </div>
+                                <div id="screen-capture-status" class="rounded-lg bg-gray-950/70 border border-gray-800 px-3 py-2 text-xs text-gray-400" role="status" aria-live="polite">Captura detenida</div>
                             </div>
 
                             <div id="video-playback-controls" class="bg-gray-900 border border-gray-800 p-3 rounded-xl space-y-3">
@@ -773,6 +784,9 @@
             </button>
             <button type="button" class="workspace-nav-item" data-workspace="design">
                 <i class="fa-solid fa-sliders"></i><span>Personalización</span><small>Diseño y logo</small>
+            </button>
+            <button type="button" class="workspace-nav-item" data-workspace="capture">
+                <i class="fa-solid fa-display"></i><span>Captura</span><small>Pantalla externa</small>
             </button>
         </nav>
     </div>
@@ -2254,7 +2268,7 @@
 
         function startScreenFrameSync() {
             stopScreenFrameSync();
-            const sourceVideo = document.getElementById('preview-video');
+            const sourceVideo = document.getElementById('screen-capture-source');
             if (!sourceVideo) return;
             screenFrameCanvas = document.createElement('canvas');
             screenFrameCanvas.width = 960;
@@ -2286,16 +2300,36 @@
         }
 
         async function startScreenCapture() {
+            const status = document.getElementById('screen-capture-status');
             try {
-                window.screenStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: "always" }, audio: false });
+                if (!navigator.mediaDevices || typeof navigator.mediaDevices.getDisplayMedia !== 'function') {
+                    if (status) status.textContent = 'Este navegador no permite capturar pantalla. Prueba desde Safari actualizado o un navegador compatible.';
+                    showToast("Este navegador no permite capturar pantalla", "error");
+                    return;
+                }
+                // Solicitar captura directamente desde la interacción del usuario.
+                window.screenStream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: { ideal: 10, max: 15 }, cursor: "always" }, audio: false });
+                const sourceVideo = document.getElementById('screen-capture-source');
+                if (!sourceVideo) throw new Error('No se encontró la fuente de captura');
+                sourceVideo.muted = true;
+                sourceVideo.playsInline = true;
+                sourceVideo.srcObject = window.screenStream;
+                await sourceVideo.play();
                 mediaMode = 'screen';
                 document.getElementById('btn-start-screen-capture').classList.add('hidden');
                 document.getElementById('btn-stop-screen-capture').classList.remove('hidden');
-                window.screenStream.getVideoTracks()[0].onended = stopScreenCapture;
+                const track = window.screenStream.getVideoTracks()[0];
+                if (track) track.onended = stopScreenCapture;
+                if (status) status.textContent = 'Transmitiendo captura directamente al proyector';
                 syncToProjector();
                 startScreenFrameSync();
                 showToast("Captura de pantalla activa", "success");
             } catch (err) {
+                console.warn('No se pudo iniciar la captura de pantalla', err);
+                if (window.screenStream) { window.screenStream.getTracks().forEach(track => track.stop()); window.screenStream = null; }
+                const sourceVideo = document.getElementById('screen-capture-source');
+                if (sourceVideo) { try { sourceVideo.pause(); sourceVideo.srcObject = null; } catch (_) {} }
+                if (status) status.textContent = err && err.name === 'NotAllowedError' ? 'Captura cancelada. Pulsa Iniciar y autoriza compartir una pantalla o ventana.' : 'No se pudo iniciar. El navegador o iPadOS puede no admitir esta captura.';
                 showToast("No se pudo iniciar la captura de pantalla", "error");
             }
         }
@@ -2306,6 +2340,10 @@
                 window.screenStream.getTracks().forEach(track => track.stop());
                 window.screenStream = null;
             }
+            const sourceVideo = document.getElementById('screen-capture-source');
+            if (sourceVideo) { try { sourceVideo.pause(); sourceVideo.srcObject = null; } catch (_) {} }
+            const status = document.getElementById('screen-capture-status');
+            if (status) status.textContent = 'Captura detenida';
             document.getElementById('btn-start-screen-capture').classList.remove('hidden');
             document.getElementById('btn-stop-screen-capture').classList.add('hidden');
             mediaMode = 'none';
@@ -2497,7 +2535,7 @@
                 const tabButton = document.getElementById(internalTab);
                 if (tabButton) tabButton.click();
                 // En los espacios multimedia, conserva visible la vista previa y muestra solo los controles del modo elegido.
-                if (workspace === 'local' || workspace === 'youtube' || workspace === 'design') {
+                if (workspace === 'local' || workspace === 'youtube' || workspace === 'design' || workspace === 'capture') {
                     const panel = document.getElementById('workspace-control');
                     if (panel) panel.scrollTop = 0;
                 }
