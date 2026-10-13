@@ -387,12 +387,21 @@
 
                                         const screenFrame = document.getElementById('proj-screen-frame');
                                         if (data.mediaMode === 'screen') {
-                                            video.pause();
                                             if (ytPlayerReady && ytPlayer) { try { ytPlayer.pauseVideo(); } catch (_) {} }
-                                            if (screenFrame) screenFrame.classList.remove('hidden');
-                                            video.classList.add('hidden');
-                                            if (video.srcObject) video.srcObject = null;
                                             youtube.classList.add('hidden');
+                                            if (video.srcObject) {
+                                                // Fuente capturada asignada directamente por la ventana de control.
+                                                // El proyector es el único destino; no limpiar srcObject en cada sync.
+                                                video.muted = true;
+                                                video.classList.remove('hidden');
+                                                if (screenFrame) screenFrame.classList.add('hidden');
+                                                video.play().catch(() => {});
+                                            } else {
+                                                // Fallback para navegadores que no permiten compartir MediaStream entre ventanas.
+                                                video.pause();
+                                                video.classList.add('hidden');
+                                                if (screenFrame) screenFrame.classList.remove('hidden');
+                                            }
                                         } else if (data.mediaMode === 'youtube' && data.videoUrl) {
                                             // Cambio automático al reproductor YouTube de esta misma ventana.
                                             // El reproductor local se pausa y se oculta; nunca hay dos videos activos.

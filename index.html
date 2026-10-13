@@ -782,11 +782,11 @@
             <button type="button" class="workspace-nav-item" data-workspace="youtube">
                 <i class="fa-brands fa-youtube"></i><span>YouTube</span><small>Video en línea</small>
             </button>
-            <button type="button" class="workspace-nav-item" data-workspace="design">
-                <i class="fa-solid fa-sliders"></i><span>Personalización</span><small>Diseño y logo</small>
-            </button>
             <button type="button" class="workspace-nav-item" data-workspace="capture">
                 <i class="fa-solid fa-display"></i><span>Captura</span><small>Pantalla externa</small>
+            </button>
+            <button type="button" class="workspace-nav-item" data-workspace="design">
+                <i class="fa-solid fa-sliders"></i><span>Personalización</span><small>Diseño y logo</small>
             </button>
         </nav>
     </div>
@@ -2079,21 +2079,18 @@
                     videoEl.classList.add('hidden');
                     const mirror = docObj.getElementById(videoEl.id === 'preview-video' ? 'preview-video-mirror' : 'local-fs-video-mirror');
                     if (mirror) mirror.classList.remove('hidden');
-                } else if (videoEl.id === 'preview-video') {
-                    const mirror = docObj.getElementById('preview-video-mirror');
-                    if (mirror) mirror.classList.add('hidden');
-                    const fsMirror = docObj.getElementById('local-fs-video-mirror');
-                    if (fsMirror) fsMirror.classList.add('hidden');
-                    if (data.mediaMode !== 'screen') {
-                        try { videoEl.pause(); videoEl.removeAttribute('src'); videoEl.srcObject = null; } catch (_) {}
-                        videoEl.classList.add('hidden');
-                    } else if (window.screenStream) {
-                        if (videoEl.srcObject !== window.screenStream) videoEl.srcObject = window.screenStream;
-                        videoEl.classList.remove('hidden');
-                        videoEl.play().catch(() => {});
-                    }
-                } else if (data.mediaMode === 'screen' && window.screenStream) {
-                    videoEl.pause();
+                } else if (videoEl.id === 'preview-video' || videoEl.id === 'local-fs-video') {
+                    // La captura de pantalla NUNCA se muestra en una vista previa local.
+                    // Solo la ventana de proyección recibe la fuente de captura.
+                    try { videoEl.pause(); videoEl.removeAttribute('src'); videoEl.srcObject = null; } catch (_) {}
+                    videoEl.classList.add('hidden');
+                    const mirror = docObj.getElementById(videoEl.id === 'preview-video' ? 'preview-video-mirror' : 'local-fs-video-mirror');
+                    if (mirror) { mirror.removeAttribute('src'); mirror.classList.add('hidden'); }
+                } else if (videoEl.id === 'proj-video' && data.mediaMode === 'screen' && window.screenStream) {
+                    // Asignar el MediaStream directamente al video de la ventana del proyector.
+                    // No usar el reproductor ni la vista previa del panel de control.
+                    videoEl.muted = true;
+                    videoEl.playsInline = true;
                     if (videoEl.srcObject !== window.screenStream) videoEl.srcObject = window.screenStream;
                     videoEl.classList.remove('hidden');
                     videoEl.play().catch(() => {});
@@ -2287,7 +2284,8 @@
                     ctx.drawImage(sourceVideo, 0, 0, screenFrameCanvas.width, screenFrameCanvas.height);
                     const frame = screenFrameCanvas.toDataURL('image/jpeg', 0.55);
                     const message = { type: '__screen_frame', frame, timestamp: now };
-                    if (broadcastChannel) broadcastChannel.postMessage(message);
+                    // Los fotogramas de respaldo se envían SOLO a la ventana del proyector.
+                    // No publicar por BroadcastChannel para evitar que otra ventana/vista previa los consuma.
                     try { if (externalWindow && !externalWindow.closed) externalWindow.postMessage(message, '*'); } catch (_) {}
                 } catch (error) { console.warn('No se pudo sincronizar un fotograma de pantalla', error); }
             }, 200);
