@@ -103,6 +103,92 @@
           body[data-workspace="local"] #projector-preview-card, body[data-workspace="youtube"] #projector-preview-card, body[data-workspace="design"] #projector-preview-card { width:100%; flex:0 0 auto; }
         }
         @media (prefers-reduced-motion: reduce) { .workspace-nav-item, #operator-interface button { transition:none !important; } }
+
+
+        /* v17.3 — pulido estético exclusivo. No cambiar IDs, eventos ni lógica. */
+        :root {
+          --ui-bg: #0b1120;
+          --ui-panel: #121b2b;
+          --ui-panel-raised: #182438;
+          --ui-line: rgba(148,163,184,.17);
+          --ui-text: #e7edf6;
+          --ui-muted: #94a3b8;
+          --ui-blue: #6ea8ff;
+          --ui-blue-soft: rgba(76,137,235,.14);
+          --ui-gold: #d6b56d;
+        }
+        html { background: var(--ui-bg); }
+        body, #operator-interface { background: radial-gradient(ellipse at 50% -25%, #1a2940 0%, #0b1120 60%) !important; color:var(--ui-text); }
+        #operator-interface > header {
+          min-height:64px; background:rgba(12,19,33,.96) !important;
+          border-bottom:1px solid rgba(148,163,184,.16) !important;
+          box-shadow:0 8px 26px rgba(0,0,0,.18); backdrop-filter:blur(18px);
+        }
+        #operator-interface > header > div:first-child > div:first-child {
+          background:linear-gradient(145deg,#263b59,#17263b) !important;
+          color:#d6e6ff !important; border:1px solid rgba(130,169,225,.25);
+          border-radius:14px !important; box-shadow:0 5px 18px rgba(0,0,0,.22) !important;
+        }
+        #operator-interface header h1 { color:#f1f5fb !important; letter-spacing:.065em; }
+        #operator-interface header h1 span { background:rgba(214,181,109,.10) !important; color:#dfc88f !important; border-color:rgba(214,181,109,.28) !important; }
+        #operator-interface header > div:last-child { gap:8px !important; }
+        /* Todos los botones de cabecera comparten una paleta sobria; los estados siguen siendo distinguibles. */
+        #btn-quick-screen-share,
+        #btn-toggle-ext-projector,
+        #btn-toggle-local-fs,
+        #btn-install-help,
+        #operator-interface header label[for],
+        #operator-interface header label:has(#json-bible-input) {
+          background:linear-gradient(180deg,#202d42,#172236) !important;
+          color:#dbe6f5 !important; border:1px solid rgba(148,163,184,.20) !important;
+          box-shadow:0 2px 7px rgba(0,0,0,.12) !important; border-radius:11px !important;
+          font-weight:650 !important;
+        }
+        #btn-quick-screen-share:hover,
+        #btn-toggle-ext-projector:hover,
+        #btn-toggle-local-fs:hover,
+        #btn-install-help:hover,
+        #operator-interface header label:has(#json-bible-input):hover {
+          background:linear-gradient(180deg,#2b3d57,#20304a) !important;
+          border-color:rgba(126,169,235,.42) !important; color:#fff !important;
+          box-shadow:0 4px 12px rgba(0,0,0,.20) !important;
+        }
+        #btn-quick-screen-share i, #btn-toggle-ext-projector i, #btn-toggle-local-fs i,
+        #btn-install-help i, #operator-interface header label:has(#json-bible-input) i { color:#9bbce9 !important; }
+        #btn-toggle-ext-projector { border-color:rgba(93,151,238,.30) !important; }
+        #btn-toggle-local-fs { border-color:rgba(112,164,154,.26) !important; }
+        #operator-interface main { gap:14px !important; }
+        #operator-interface section.bg-gray-900, #workspace-control > div {
+          border-color:var(--ui-line) !important; box-shadow:0 10px 28px rgba(0,0,0,.12);
+        }
+        #operator-interface .bg-gray-900 { background-color:rgba(18,27,43,.96) !important; }
+        #operator-interface .bg-gray-800 { background-color:#202d42 !important; }
+        #operator-interface .border-gray-800, #operator-interface .border-gray-700 { border-color:var(--ui-line) !important; }
+        #operator-interface input:not([type=file]), #operator-interface select, #operator-interface textarea {
+          background-color:#0d1728 !important; color:#e7edf6 !important; border-color:rgba(148,163,184,.22) !important;
+          border-radius:10px;
+        }
+        #operator-interface input:focus, #operator-interface select:focus, #operator-interface textarea:focus {
+          outline:none; border-color:rgba(110,168,255,.7) !important; box-shadow:0 0 0 3px rgba(76,137,235,.12) !important;
+        }
+        #operator-interface button:not(:disabled):hover { filter:brightness(1.08); }
+        #operator-interface button:focus-visible, #operator-interface label:focus-within {
+          outline:2px solid rgba(110,168,255,.78); outline-offset:2px;
+        }
+        .workspace-nav { background:rgba(8,14,26,.98) !important; border-top-color:rgba(148,163,184,.16) !important; }
+        .workspace-nav-item { border-radius:13px !important; }
+        .workspace-nav-item.is-active { background:linear-gradient(180deg,rgba(76,137,235,.17),rgba(76,137,235,.07)) !important; box-shadow:inset 0 2px 0 #6ea8ff !important; }
+        .workspace-nav-item.is-active i, .workspace-nav-item.is-active span { color:#a9ccff !important; }
+        /* Los colores de alerta se reservan para estados, no para decorar botones permanentes. */
+        #btn-clear-projection { background:rgba(127,45,55,.16) !important; color:#e8a6ad !important; border-color:rgba(190,85,98,.28) !important; }
+        #btn-standby { background:rgba(214,181,109,.09) !important; color:#e3cb91 !important; border-color:rgba(214,181,109,.28) !important; }
+        @media(max-width:900px) {
+          #operator-interface > header { padding-left:12px !important; padding-right:12px !important; gap:8px !important; }
+          #operator-interface header > div:last-child { gap:5px !important; }
+          #btn-quick-screen-share, #btn-toggle-ext-projector, #btn-toggle-local-fs, #btn-install-help,
+          #operator-interface header label:has(#json-bible-input) { padding:9px 10px !important; border-radius:10px !important; }
+        }
+
     </style>
 </head>
 <body class="bg-gray-950 text-gray-100 h-screen overflow-hidden flex flex-col font-['Inter'] antialiased select-none">
