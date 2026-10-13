@@ -340,7 +340,7 @@
                                             karaokeBox.style.inset=''; karaokeBox.style.padding=''; karaokeBox.style.zIndex='40';
                                             karaokeText.style.maxHeight=''; karaokeText.style.overflow='';
                                         }
-                                        if (karaokeLoaded && data.mediaMode !== 'screen') {
+                                        if (karaokeLoaded && !data.isClearText && !data.isStandby && data.mediaMode !== 'screen') {
                                             karaokeBox.classList.remove('hidden'); karaokeText.textContent=karaoke.stanza || '';
                                             karaokeText.style.fontFamily='\"'+(karaokeStyle.font||'Inter')+'\", sans-serif';
                                             if (!youtubeLyricsLayout) karaokeText.style.fontSize=(Number(karaokeStyle.size)||4.5)+'vw';
