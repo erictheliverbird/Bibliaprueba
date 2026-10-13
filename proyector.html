@@ -19,6 +19,11 @@
                                 body { height: 100vh; height: 100dvh; padding: max(2.5vw, env(safe-area-inset-top)) max(2.5vw, env(safe-area-inset-right)) max(2.5vw, env(safe-area-inset-bottom)) max(2.5vw, env(safe-area-inset-left)) !important; box-sizing: border-box; }
                                 #proj-fullscreen-prompt { font-family: Inter, system-ui, sans-serif; }
                                 .text-projection-shadow { text-shadow: 0 2px 12px rgba(0,0,0,0.95), 0 4px 24px rgba(0,0,0,0.85); }
+                                /* Capa de letras por encima del iframe de YouTube en Safari/iPadOS. */
+                                #proj-karaoke { position: fixed !important; inset: 0 !important; z-index: 2147483647 !important; isolation: isolate; transform: translateZ(0); pointer-events: none !important; }
+                                #proj-karaoke.hidden { display: none !important; }
+                                #proj-karaoke-stanza { position: relative; z-index: 2147483647 !important; }
+                                #proj-youtube iframe { max-width: 100%; max-height: 100%; }
                             </style>
                         </head>
                         <body class="h-screen w-screen overflow-hidden relative flex flex-col justify-between p-16 select-none bg-black">
@@ -315,7 +320,25 @@
                                         const corner = document.getElementById('proj-logo-corner');
                                         const karaokeBox = document.getElementById('proj-karaoke'); const karaokeText = document.getElementById('proj-karaoke-stanza');
                                         const karaoke = data.karaoke || {}; const karaokeStyle = karaoke.style || {};
-                                        if (karaoke.active && (data.mediaMode === 'youtube' || data.mediaMode === 'video' || data.mediaMode === 'none')) { karaokeBox.classList.remove('hidden'); karaokeText.textContent = karaoke.stanza || ''; karaokeText.style.fontFamily='\"'+(karaokeStyle.font||'Inter')+'\", sans-serif'; karaokeText.style.fontSize=(Number(karaokeStyle.size)||4.5)+'vw'; karaokeText.style.color=karaokeStyle.color||'#fff'; karaokeText.style.textAlign=karaokeStyle.align||'center'; karaokeText.style.fontWeight='700'; karaokeText.style.textShadow='0 2px 12px rgba(0,0,0,.95)'; if(karaokeStyle.transparent){backdrop.style.background='transparent';backdrop.style.backgroundImage='none';overlay.style.backgroundColor='transparent';} } else { karaokeBox.classList.add('hidden'); }
+                                        if (karaoke.active && (data.mediaMode === 'youtube' || data.mediaMode === 'video' || data.mediaMode === 'none')) {
+                                            karaokeBox.classList.remove('hidden');
+                                            karaokeBox.style.setProperty('display', 'flex', 'important');
+                                            karaokeBox.style.setProperty('position', 'fixed', 'important');
+                                            karaokeBox.style.setProperty('inset', '0', 'important');
+                                            karaokeBox.style.setProperty('z-index', '2147483647', 'important');
+                                            karaokeBox.style.pointerEvents = 'none';
+                                            karaokeText.textContent = karaoke.stanza || '';
+                                            karaokeText.style.fontFamily = '"' + (karaokeStyle.font || 'Inter') + '", sans-serif';
+                                            karaokeText.style.fontSize = (Number(karaokeStyle.size) || 4.5) + 'vw';
+                                            karaokeText.style.color = karaokeStyle.color || '#fff';
+                                            karaokeText.style.textAlign = karaokeStyle.align || 'center';
+                                            karaokeText.style.fontWeight = '700';
+                                            karaokeText.style.textShadow = '0 2px 12px rgba(0,0,0,.95)';
+                                            if (karaokeStyle.transparent) { backdrop.style.background = 'transparent'; backdrop.style.backgroundImage = 'none'; overlay.style.backgroundColor = 'transparent'; }
+                                        } else {
+                                            karaokeBox.classList.add('hidden');
+                                            karaokeBox.style.removeProperty('display');
+                                        }
                                         if (!text || !backdrop) return;
 
                                         if (data.isBlackout) {
