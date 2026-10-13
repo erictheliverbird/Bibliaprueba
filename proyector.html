@@ -27,7 +27,7 @@
                             <video id="proj-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay></video>
                             <button id="proj-enable-audio" type="button" class="absolute z-50 hidden left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-black/85 border border-white/40 px-6 py-4 text-white text-lg font-bold shadow-2xl" style="pointer-events:auto">▶ Toca para reproducir con sonido</button>
 
-                            <video id="proj-screen-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay muted></video>
+                            <video id="proj-screen-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay></video>
                             <div id="proj-youtube" data-youtube-api="1" title="Reproductor de YouTube (proyección)" class="absolute inset-0 w-full h-full bg-black z-10 hidden" aria-label="Reproductor de YouTube"></div>
                             <div id="proj-overlay" class="absolute inset-0 z-20 bg-black/40 transition-all duration-300"></div>
                             <img id="proj-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-30 hidden" alt="Standby Logo" />
@@ -677,9 +677,17 @@
                                                 const screenVideo = document.getElementById('proj-screen-video');
                                                 if (!screenVideo) return;
                                                 screenVideo.srcObject = event.streams && event.streams[0] ? event.streams[0] : new MediaStream([event.track]);
-                                                screenVideo.muted = true;
+                                                screenVideo.muted = false;
+                                                screenVideo.volume = 1;
                                                 if (latestProjectionData && latestProjectionData.mediaMode === 'screen') screenVideo.classList.remove('hidden');
-                                                screenVideo.play().catch(error => console.warn('El vídeo de captura necesita activación en la ventana del proyector:', error));
+                                                screenVideo.play().then(() => {
+                                                    const prompt = document.getElementById('proj-enable-audio');
+                                                    if (prompt) prompt.classList.add('hidden');
+                                                }).catch(error => {
+                                                    console.warn('La reproducción de captura necesita activación en la ventana del proyector:', error);
+                                                    const prompt = document.getElementById('proj-enable-audio');
+                                                    if (prompt) { prompt.textContent = '▶ Toca para activar el audio de la captura'; prompt.classList.remove('hidden'); }
+                                                });
                                             };
                                             pc.onconnectionstatechange = () => {
                                                 if (['failed', 'closed'].includes(pc.connectionState)) {
@@ -721,10 +729,11 @@
                                     // permite activar el video con un gesto dentro de esta ventana.
                                     const audioPrompt = document.getElementById('proj-enable-audio');
                                     if (audioPrompt) audioPrompt.addEventListener('click', () => {
-                                        const video = document.getElementById('proj-video');
+                                        const screenVideo = document.getElementById('proj-screen-video');
+                                        const video = screenVideo && !screenVideo.classList.contains('hidden') ? screenVideo : document.getElementById('proj-video');
                                         if (!video) return;
                                         video.muted = false; video.volume = 1;
-                                        video.play().then(() => audioPrompt.classList.add('hidden')).catch(() => { audioPrompt.textContent = 'No se pudo iniciar el video'; });
+                                        video.play().then(() => audioPrompt.classList.add('hidden')).catch(() => { audioPrompt.textContent = 'No se pudo iniciar el audio'; });
                                     });
 
                                     // Canal remoto independiente del almacenamiento local y BroadcastChannel.

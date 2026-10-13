@@ -1190,17 +1190,22 @@
                 screenTransferPeer = pc;
                 const track = stream.getVideoTracks()[0];
                 if (!track) throw new Error('La captura no contiene una pista de vídeo.');
-                const sender = pc.addTrack(track, stream);
+                // Transmitir todas las pistas que iPadOS entregue: vídeo y, si está disponible, audio.
+                const senders = stream.getTracks().map(mediaTrack => pc.addTrack(mediaTrack, stream));
+                const videoSender = senders[stream.getTracks().indexOf(track)];
                 try {
-                    const params = sender.getParameters();
+                    const params = videoSender.getParameters();
                     params.encodings = params.encodings && params.encodings.length ? params.encodings : [{}];
-                    params.encodings[0].maxBitrate = 6000000;
-                    params.degradationPreference = 'maintain-resolution';
-                    await sender.setParameters(params);
+                    params.encodings[0].maxBitrate = 12000000;
+                    params.degradationPreference = 'maintain-framerate';
+                    await videoSender.setParameters(params);
                 } catch (e) { console.info('Se usarán los parámetros WebRTC predeterminados para la captura.', e); }
                 pc.onconnectionstatechange = () => {
                     const status = document.getElementById('screen-capture-status');
-                    if (pc.connectionState === 'connected' && status && mediaMode === 'screen') status.textContent = 'Vídeo en tiempo real conectado al proyector';
+                    if (pc.connectionState === 'connected' && status && mediaMode === 'screen') {
+                        const hasAudio = stream.getAudioTracks().some(track => track.readyState === 'live');
+                        status.textContent = hasAudio ? 'Vídeo y pista de audio conectados al proyector' : 'Vídeo en tiempo real conectado; iPadOS no entregó audio del sistema';
+                    }
                     if (['failed', 'disconnected'].includes(pc.connectionState) && status && mediaMode === 'screen') status.textContent = 'Conexión de vídeo interrumpida. Mantén ambas ventanas abiertas.';
                 };
                 const answerRef = cloudDatabase.ref(CLOUD_TRANSFER_PATH + '/screenAnswer');
@@ -2336,7 +2341,11 @@
                     return;
                 }
                 // Solicitar captura directamente desde la interacción del usuario.
-                window.screenStream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: { ideal: 30, max: 30 } }, audio: false });
+                // Pedir hasta 60 FPS y audio del sistema. iPadOS puede ignorar audio o no ofrecer una pista.
+                window.screenStream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { frameRate: { ideal: 60, max: 60 } },
+                    audio: true
+                });
                 const sourceVideo = document.getElementById('screen-capture-source');
                 if (!sourceVideo) throw new Error('No se encontró la fuente de captura');
                 sourceVideo.muted = true;
@@ -2348,7 +2357,10 @@
                 document.getElementById('btn-stop-screen-capture').classList.remove('hidden');
                 const track = window.screenStream.getVideoTracks()[0];
                 if (track) track.onended = stopScreenCapture;
-                if (status) status.textContent = 'Captura iniciada; preparando vídeo en tiempo real…';
+                const hasAudio = window.screenStream.getAudioTracks().length > 0;
+                if (status) status.textContent = hasAudio
+                    ? 'Captura iniciada a hasta 60 FPS; se detectó una pista de audio.'
+                    : 'Captura iniciada a hasta 60 FPS; iPadOS no proporcionó audio del sistema.';
                 syncToProjector();
                 // Enviar la pista de vídeo original; no convertirla en imágenes ni subir medios a Firebase.
                 sendScreenStreamToProjector(window.screenStream);
