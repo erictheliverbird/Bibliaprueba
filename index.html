@@ -1204,7 +1204,7 @@
                     const status = document.getElementById('screen-capture-status');
                     if (pc.connectionState === 'connected' && status && mediaMode === 'screen') {
                         const hasAudio = stream.getAudioTracks().some(track => track.readyState === 'live');
-                        status.textContent = hasAudio ? 'Vídeo y pista de audio conectados al proyector' : 'Vídeo en tiempo real conectado; iPadOS no entregó audio del sistema';
+                        status.textContent = hasAudio ? 'Vídeo y pista de audio conectados al proyector' : 'Vídeo en tiempo real conectado; audio del sistema no capturado';
                     }
                     if (['failed', 'disconnected'].includes(pc.connectionState) && status && mediaMode === 'screen') status.textContent = 'Conexión de vídeo interrumpida. Mantén ambas ventanas abiertas.';
                 };
@@ -2341,10 +2341,11 @@
                     return;
                 }
                 // Solicitar captura directamente desde la interacción del usuario.
-                // Pedir hasta 60 FPS y audio del sistema. iPadOS puede ignorar audio o no ofrecer una pista.
+                // Pedir hasta 60 FPS, sin solicitar captura de audio del sistema.
+                // Esto permite comprobar si Apple Music mantiene la reproducción mientras se captura solo el vídeo.
                 window.screenStream = await navigator.mediaDevices.getDisplayMedia({
                     video: { frameRate: { ideal: 60, max: 60 } },
-                    audio: true
+                    audio: false
                 });
                 const sourceVideo = document.getElementById('screen-capture-source');
                 if (!sourceVideo) throw new Error('No se encontró la fuente de captura');
@@ -2360,7 +2361,7 @@
                 const hasAudio = window.screenStream.getAudioTracks().length > 0;
                 if (status) status.textContent = hasAudio
                     ? 'Captura iniciada a hasta 60 FPS; se detectó una pista de audio.'
-                    : 'Captura iniciada a hasta 60 FPS; iPadOS no proporcionó audio del sistema.';
+                    : 'Vídeo capturado hasta 60 FPS. Audio no capturado: usa la salida normal del iPad para Apple Music.';
                 syncToProjector();
                 // Enviar la pista de vídeo original; no convertirla en imágenes ni subir medios a Firebase.
                 sendScreenStreamToProjector(window.screenStream);
