@@ -27,7 +27,7 @@
                             <video id="proj-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay></video>
                             <button id="proj-enable-audio" type="button" class="absolute z-50 hidden left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-black/85 border border-white/40 px-6 py-4 text-white text-lg font-bold shadow-2xl" style="pointer-events:auto">▶ Toca para reproducir con sonido</button>
 
-                            <img id="proj-screen-frame" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" alt="Captura de pantalla en vivo" />
+                            <video id="proj-screen-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay muted></video>
                             <div id="proj-youtube" data-youtube-api="1" title="Reproductor de YouTube (proyección)" class="absolute inset-0 w-full h-full bg-black z-10 hidden" aria-label="Reproductor de YouTube"></div>
                             <div id="proj-overlay" class="absolute inset-0 z-20 bg-black/40 transition-all duration-300"></div>
                             <img id="proj-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-30 hidden" alt="Standby Logo" />
@@ -221,11 +221,6 @@
                                                     sendProjectorHeartbeat();
                                                     return;
                                                 }
-                                                if (data && data.type === '__screen_frame') {
-                                                    const frame = document.getElementById('proj-screen-frame');
-                                                    if (frame && data.frame) { frame.src = data.frame; frame.classList.remove('hidden'); }
-                                                    return;
-                                                }
                                                 applyProjection(data);
                                             });
                                         }
@@ -255,11 +250,6 @@
                                             handleYouTubeCommand(data.command, data.target);
                                             // Reintentar si el iframe aún está terminando de inicializarse.
                                             [150, 450, 900].forEach(delay => setTimeout(() => handleYouTubeCommand(data.command, data.target), delay));
-                                            return;
-                                        }
-                                        if (data && data.type === '__screen_frame') {
-                                            const frame = document.getElementById('proj-screen-frame');
-                                            if (frame && data.frame) { frame.src = data.frame; frame.classList.remove('hidden'); }
                                             return;
                                         }
                                         applyProjection(data);
@@ -331,8 +321,8 @@
                                             citation.textContent = '';
                                             standby.classList.add('hidden'); corner.classList.add('hidden');
                                             video.classList.add('hidden'); youtube.classList.add('hidden');
-                                            const screenFrame = document.getElementById('proj-screen-frame');
-                                            if (screenFrame) screenFrame.classList.add('hidden');
+                                            const screenVideo = document.getElementById('proj-screen-video');
+                                            if (screenVideo) screenVideo.classList.add('hidden');
                                             return;
                                         }
 
@@ -385,24 +375,26 @@
                                             corner.classList.add(...(logoClasses[logoPos] || logoClasses['top-left'])); corner.classList.remove('hidden');
                                         } else corner.classList.add('hidden');
 
-                                        const screenFrame = document.getElementById('proj-screen-frame');
+                                        const screenVideo = document.getElementById('proj-screen-video');
                                         if (data.mediaMode === 'screen') {
                                             if (ytPlayerReady && ytPlayer) { try { ytPlayer.pauseVideo(); } catch (_) {} }
                                             youtube.classList.add('hidden');
-                                            if (video.srcObject) {
-                                                // Fuente capturada asignada directamente por la ventana de control.
-                                                // El proyector es el único destino; no limpiar srcObject en cada sync.
-                                                video.muted = true;
-                                                video.classList.remove('hidden');
-                                                if (screenFrame) screenFrame.classList.add('hidden');
-                                                video.play().catch(() => {});
+                                            video.pause(); video.classList.add('hidden');
+                                            if (screenVideo && screenVideo.srcObject) {
+                                                screenVideo.classList.remove('hidden');
+                                                screenVideo.play().catch(() => {});
                                             } else {
-                                                // Fallback para navegadores que no permiten compartir MediaStream entre ventanas.
-                                                video.pause();
-                                                video.classList.add('hidden');
-                                                if (screenFrame) screenFrame.classList.remove('hidden');
+                                                // Espera la pista WebRTC; el vídeo no pasa por Firebase.
+                                                if (screenVideo) screenVideo.classList.add('hidden');
                                             }
-                                        } else if (data.mediaMode === 'youtube' && data.videoUrl) {
+                                        } else if (screenVideo) {
+                                            screenVideo.classList.add('hidden');
+                                            if (data.mediaMode !== 'screen' && screenVideo.srcObject) {
+                                                try { screenVideo.srcObject.getTracks().forEach(track => track.stop()); } catch (_) {}
+                                                screenVideo.srcObject = null;
+                                            }
+                                        }
+                                        if (data.mediaMode === 'youtube' && data.videoUrl) {
                                             // Cambio automático al reproductor YouTube de esta misma ventana.
                                             // El reproductor local se pausa y se oculta; nunca hay dos videos activos.
                                             video.pause();
@@ -412,7 +404,6 @@
                                             if (audioPrompt) audioPrompt.classList.add('hidden');
                                             const localPrompt = document.getElementById('proj-local-video-prompt');
                                             if (localPrompt) localPrompt.classList.add('hidden');
-                                            if (screenFrame) screenFrame.classList.add('hidden');
                                             text.classList.add('hidden');
                                             citation.classList.add('hidden');
                                             backdrop.classList.add('hidden');
@@ -429,13 +420,21 @@
                                             return;
                                         } else {
                                             if (ytPlayerReady && ytPlayer) { try { ytPlayer.pauseVideo(); } catch (_) {} }
-                                            if (screenFrame) screenFrame.classList.add('hidden');
                                             youtube.classList.add('hidden');
                                             youtube.style.pointerEvents = 'none';
-                                            text.classList.remove('hidden');
-                                            citation.classList.remove('hidden');
-                                            backdrop.classList.remove('hidden');
-                                            overlay.classList.remove('hidden');
+                                            if (data.mediaMode === 'screen') {
+                                                text.classList.add('hidden');
+                                                citation.classList.add('hidden');
+                                                backdrop.classList.add('hidden');
+                                                overlay.classList.add('hidden');
+                                                standby.classList.add('hidden');
+                                                corner.classList.add('hidden');
+                                            } else {
+                                                text.classList.remove('hidden');
+                                                citation.classList.remove('hidden');
+                                                backdrop.classList.remove('hidden');
+                                                overlay.classList.remove('hidden');
+                                            }
                                             if (data.mediaMode === 'video' && data.videoUrl) {
                                                 const remoteUrl = String(data.videoUrl);
                                                 const isBlobUrl = remoteUrl.startsWith('blob:');
@@ -449,7 +448,6 @@
                                                         video.pause();
                                                         video.classList.add('hidden');
                                                         if (audioPrompt) audioPrompt.classList.add('hidden');
-                                                        if (screenFrame) screenFrame.classList.add('hidden');
                                                         return;
                                                     }
                                                     usableUrl = localProjectionVideoUrl;
@@ -655,6 +653,48 @@
                                         } catch (error) { console.error('No se pudo aceptar la conexión de video:', error); }
                                     }
 
+                                    let projectorScreenPeer = null;
+                                    let projectorScreenSessionId = '';
+                                    function closeProjectorScreenPeer() {
+                                        try { if (projectorScreenPeer) projectorScreenPeer.close(); } catch (_) {}
+                                        projectorScreenPeer = null;
+                                        projectorScreenSessionId = '';
+                                        const screenVideo = document.getElementById('proj-screen-video');
+                                        if (screenVideo) {
+                                            try { if (screenVideo.srcObject) screenVideo.srcObject.getTracks().forEach(track => track.stop()); } catch (_) {}
+                                            screenVideo.pause(); screenVideo.srcObject = null; screenVideo.classList.add('hidden');
+                                        }
+                                    }
+                                    async function handleScreenOffer(offer) {
+                                        if (!offer || !offer.sessionId || !offer.sdp || offer.projectorId !== projectorInstanceId) return;
+                                        if (offer.sessionId === projectorScreenSessionId) return;
+                                        closeProjectorScreenPeer();
+                                        projectorScreenSessionId = offer.sessionId;
+                                        try {
+                                            const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+                                            projectorScreenPeer = pc;
+                                            pc.ontrack = event => {
+                                                const screenVideo = document.getElementById('proj-screen-video');
+                                                if (!screenVideo) return;
+                                                screenVideo.srcObject = event.streams && event.streams[0] ? event.streams[0] : new MediaStream([event.track]);
+                                                screenVideo.muted = true;
+                                                if (latestProjectionData && latestProjectionData.mediaMode === 'screen') screenVideo.classList.remove('hidden');
+                                                screenVideo.play().catch(error => console.warn('El vídeo de captura necesita activación en la ventana del proyector:', error));
+                                            };
+                                            pc.onconnectionstatechange = () => {
+                                                if (['failed', 'closed'].includes(pc.connectionState)) {
+                                                    const screenVideo = document.getElementById('proj-screen-video');
+                                                    if (screenVideo) screenVideo.classList.add('hidden');
+                                                }
+                                            };
+                                            await pc.setRemoteDescription({ type: 'offer', sdp: offer.sdp });
+                                            const answer = await pc.createAnswer();
+                                            await pc.setLocalDescription(answer);
+                                            await waitForIceGathering(pc);
+                                            await projectorTransferDatabase.ref(CLOUD_TRANSFER_PATH + '/screenAnswer').set({ sessionId: offer.sessionId, type: 'answer', sdp: pc.localDescription.sdp, timestamp: Date.now() });
+                                        } catch (error) { console.error('No se pudo recibir el vídeo de pantalla por WebRTC:', error); closeProjectorScreenPeer(); }
+                                    }
+
                                     function setupProjectorVideoTransfer(database) {
                                         projectorTransferDatabase = database;
                                         const transferRef = database.ref(CLOUD_TRANSFER_PATH);
@@ -664,6 +704,10 @@
                                             const offer = snapshot.val();
                                             if (offer) handleVideoOffer(offer);
                                         }, error => console.error('No se pudo escuchar la oferta de video:', error));
+                                        transferRef.child('screenOffer').on('value', snapshot => {
+                                            const offer = snapshot.val();
+                                            if (offer) handleScreenOffer(offer);
+                                        }, error => console.error('No se pudo escuchar la oferta de captura de pantalla:', error));
                                     }
 
                                     const projectedVideoElement = document.getElementById('proj-video');

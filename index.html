@@ -951,6 +951,10 @@
         let videoTransferSessionId = '';
         let videoTransferAnswerListener = null;
         let videoTransferInProgress = false;
+        // Captura de pantalla: conexión WebRTC dedicada; Firebase solo señaliza, nunca transporta video.
+        let screenTransferPeer = null;
+        let screenTransferAnswerListener = null;
+        let screenTransferSessionId = '';
 
         function waitForIceGathering(pc, timeoutMs = 12000) {
             return new Promise(resolve => {
@@ -1161,6 +1165,66 @@
             }
         }
 
+        function closeScreenTransferPeer() {
+            try { if (screenTransferAnswerListener && cloudDatabase) cloudDatabase.ref(CLOUD_TRANSFER_PATH + '/screenAnswer').off('value', screenTransferAnswerListener); } catch (_) {}
+            screenTransferAnswerListener = null;
+            try { if (screenTransferPeer) screenTransferPeer.close(); } catch (_) {}
+            screenTransferPeer = null;
+            screenTransferSessionId = '';
+        }
+
+        async function sendScreenStreamToProjector(stream, attempt = 0) {
+            if (!stream || mediaMode !== 'screen') return;
+            if (!cloudDatabase || !cloudAuthReady || !videoTransferReadyId) {
+                if (attempt < 30) { setTimeout(() => sendScreenStreamToProjector(stream, attempt + 1), 400); return; }
+                const status = document.getElementById('screen-capture-status');
+                if (status) status.textContent = 'La captura está activa, pero no se encontró el proyector conectado.';
+                showToast('Abre la ventana del proyector y vuelve a iniciar la captura.', 'warning');
+                return;
+            }
+            closeScreenTransferPeer();
+            const sessionId = 'screen-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 9);
+            screenTransferSessionId = sessionId;
+            try {
+                const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+                screenTransferPeer = pc;
+                const track = stream.getVideoTracks()[0];
+                if (!track) throw new Error('La captura no contiene una pista de vídeo.');
+                const sender = pc.addTrack(track, stream);
+                try {
+                    const params = sender.getParameters();
+                    params.encodings = params.encodings && params.encodings.length ? params.encodings : [{}];
+                    params.encodings[0].maxBitrate = 6000000;
+                    params.degradationPreference = 'maintain-resolution';
+                    await sender.setParameters(params);
+                } catch (e) { console.info('Se usarán los parámetros WebRTC predeterminados para la captura.', e); }
+                pc.onconnectionstatechange = () => {
+                    const status = document.getElementById('screen-capture-status');
+                    if (pc.connectionState === 'connected' && status && mediaMode === 'screen') status.textContent = 'Vídeo en tiempo real conectado al proyector';
+                    if (['failed', 'disconnected'].includes(pc.connectionState) && status && mediaMode === 'screen') status.textContent = 'Conexión de vídeo interrumpida. Mantén ambas ventanas abiertas.';
+                };
+                const answerRef = cloudDatabase.ref(CLOUD_TRANSFER_PATH + '/screenAnswer');
+                screenTransferAnswerListener = snapshot => {
+                    const answer = snapshot.val();
+                    if (!answer || answer.sessionId !== sessionId || !answer.sdp || pc.signalingState !== 'have-local-offer') return;
+                    pc.setRemoteDescription({ type: 'answer', sdp: answer.sdp }).catch(error => console.error('No se pudo aceptar la respuesta WebRTC de pantalla:', error));
+                };
+                answerRef.on('value', screenTransferAnswerListener);
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+                await waitForIceGathering(pc);
+                await cloudDatabase.ref(CLOUD_TRANSFER_PATH + '/screenOffer').set({ sessionId, type: 'offer', sdp: pc.localDescription.sdp, timestamp: Date.now(), projectorId: videoTransferReadyId });
+                const status = document.getElementById('screen-capture-status');
+                if (status) status.textContent = 'Conectando vídeo en tiempo real con el proyector…';
+            } catch (error) {
+                console.error('No se pudo iniciar la transmisión WebRTC de pantalla:', error);
+                closeScreenTransferPeer();
+                const status = document.getElementById('screen-capture-status');
+                if (status) status.textContent = 'No se pudo conectar el vídeo. Comprueba que el proyector esté abierto.';
+                showToast('No se pudo conectar la captura al proyector.', 'error');
+            }
+        }
+
         function initializeCloudProjectionSync() {
             if (!window.firebase || !firebase.database || !firebase.auth) {
                 console.warn('Firebase SDK no está disponible; se mantiene la sincronización local.');
@@ -1259,9 +1323,6 @@
         });
         
         window.screenStream = null;
-        let screenFrameInterval = null;
-        let screenFrameCanvas = null;
-        let screenFrameLastSent = 0;
 
         // BUSCADOR DE IMÁGENES: resultados reales de Pixabay, consultas alternativas
         // y sin imágenes aleatorias que no correspondan con la palabra buscada.
@@ -2266,40 +2327,6 @@
             });
         }
 
-        function startScreenFrameSync() {
-            stopScreenFrameSync();
-            const sourceVideo = document.getElementById('screen-capture-source');
-            if (!sourceVideo) return;
-            screenFrameCanvas = document.createElement('canvas');
-            screenFrameCanvas.width = 960;
-            screenFrameCanvas.height = 540;
-            const ctx = screenFrameCanvas.getContext('2d', { alpha: false });
-            screenFrameLastSent = 0;
-            // MediaStream no se puede compartir de forma fiable entre ventanas separadas en Safari.
-            // Enviamos fotogramas JPEG ligeros por BroadcastChannel como alternativa.
-            screenFrameInterval = window.setInterval(() => {
-                if (mediaMode !== 'screen' || !window.screenStream) return;
-                if (sourceVideo.readyState < 2 || !ctx) return;
-                const now = Date.now();
-                if (now - screenFrameLastSent < 180) return;
-                screenFrameLastSent = now;
-                try {
-                    ctx.drawImage(sourceVideo, 0, 0, screenFrameCanvas.width, screenFrameCanvas.height);
-                    const frame = screenFrameCanvas.toDataURL('image/jpeg', 0.55);
-                    const message = { type: '__screen_frame', frame, timestamp: now };
-                    // Los fotogramas de respaldo se envían SOLO a la ventana del proyector.
-                    // No publicar por BroadcastChannel para evitar que otra ventana/vista previa los consuma.
-                    try { if (externalWindow && !externalWindow.closed) externalWindow.postMessage(message, '*'); } catch (_) {}
-                } catch (error) { console.warn('No se pudo sincronizar un fotograma de pantalla', error); }
-            }, 200);
-        }
-
-        function stopScreenFrameSync() {
-            if (screenFrameInterval !== null) window.clearInterval(screenFrameInterval);
-            screenFrameInterval = null;
-            screenFrameCanvas = null;
-        }
-
         async function startScreenCapture() {
             const status = document.getElementById('screen-capture-status');
             try {
@@ -2309,7 +2336,7 @@
                     return;
                 }
                 // Solicitar captura directamente desde la interacción del usuario.
-                window.screenStream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: { ideal: 10, max: 15 }, cursor: "always" }, audio: false });
+                window.screenStream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: { ideal: 30, max: 30 } }, audio: false });
                 const sourceVideo = document.getElementById('screen-capture-source');
                 if (!sourceVideo) throw new Error('No se encontró la fuente de captura');
                 sourceVideo.muted = true;
@@ -2321,10 +2348,11 @@
                 document.getElementById('btn-stop-screen-capture').classList.remove('hidden');
                 const track = window.screenStream.getVideoTracks()[0];
                 if (track) track.onended = stopScreenCapture;
-                if (status) status.textContent = 'Transmitiendo captura directamente al proyector';
+                if (status) status.textContent = 'Captura iniciada; preparando vídeo en tiempo real…';
                 syncToProjector();
-                startScreenFrameSync();
-                showToast("Captura de pantalla activa", "success");
+                // Enviar la pista de vídeo original; no convertirla en imágenes ni subir medios a Firebase.
+                sendScreenStreamToProjector(window.screenStream);
+                showToast("Captura activa; conectando vídeo en tiempo real", "success");
             } catch (err) {
                 console.warn('No se pudo iniciar la captura de pantalla', err);
                 if (window.screenStream) { window.screenStream.getTracks().forEach(track => track.stop()); window.screenStream = null; }
@@ -2336,7 +2364,7 @@
         }
 
         function stopScreenCapture() {
-            stopScreenFrameSync();
+            closeScreenTransferPeer();
             if (window.screenStream) {
                 window.screenStream.getTracks().forEach(track => track.stop());
                 window.screenStream = null;
