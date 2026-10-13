@@ -248,7 +248,35 @@
           #operator-interface header label:has(#json-bible-input) { padding:9px 10px !important; border-radius:10px !important; }
         }
 
-    </style>
+    
+        /* v18.2.3: anclar Karaoke arriba y eliminar el hueco superior heredado */
+        body[data-workspace="karaoke"] #workspace-control {
+            align-items: stretch !important;
+            align-self: stretch !important;
+            min-height: 0 !important;
+        }
+        body[data-workspace="karaoke"] #workspace-control > .control-panel {
+            align-self: stretch !important;
+            justify-content: flex-start !important;
+            padding-top: 0 !important;
+            min-height: 0 !important;
+        }
+        body[data-workspace="karaoke"] #tab-video {
+            align-self: flex-start !important;
+            align-content: flex-start !important;
+            justify-content: flex-start !important;
+            flex: 0 1 auto !important;
+            height: auto !important;
+            min-height: 0 !important;
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+        body[data-workspace="karaoke"] #karaoke-panel {
+            align-self: flex-start !important;
+            flex: 0 0 auto !important;
+            margin-top: 0 !important;
+        }
+</style>
 </head>
 <body class="bg-gray-950 text-gray-100 h-screen overflow-hidden flex flex-col font-['Inter'] antialiased select-none">
 
