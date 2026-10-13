@@ -21,12 +21,12 @@
                                 .text-projection-shadow { text-shadow: 0 2px 12px rgba(0,0,0,0.95), 0 4px 24px rgba(0,0,0,0.85); }
                                 /* YouTube y Karaoke comparten un contenedor de composición propio.
                                    Esto evita depender de capas hermanas del iframe en Safari/iPadOS. */
-                                #proj-youtube-shell { position:absolute; inset:0; z-index:10; overflow:hidden; isolation:isolate; background:#000; }
-                                #proj-youtube { position:absolute; inset:0; width:100%; height:100%; z-index:1; }
-                                #proj-youtube iframe { position:relative !important; z-index:1 !important; display:block; width:100% !important; height:100% !important; max-width:100%; max-height:100%; }
-                                #proj-karaoke { position:absolute !important; inset:0 !important; z-index:1000 !important; isolation:isolate; pointer-events:none !important; }
+                                #proj-youtube-shell { position:absolute; inset:0; z-index:10; overflow:hidden; isolation:isolate; background:#000; transform:translate3d(0,0,0); -webkit-transform:translate3d(0,0,0); }
+                                #proj-youtube { position:absolute; inset:0; width:100%; height:100%; z-index:1; transform:translate3d(0,0,0); -webkit-transform:translate3d(0,0,0); }
+                                #proj-youtube iframe { position:relative !important; z-index:1 !important; display:block; width:100% !important; height:100% !important; max-width:100%; max-height:100%; transform:translate3d(0,0,0) !important; -webkit-transform:translate3d(0,0,0) !important; -webkit-backface-visibility:hidden; backface-visibility:hidden; }
+                                #proj-karaoke { position:absolute !important; inset:0 !important; z-index:2147483647 !important; isolation:isolate; pointer-events:none !important; transform:translate3d(0,0,1px); -webkit-transform:translate3d(0,0,1px); -webkit-backface-visibility:hidden; backface-visibility:hidden; will-change:transform,opacity; }
                                 #proj-karaoke.hidden { display:none !important; }
-                                #proj-karaoke-stanza { position:relative; z-index:1001 !important; }
+                                #proj-karaoke-stanza { position:relative; z-index:2147483647 !important; transform:translate3d(0,0,1px); -webkit-transform:translate3d(0,0,1px); will-change:transform; }
                             </style>
                         </head>
                         <body class="h-screen w-screen overflow-hidden relative flex flex-col justify-between p-16 select-none bg-black">
@@ -167,6 +167,31 @@
                                             sendYouTubeStatus('player-error', { message: String(error) });
                                         }
                                     }
+                                    // Safari/iPadOS: fuerza la promoción de la capa de letras y la del iframe
+                                    // a capas de composición explícitas. No modifica comandos ni reproducción.
+                                    function stabilizeKaraokeCompositing() {
+                                        const shell = document.getElementById('proj-youtube-shell');
+                                        const player = document.getElementById('proj-youtube');
+                                        const frame = player && player.querySelector('iframe');
+                                        const layer = document.getElementById('proj-karaoke');
+                                        const stanza = document.getElementById('proj-karaoke-stanza');
+                                        for (const el of [shell, player, frame]) {
+                                            if (!el) continue;
+                                            el.style.setProperty('transform', 'translate3d(0,0,0)', 'important');
+                                            el.style.setProperty('-webkit-transform', 'translate3d(0,0,0)', 'important');
+                                            el.style.setProperty('backface-visibility', 'hidden', 'important');
+                                            el.style.setProperty('-webkit-backface-visibility', 'hidden', 'important');
+                                        }
+                                        for (const el of [layer, stanza]) {
+                                            if (!el) continue;
+                                            el.style.setProperty('transform', 'translate3d(0,0,1px)', 'important');
+                                            el.style.setProperty('-webkit-transform', 'translate3d(0,0,1px)', 'important');
+                                            el.style.setProperty('backface-visibility', 'hidden', 'important');
+                                            el.style.setProperty('-webkit-backface-visibility', 'hidden', 'important');
+                                            el.style.setProperty('will-change', 'transform, opacity', 'important');
+                                        }
+                                    }
+
                                     function initializeYouTubeAPI() {
                                         window.onYouTubeIframeAPIReady = () => {
                                             ytApiReady = true;
@@ -186,6 +211,7 @@
                                                             frame.style.width = '100%'; frame.style.height = '100%'; frame.style.border = '0';
                                                         } catch (_) {}
                                                         if (ytPendingVideoId || ytDesiredVideoId) cueYouTubeVideo(ytPendingVideoId || ytDesiredVideoId);
+                                                        stabilizeKaraokeCompositing();
                                                         sendYouTubeStatus('player-ready', { force: true });
                                                     },
                                                     onStateChange: event => {
@@ -198,7 +224,13 @@
                                                             ytPendingTarget = null;
                                                             executeYouTubeCommand(queued, queuedTarget);
                                                         }
-                                                        if (event.data === 1) sendYouTubeStatus('playing', { videoId: ytDesiredVideoId });
+                                                        if (event.data === 1) {
+                                                            // iPadOS a veces reordena capas al arrancar el vídeo; re-promover la capa después del cambio.
+                                                            stabilizeKaraokeCompositing();
+                                                            requestAnimationFrame(() => stabilizeKaraokeCompositing());
+                                                            setTimeout(stabilizeKaraokeCompositing, 180);
+                                                            sendYouTubeStatus('playing', { videoId: ytDesiredVideoId });
+                                                        }
                                                         else if (event.data === 2) sendYouTubeStatus('paused', { videoId: ytDesiredVideoId });
                                                         else if (event.data === 0 && ytLoopEnabled) {
                                                             try { ytPlayer.seekTo(0, true); ytPlayer.playVideo(); } catch (_) {}
@@ -342,6 +374,7 @@
                                             karaokeText.style.fontWeight = '700';
                                             karaokeText.style.textShadow = '0 2px 12px rgba(0,0,0,.95)';
                                             if (karaokeStyle.transparent) { backdrop.style.background = 'transparent'; backdrop.style.backgroundImage = 'none'; overlay.style.backgroundColor = 'transparent'; }
+                                            if (data.mediaMode === 'youtube') stabilizeKaraokeCompositing();
                                         } else {
                                             karaokeBox.classList.add('hidden');
                                             karaokeBox.style.removeProperty('display');
