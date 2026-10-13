@@ -28,7 +28,7 @@
                             <button id="proj-enable-audio" type="button" class="absolute z-50 hidden left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-black/85 border border-white/40 px-6 py-4 text-white text-lg font-bold shadow-2xl" style="pointer-events:auto">▶ Toca para reproducir con sonido</button>
 
                             <video id="proj-screen-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline autoplay></video>
-                            <div id="proj-youtube" data-youtube-api="1" title="Reproductor de YouTube (proyección)" class="absolute inset-0 w-full h-full bg-black z-10 hidden" aria-label="Reproductor de YouTube"></div>
+                            <div id="proj-youtube" title="Reproductor de YouTube (proyección)" class="absolute inset-0 w-full h-full bg-black z-10 hidden overflow-hidden" aria-label="Reproductor de YouTube" style="contain:layout paint; clip-path:inset(0)"><div id="proj-youtube-player" data-youtube-api="1" class="absolute inset-0 w-full h-full"></div></div>
                             <div id="proj-overlay" class="absolute inset-0 z-20 bg-black/40 transition-all duration-300"></div>
                             <img id="proj-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-30 hidden" alt="Standby Logo" />
                             <img id="proj-logo-corner" class="absolute max-w-[12%] max-h-[15%] object-contain z-30 hidden" alt="Corner Logo" />
@@ -162,7 +162,7 @@
                                             ytApiReady = true;
                                             const playerVars = { autoplay: 0, controls: 0, disablekb: 1, enablejsapi: 1, playsinline: 1, rel: 0, fs: 0, modestbranding: 1 };
                                             if (location.protocol === 'https:' || location.protocol === 'http:') playerVars.origin = location.origin;
-                                            ytPlayer = new YT.Player('proj-youtube', {
+                                            ytPlayer = new YT.Player('proj-youtube-player', {
                                                 width: '100%', height: '100%', playerVars,
                                                 events: {
                                                     onReady: event => {
@@ -317,30 +317,29 @@
                                         const karaoke = data.karaoke || {}; const karaokeStyle = karaoke.style || {};
                                         const karaokeLoaded = !!karaoke.active && !!String(karaoke.stanza || '').trim();
                                         const youtubeLyricsLayout = data.mediaMode === 'youtube' && karaokeLoaded;
-                                        // YouTube mantiene pantalla completa cuando no hay letras.
-                                        // Con letras cargadas, reservamos una franja inferior independiente para evitar
-                                        // superponer HTML sobre la superficie de vídeo de Safari/iPadOS.
+                                        // La API de YouTube reemplaza el nodo objetivo por un iframe. Por eso el tamaño
+                                        // se aplica al contenedor estable, no al iframe que controla YouTube.
                                         if (youtubeLyricsLayout) {
-                                            youtube.style.top = '0'; youtube.style.left = '0'; youtube.style.right = '0';
-                                            youtube.style.bottom = 'auto'; youtube.style.width = '100%'; youtube.style.height = '76%';
-                                            karaokeBox.style.inset = '76% 0 0 0';
-                                            karaokeBox.style.padding = '1% 5%';
-                                            karaokeBox.style.backgroundColor = '#000';
-                                            karaokeBox.style.zIndex = '40';
-                                            karaokeText.style.fontSize = Math.min(Number(karaokeStyle.size) || 4.5, 3.5) + 'vw';
-                                            karaokeText.style.maxHeight = '100%';
-                                            karaokeText.style.overflow = 'hidden';
+                                            youtube.style.top='0'; youtube.style.left='0'; youtube.style.right='0'; youtube.style.bottom='auto';
+                                            youtube.style.width='100%'; youtube.style.height='76%'; youtube.style.overflow='hidden';
+                                            youtube.style.contain='layout paint'; youtube.style.clipPath='inset(0)';
+                                            karaokeBox.style.inset='76% 0 0 0'; karaokeBox.style.padding='1% 5%';
+                                            karaokeBox.style.backgroundColor='#000'; karaokeBox.style.zIndex='40';
+                                            karaokeText.style.maxHeight='100%'; karaokeText.style.overflow='hidden';
+                                            karaokeText.style.fontSize=Math.min(Number(karaokeStyle.size)||4.5,3.5)+'vw';
                                         } else {
-                                            youtube.style.top = ''; youtube.style.left = ''; youtube.style.right = '';
-                                            youtube.style.bottom = ''; youtube.style.width = ''; youtube.style.height = '';
-                                            karaokeBox.style.inset = ''; karaokeBox.style.padding = ''; karaokeBox.style.backgroundColor = '';
-                                            karaokeBox.style.zIndex = ''; karaokeText.style.maxHeight = ''; karaokeText.style.overflow = '';
+                                            youtube.style.top=''; youtube.style.left=''; youtube.style.right=''; youtube.style.bottom='';
+                                            youtube.style.width=''; youtube.style.height=''; youtube.style.overflow='hidden';
+                                            youtube.style.contain='layout paint'; youtube.style.clipPath='inset(0)';
+                                            karaokeBox.style.inset=''; karaokeBox.style.padding=''; karaokeBox.style.backgroundColor=''; karaokeBox.style.zIndex='';
+                                            karaokeText.style.maxHeight=''; karaokeText.style.overflow='';
                                         }
                                         if (karaokeLoaded && data.mediaMode !== 'screen') {
-                                            karaokeBox.classList.remove('hidden'); karaokeText.textContent = karaoke.stanza || '';
+                                            karaokeBox.classList.remove('hidden'); karaokeText.textContent=karaoke.stanza || '';
                                             karaokeText.style.fontFamily='\"'+(karaokeStyle.font||'Inter')+'\", sans-serif';
                                             if (!youtubeLyricsLayout) karaokeText.style.fontSize=(Number(karaokeStyle.size)||4.5)+'vw';
-                                            karaokeText.style.color=karaokeStyle.color||'#fff'; karaokeText.style.textAlign=karaokeStyle.align||'center'; karaokeText.style.fontWeight='700'; karaokeText.style.textShadow='0 2px 12px rgba(0,0,0,.95)';
+                                            karaokeText.style.color=karaokeStyle.color||'#fff'; karaokeText.style.textAlign=karaokeStyle.align||'center';
+                                            karaokeText.style.fontWeight='700'; karaokeText.style.textShadow='0 2px 12px rgba(0,0,0,.95)';
                                             if(karaokeStyle.transparent && data.mediaMode !== 'youtube'){backdrop.style.background='transparent';backdrop.style.backgroundImage='none';overlay.style.backgroundColor='transparent';}
                                         } else { karaokeBox.classList.add('hidden'); }
                                         if (!text || !backdrop) return;
