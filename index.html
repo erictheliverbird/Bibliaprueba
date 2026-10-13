@@ -872,6 +872,7 @@
         let currentCitation = "Salmos 23:1";
         let isBlackout = false;
         let isClearText = false;
+        let isStandby = false;
 
         let projectionStyles = {
             font: 'Inter',
@@ -1919,6 +1920,7 @@
         function projectVerse(text, citation, idx = null) {
             currentText = text;
             currentCitation = citation;
+            isStandby = false;
             if (idx !== null) selectedVerseIdx = idx;
             // Seleccionar un versículo devuelve automáticamente la pantalla al modo Biblia,
             // deteniendo el medio que estuviera activo (YouTube o video local).
@@ -1984,6 +1986,7 @@
                 citation: isClearText ? "" : currentCitation,
                 isBlackout: isBlackout,
                 isClearText: isClearText,
+                isStandby: isStandby,
                 styles: projectionStyles,
                 mediaMode: mediaMode,
                 videoUrl: activeVideoUrl,
@@ -2187,7 +2190,7 @@
 
             const hasText = data.text.trim().length > 0;
             if (logoStandbyEl) {
-                if (!hasText && data.styles.logoUrl && data.mediaMode === 'none') {
+                if (data.isStandby === true && data.styles.logoUrl && data.mediaMode === 'none') {
                     logoStandbyEl.src = data.styles.logoUrl;
                     logoStandbyEl.classList.remove('hidden');
                 } else {
@@ -2491,6 +2494,7 @@
             };
             document.getElementById('btn-cleartext').onclick = () => {
                 isClearText = !isClearText;
+                isStandby = false;
                 const btn = document.getElementById('btn-cleartext');
                 if (isClearText) btn.className = "bg-amber-600 hover:bg-amber-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-amber-950/50";
                 else btn.className = "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5";
@@ -2503,6 +2507,7 @@
                 selectedVerseIdx = null;
                 isBlackout = false;
                 isClearText = true;
+                isStandby = true;
                 isVideoPlaying = false;
                 mediaMode = 'none';
                 const previewVideo = document.getElementById('preview-video');
