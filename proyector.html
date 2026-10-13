@@ -299,7 +299,12 @@
                                     let mappedRemoteBlobKey = '';
                                     let localProjectionVideoUrl = '';
                                     function applyProjection(data, force = false) {
-                                        if (!data) return;
+                                        // Ignorar mensajes ajenos al estado de proyección. El iframe de YouTube
+                                        // también emite mensajes window.postMessage; tratarlos como estado
+                                        // visual reiniciaba el diseño y volvía a pantalla completa.
+                                        if (!data || typeof data !== 'object' || !data.styles ||
+                                            !Object.prototype.hasOwnProperty.call(data, 'mediaMode') ||
+                                            !Number.isFinite(Number(data.timestamp)) || Number(data.timestamp) <= 0) return;
                                         const incomingTimestamp = Number(data.timestamp || 0);
                                         if (!force && incomingTimestamp && incomingTimestamp <= latestProjectionTimestamp) return;
                                         if (incomingTimestamp && (!force || incomingTimestamp > latestProjectionTimestamp)) latestProjectionTimestamp = incomingTimestamp;
