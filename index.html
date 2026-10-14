@@ -490,6 +490,13 @@
                                         <i class="fa-solid fa-play mr-1"></i> Cargar
                                     </button>
                                 </div>
+                                <div id="youtube-history-panel" class="rounded-xl border border-gray-800 bg-gray-950/60 p-2.5 space-y-2">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <span class="text-[10px] font-bold uppercase tracking-wider text-gray-300"><i class="fa-solid fa-clock-rotate-left text-red-400 mr-1"></i>Últimos 10 enlaces</span>
+                                        <button id="btn-clear-youtube-history" type="button" class="text-[10px] text-gray-500 hover:text-red-300">Borrar historial</button>
+                                    </div>
+                                    <div id="youtube-history-list" class="space-y-1.5"><p class="text-[10px] text-gray-500">Los enlaces cargados aparecerán aquí.</p></div>
+                                </div>
                                 <div class="grid grid-cols-2 gap-2 pt-1">
                                     <button id="btn-youtube-play" type="button" class="bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
                                         <i class="fa-solid fa-play"></i> Reproducir YouTube
@@ -590,7 +597,7 @@
                               <p class="text-[10px] text-gray-500">Búsqueda mediante LRCLIB. La disponibilidad depende de su catálogo y conexión a internet.</p><div id="karaoke-results" class="space-y-2"></div>
                             </section>
                             <section id="karaoke-manual-area" class="karaoke-area rounded-xl border border-gray-700/80 bg-gray-950/35 p-3 space-y-2"><h3 class="text-sm font-bold text-blue-200"><i class="fa-solid fa-file-lines mr-2"></i>Letras de la canción</h3><label class="text-xs font-bold text-gray-300">Escribir o pegar letras (separa las estrofas con una línea en blanco)</label>
-                              <div id="karaoke-quick-controls" class="sticky top-0 z-10 flex flex-wrap items-center gap-2 rounded-lg border border-gray-700/80 bg-gray-900/95 p-2 backdrop-blur"><button id="karaoke-prev" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-xs font-bold" disabled><i class="fa-solid fa-chevron-left mr-1"></i>Anterior</button><button id="karaoke-project" class="bg-fuchsia-700 hover:bg-fuchsia-600 rounded-lg px-3 py-2 text-xs font-bold">Proyectar estrofa</button><button id="karaoke-next" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-xs font-bold" disabled>Siguiente<i class="fa-solid fa-chevron-right ml-1"></i></button><button id="karaoke-split-2" type="button" class="bg-blue-900/70 border border-blue-700/70 rounded-lg px-3 py-2 text-xs font-bold" title="Dividir cada estrofa en bloques de dos líneas">Dividir cada 2 líneas</button><label class="flex items-center gap-2 text-xs text-gray-300">División<select id="karaoke-split-mode" class="max-w-[180px] bg-gray-950 border border-gray-700 rounded-lg px-2 py-2 text-xs"><option value="manual">Estrofas originales</option><option value="lines2">Cada 2 líneas</option><option value="lines3">Cada 3 líneas</option><option value="lines4">Cada 4 líneas</option><option value="words40">Hasta 40 palabras</option><option value="words60">Hasta 60 palabras</option><option value="words80">Hasta 80 palabras</option></select></label></div>
+                              <div id="karaoke-quick-controls" class="sticky top-0 z-10 flex flex-wrap items-center gap-2 rounded-lg border border-gray-700/80 bg-gray-900/95 p-2 backdrop-blur"><button id="karaoke-prev" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-xs font-bold" disabled><i class="fa-solid fa-chevron-left mr-1"></i>Anterior</button><button id="karaoke-project" class="bg-fuchsia-700 hover:bg-fuchsia-600 rounded-lg px-3 py-2 text-xs font-bold">Proyectar estrofa</button><button id="karaoke-next" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-xs font-bold" disabled>Siguiente<i class="fa-solid fa-chevron-right ml-1"></i></button><button id="karaoke-split-2" type="button" class="bg-blue-900/70 border border-blue-700/70 rounded-lg px-3 py-2 text-xs font-bold" title="Dividir cada estrofa en bloques de dos líneas">Dividir cada 2 líneas</button><label class="flex items-center gap-2 text-xs text-gray-300">División<select id="karaoke-split-mode" class="max-w-[180px] bg-gray-950 border border-gray-700 rounded-lg px-2 py-2 text-xs"><option value="manual">Estrofas originales</option><option value="lines1">Cada línea</option><option value="lines2">Cada 2 líneas</option><option value="lines3">Cada 3 líneas</option><option value="lines4">Cada 4 líneas</option><option value="words20">Hasta 20 palabras</option><option value="words40">Hasta 40 palabras</option><option value="words60">Hasta 60 palabras</option><option value="words80">Hasta 80 palabras</option></select></label></div>
                               <textarea id="karaoke-manual" rows="14" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-sm leading-relaxed" placeholder="Primera línea de la estrofa
 Segunda línea
 
@@ -2766,10 +2773,45 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 refreshYouTubeControls();
                 setTimeout(() => { youtubeSeekPendingUntil = 0; refreshYouTubeControls(); }, 1900);
             });
+            // Historial local de los últimos 10 enlaces válidos cargados en YouTube.
+            const youtubeHistoryKey = 'biblical_projector_youtube_history_v1';
+            function getYouTubeHistory() {
+                try { const value = JSON.parse(localStorage.getItem(youtubeHistoryKey) || '[]'); return Array.isArray(value) ? value.filter(item => typeof item === 'string').slice(0, 10) : []; }
+                catch (_) { return []; }
+            }
+            function renderYouTubeHistory() {
+                const list = document.getElementById('youtube-history-list');
+                if (!list) return;
+                const history = getYouTubeHistory();
+                list.replaceChildren();
+                if (!history.length) {
+                    const empty = document.createElement('p'); empty.className = 'text-[10px] text-gray-500'; empty.textContent = 'Los enlaces cargados aparecerán aquí.'; list.appendChild(empty); return;
+                }
+                history.forEach((url, index) => {
+                    const row = document.createElement('div'); row.className = 'flex items-center gap-2';
+                    const button = document.createElement('button'); button.type = 'button'; button.className = 'min-w-0 flex-1 text-left text-[10px] text-gray-300 hover:text-white truncate rounded-md px-2 py-1.5 bg-gray-900/80 border border-gray-800';
+                    button.title = url; button.textContent = `${index + 1}. ${url}`;
+                    button.addEventListener('click', () => { document.getElementById('video-url-input').value = url; document.getElementById('btn-load-youtube').click(); });
+                    row.appendChild(button); list.appendChild(row);
+                });
+            }
+            function rememberYouTubeUrl(url) {
+                const history = getYouTubeHistory().filter(item => item !== url);
+                history.unshift(url);
+                try { localStorage.setItem(youtubeHistoryKey, JSON.stringify(history.slice(0, 10))); } catch (_) {}
+                renderYouTubeHistory();
+            }
+            document.getElementById('btn-clear-youtube-history').addEventListener('click', () => {
+                try { localStorage.removeItem(youtubeHistoryKey); } catch (_) {}
+                renderYouTubeHistory();
+            });
+            renderYouTubeHistory();
+
             document.getElementById('btn-load-youtube').onclick = () => {
                 const url = document.getElementById('video-url-input').value.trim();
                 const embedUrl = getYouTubeEmbedUrl(url);
                 if (embedUrl) {
+                    rememberYouTubeUrl(url);
                     videoLoop = document.getElementById('video-loop-toggle').checked;
                     activeVideoUrl = withYouTubeLoop(embedUrl, videoLoop);
                     mediaMode = 'youtube';
@@ -2870,7 +2912,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             document.getElementById('karaoke-prev').onclick=()=>{if(karaokeIndex>0){karaokeIndex--;karaokeRefreshNav();syncToProjector();}};
             document.getElementById('karaoke-next').onclick=()=>{if(karaokeIndex<karaokeStanzas.length-1){karaokeIndex++;karaokeRefreshNav();syncToProjector();}};
             document.getElementById('karaoke-split-2').onclick=()=>{document.getElementById('karaoke-split-mode').value='lines2';karaokeApplyDivision();karaokeStatus.textContent='Cada estrofa se dividió en bloques de 2 líneas.';};
-            document.getElementById('karaoke-split-mode').onchange=()=>{karaokeApplyDivision();const labels={manual:'Se respetan las estrofas originales.',lines2:'División: 2 líneas.',lines3:'División: 3 líneas.',lines4:'División: 4 líneas.',words40:'División: hasta 40 palabras.',words60:'División: hasta 60 palabras.',words80:'División: hasta 80 palabras.'};karaokeStatus.textContent=labels[karaokeDivisionMode]||'División actualizada.';};
+            document.getElementById('karaoke-split-mode').onchange=()=>{karaokeApplyDivision();const labels={manual:'Se respetan las estrofas originales.',lines1:'División: cada línea.',lines2:'División: 2 líneas.',lines3:'División: 3 líneas.',lines4:'División: 4 líneas.',words20:'División: hasta 20 palabras por bloque y estrofa.',words40:'División: hasta 40 palabras.',words60:'División: hasta 60 palabras.',words80:'División: hasta 80 palabras.'};karaokeStatus.textContent=labels[karaokeDivisionMode]||'División actualizada.';};
             document.getElementById('karaoke-project').onclick=()=>{if(!karaokeStanzas.length){karaokeStatus.textContent='Primero busca o escribe las letras';return;}karaokeActive=true;karaokeApplyStyle();showToast('Estrofa enviada al proyector','success');};
             ['karaoke-transparent','karaoke-size','karaoke-color','karaoke-font','karaoke-align','karaoke-shadow'].forEach(id=>document.getElementById(id).addEventListener('change',karaokeApplyStyle));
             ['karaoke-bg-type','karaoke-bg-color','karaoke-bg-gradient','karaoke-bg-opacity'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{document.getElementById('karaoke-transparent').checked=false;karaokeApplyStyle();}));
