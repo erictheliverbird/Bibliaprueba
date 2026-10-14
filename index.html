@@ -256,6 +256,35 @@
         }
 
     
+        /* v18.2.6: adaptar la consola al viewport dinámico de Safari en iPad.
+           Evita que la cabecera quede detrás de la barra del navegador cuando cambia su altura.
+           No modifica reproductores, sincronización ni controles funcionales. */
+        html, body {
+            height: 100%;
+            min-height: 0;
+        }
+        body {
+            height: 100vh;
+            height: 100dvh;
+            min-height: 0;
+            overflow: hidden;
+        }
+        #operator-interface {
+            height: 100vh;
+            height: 100dvh;
+            min-height: 0;
+            padding-top: env(safe-area-inset-top, 0px);
+            box-sizing: border-box;
+        }
+        #operator-interface > header {
+            flex-shrink: 0;
+            position: relative;
+            z-index: 5;
+        }
+        .workspace-nav {
+            flex-shrink: 0;
+        }
+
         /* v18.2.3: anclar Karaoke arriba y eliminar el hueco superior heredado */
         body[data-workspace="karaoke"] #workspace-control {
             align-items: stretch !important;
