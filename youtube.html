@@ -22,9 +22,6 @@ button{border:0;border-radius:9px;padding:10px 14px;font-weight:700;color:#fff;b
 (() => {
  const CHANNEL_NAME='biblical-projector-channel';
  const STORAGE_KEY='biblical_projector_data';
- const pageParams=new URLSearchParams(location.search);
- const monitorMode=pageParams.get('monitor')==='1';
- const monitorVideoUrl=monitorMode?(pageParams.get('video')||''):'';
  let channel=null, player=null, apiReady=false, playerReady=false, desiredId='', loopEnabled=false, pendingCommand='';
  const statusEl=document.getElementById('status'), emptyEl=document.getElementById('empty');
  function status(s){statusEl.textContent=s;}
@@ -58,24 +55,18 @@ button{border:0;border-radius:9px;padding:10px 14px;font-weight:700;color:#fff;b
    apiReady=true;
    player=new YT.Player('player',{width:'100%',height:'100%',videoId:desiredId||undefined,playerVars:{autoplay:0,controls:1,playsinline:1,rel:0,fs:1,enablejsapi:1},events:{
      onReady:e=>{playerReady=true;try{const f=e.target.getIframe();f.setAttribute('allow','autoplay; encrypted-media; picture-in-picture; web-share');f.setAttribute('referrerpolicy','strict-origin-when-cross-origin');f.style.width='100%';f.style.height='100%';f.style.border='0';}catch(_){}
-       const saved=stateFromStorage();if(!monitorMode&&saved)loadState(saved);status(desiredId?'Video listo · toca Reproducir o el control del reproductor':'Esperando enlace de YouTube…');if(pendingCommand){const c=pendingCommand;pendingCommand='';runCommand(c);}},
+       const saved=stateFromStorage();if(saved)loadState(saved);status(desiredId?'Video listo · toca Reproducir o el control del reproductor':'Esperando enlace de YouTube…');if(pendingCommand){const c=pendingCommand;pendingCommand='';runCommand(c);}},
      onStateChange:e=>{if(e.data===1)status('Reproduciendo');else if(e.data===2)status('En pausa');else if(e.data===5)status('Video listo · controles de YouTube activos');else if(e.data===0&&loopEnabled){try{player.seekTo(0,true);player.playVideo();}catch(_){}}},
      onError:e=>status('YouTube no permite reproducir este video (código '+e.data+').')
    }});
  };
- if(monitorMode){
-   document.querySelector('.brand').textContent='▶ YouTube · Monitor de preparación';
-   const monitorId=extractId(monitorVideoUrl);
-   if(monitorId){desiredId=monitorId;emptyEl.classList.add('hidden');status('Video preparado en monitor · espera los anuncios y usa los controles de YouTube');}
-   else status('El enlace preparado no es válido');
- }
  const script=document.createElement('script');script.src='https://www.youtube.com/iframe_api';script.onerror=()=>status('No se pudo cargar la API de YouTube; comprueba Internet.');document.head.appendChild(script);
- try{channel=new BroadcastChannel(CHANNEL_NAME);channel.addEventListener('message',e=>{const d=e.data;if(!d)return;if(d.type==='__youtube_command'){if(!monitorMode)runCommand(d.command);return;}if(d.type==='__controller_hello'){try{channel.postMessage({type:'__youtube_window_heartbeat',timestamp:Date.now()});}catch(_){}return;}if(!monitorMode&&d.mediaMode==='youtube')loadState(d);else if(d.mediaMode==='none'&&d.youtubeSeparateWindow===false){/* mantener el video abierto hasta que el usuario lo cambie */}});setInterval(()=>{try{channel.postMessage({type:'__youtube_window_heartbeat',timestamp:Date.now()});}catch(_){}},2000);}catch(_){status('Este navegador no admite el canal de sincronización; usa los controles del video.');}
- if(!monitorMode)window.addEventListener('storage',e=>{if(e.key===STORAGE_KEY){const d=stateFromStorage();if(d)loadState(d);}});
+ try{channel=new BroadcastChannel(CHANNEL_NAME);channel.addEventListener('message',e=>{const d=e.data;if(!d)return;if(d.type==='__youtube_command'){runCommand(d.command);return;}if(d.type==='__controller_hello'){try{channel.postMessage({type:'__youtube_window_heartbeat',timestamp:Date.now()});}catch(_){}return;}if(d.mediaMode==='youtube')loadState(d);else if(d.mediaMode==='none'&&d.youtubeSeparateWindow===false){/* mantener el video abierto hasta que el usuario lo cambie */}});setInterval(()=>{try{channel.postMessage({type:'__youtube_window_heartbeat',timestamp:Date.now()});}catch(_){}},2000);}catch(_){status('Este navegador no admite el canal de sincronización; usa los controles del video.');}
+ window.addEventListener('storage',e=>{if(e.key===STORAGE_KEY){const d=stateFromStorage();if(d)loadState(d);}});
  document.getElementById('play').addEventListener('click',()=>runCommand('playVideo'));
  document.getElementById('pause').addEventListener('click',()=>runCommand('pauseVideo'));
  document.getElementById('reload').addEventListener('click',()=>{if(desiredId&&playerReady){try{player.loadVideoById({videoId:desiredId,startSeconds:0});status('Reiniciando video…');}catch(_){status('No se pudo reiniciar el video');}}else{const d=stateFromStorage();if(d)loadState(d);}});
- const saved=stateFromStorage();if(!monitorMode&&saved)loadState(saved);
+ const saved=stateFromStorage();if(saved)loadState(saved);
 })();
 </script>
 </body></html>

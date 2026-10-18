@@ -321,11 +321,6 @@
                     <span id="ext-win-text" class="hidden sm:inline">Proyectar (Ventana)</span>
                 </button>
 
-                <button id="btn-open-youtube-monitor" type="button" disabled title="Prepara primero un enlace de YouTube" class="bg-red-700 hover:bg-red-600 disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg shadow-red-950/30">
-                    <i class="fa-brands fa-youtube text-xs"></i>
-                    <span class="hidden sm:inline">Monitor YouTube</span>
-                </button>
-
                 <button id="btn-toggle-local-fs" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg shadow-emerald-950/40">
                     <i class="fa-solid fa-expand text-xs"></i>
                     <span class="hidden md:inline">Simular Pantalla</span>
@@ -2526,28 +2521,8 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             showToast("Transmisión de pantalla detenida", "info");
         }
 
-        let youtubeMonitorWindow = null;
-
-        function openYouTubeMonitorWindow() {
-            if (!stagedYouTubeUrl || !getYouTubeEmbedUrl(stagedYouTubeUrl)) {
-                showToast('Primero prepara un enlace válido de YouTube.', 'warning');
-                return;
-            }
-            const monitorUrl = new URL('youtube.html', window.location.href);
-            monitorUrl.searchParams.set('monitor', '1');
-            monitorUrl.searchParams.set('video', stagedYouTubeUrl);
-            if (youtubeMonitorWindow && !youtubeMonitorWindow.closed) {
-                try { youtubeMonitorWindow.location.href = monitorUrl.href; youtubeMonitorWindow.focus(); }
-                catch (_) { youtubeMonitorWindow = window.open(monitorUrl.href, 'BiblicalYouTubeMonitor', 'width=1000,height=650'); }
-            } else {
-                youtubeMonitorWindow = window.open(monitorUrl.href, 'BiblicalYouTubeMonitor', 'width=1000,height=650');
-            }
-            if (youtubeMonitorWindow) {
-                showToast('Monitor de YouTube abierto. La proyección principal no ha cambiado.', 'success');
-                try { youtubeMonitorWindow.focus(); } catch (_) {}
-            } else {
-                showToast('Safari bloqueó la ventana del monitor. Permite las ventanas emergentes para este sitio.', 'error');
-            }
+        function openInteractiveYouTubeWindow() {
+            showToast('YouTube ahora se proyecta automáticamente en la misma ventana que los versículos. No hace falta abrir otra ventana.', 'info');
         }
 
         function toggleExternalProjector() {
@@ -2594,7 +2569,6 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
 
             // Ventana Externa y Simulador
             document.getElementById('btn-toggle-ext-projector').onclick = toggleExternalProjector;
-            document.getElementById('btn-open-youtube-monitor').onclick = openYouTubeMonitorWindow;
             document.getElementById('btn-toggle-local-fs').onclick = () => {
                 document.getElementById('local-fullscreen-container').classList.remove('hidden');
                 syncToProjector();
@@ -2850,13 +2824,9 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                     const launchButton = document.getElementById('btn-launch-youtube-projection');
                     const stagedStatus = document.getElementById('youtube-staged-status');
                     if (launchButton) launchButton.disabled = false;
-                    const monitorButton = document.getElementById('btn-open-youtube-monitor');
-                    if (monitorButton) monitorButton.disabled = false;
-                    if (stagedStatus) stagedStatus.textContent = 'Video preparado. Abre «Monitor YouTube» para revisar el video y esperar los anuncios; la proyección actual seguirá sin cambios.';
+                    if (stagedStatus) stagedStatus.textContent = 'Video preparado. La proyección actual sigue sin cambios. Cuando estés listo, pulsa «Enviar video a proyección».';
                     showToast('Video preparado sin cambiar la proyección actual.', 'success');
                 } else {
-                    const monitorButton = document.getElementById('btn-open-youtube-monitor');
-                    if (monitorButton) monitorButton.disabled = true;
                     showToast("Enlace de YouTube no válido", "error");
                 }
             };
