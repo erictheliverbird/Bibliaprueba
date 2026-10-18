@@ -487,7 +487,13 @@
                                 <div class="flex gap-1.5">
                                     <input type="text" id="video-url-input" placeholder="Ej: https://youtube.com/watch?v=..." class="flex-1 bg-gray-950 border border-gray-800 rounded-xl px-2.5 py-2 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500">
                                     <button id="btn-load-youtube" class="bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center">
-                                        <i class="fa-solid fa-play mr-1"></i> Cargar
+                                        <i class="fa-solid fa-check mr-1"></i> Preparar
+                                    </button>
+                                </div>
+                                <div class="rounded-xl border border-amber-800/60 bg-amber-950/30 p-2.5 space-y-2">
+                                    <p id="youtube-staged-status" class="text-[10px] text-amber-200">Pega un enlace y pulsa Preparar. La proyección actual no cambiará.</p>
+                                    <button id="btn-launch-youtube-projection" type="button" disabled class="w-full disabled:opacity-40 disabled:cursor-not-allowed bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+                                        <i class="fa-solid fa-display"></i> Enviar video a proyección
                                     </button>
                                 </div>
                                 <div id="youtube-history-panel" class="rounded-xl border border-gray-800 bg-gray-950/60 p-2.5 space-y-2">
@@ -1020,6 +1026,8 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
         let karaokeStanzas = []; let karaokeIndex = 0; let karaokeActive = false; let karaokeTitle = '';
         let karaokeStyle = { transparent:true, size:4.5, color:'#ffffff', font:'Inter', align:'center', bgType:'color', bgColor:'#000000', bgGradient:'linear-gradient(135deg,#020617 0%,#1e1b4b 100%)', bgImage:'', bgOpacity:100, shadow:true };
         let activeVideoUrl = '';
+        // URL preparada: no altera la proyección hasta pulsar el botón de envío.
+        let stagedYouTubeUrl = '';
         let activeVideoFile = null;
         let isVideoPlaying = false;
         let videoLoop = false;
@@ -2811,22 +2819,41 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 const url = document.getElementById('video-url-input').value.trim();
                 const embedUrl = getYouTubeEmbedUrl(url);
                 if (embedUrl) {
+                    stagedYouTubeUrl = url;
                     rememberYouTubeUrl(url);
-                    videoLoop = document.getElementById('video-loop-toggle').checked;
-                    activeVideoUrl = withYouTubeLoop(embedUrl, videoLoop);
-                    mediaMode = 'youtube';
-                    // Modo automático: YouTube comparte la ventana del proyector con los versículos.
-                    // No se abre una segunda ventana ni se crea un reproductor en la vista previa.
-                    youtubeSeparateWindowMode = false;
-                    isVideoPlaying = false;
-                    syncToProjector();
-                    if (location.protocol === 'file:') {
-                        showToast('Abre la aplicación desde GitHub Pages (HTTPS) para proyectar YouTube.', 'warning');
-                    } else {
-                        showToast('YouTube cargado en la ventana del proyector. Pulsa “Reproducir YouTube” desde el iPad.', 'success');
-                    }
+                    const launchButton = document.getElementById('btn-launch-youtube-projection');
+                    const stagedStatus = document.getElementById('youtube-staged-status');
+                    if (launchButton) launchButton.disabled = false;
+                    if (stagedStatus) stagedStatus.textContent = 'Video preparado. La proyección actual sigue sin cambios. Cuando estés listo, pulsa «Enviar video a proyección».';
+                    showToast('Video preparado sin cambiar la proyección actual.', 'success');
                 } else {
                     showToast("Enlace de YouTube no válido", "error");
+                }
+            };
+            document.getElementById('btn-launch-youtube-projection').onclick = () => {
+                if (!stagedYouTubeUrl) {
+                    showToast('Primero prepara un enlace válido de YouTube.', 'warning');
+                    return;
+                }
+                const embedUrl = getYouTubeEmbedUrl(stagedYouTubeUrl);
+                if (!embedUrl) {
+                    stagedYouTubeUrl = '';
+                    document.getElementById('btn-launch-youtube-projection').disabled = true;
+                    showToast('El enlace preparado ya no es válido. Vuelve a prepararlo.', 'error');
+                    return;
+                }
+                videoLoop = document.getElementById('video-loop-toggle').checked;
+                activeVideoUrl = withYouTubeLoop(embedUrl, videoLoop);
+                mediaMode = 'youtube';
+                youtubeSeparateWindowMode = false;
+                isVideoPlaying = false;
+                syncToProjector();
+                const stagedStatus = document.getElementById('youtube-staged-status');
+                if (stagedStatus) stagedStatus.textContent = 'Video enviado a la proyección. Puedes preparar otro enlace sin cambiar lo que se proyecta hasta volver a enviarlo.';
+                if (location.protocol === 'file:') {
+                    showToast('Abre la aplicación desde GitHub Pages (HTTPS) para proyectar YouTube.', 'warning');
+                } else {
+                    showToast('Video enviado a la proyección. Pulsa «Reproducir YouTube» cuando corresponda.', 'success');
                 }
             };
             // Karaoke Lyrics: búsqueda de letras y proyección por estrofas.
