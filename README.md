@@ -19,6 +19,13 @@ Aplicación web estática para controlar versículos, letras y videos durante el
 - Atajos del Magic Keyboard: flechas para avanzar o retroceder versículos; en **Letras**, flechas para cambiar de estrofa; `L` pantalla de espera con logo; `B` apagar; `C` ocultar texto; `Esc` cerrar la vista ampliada.
 - Para probar desde la carpeta del computador, usa GitHub Pages o un servidor local HTTPS/HTTP. Abrir `index.html` directamente como `file://` puede impedir que Safari lea automáticamente `biblia.json`.
 
+## Animaciones y videos de diseño
+
+- En **Diseño**, el selector de animación aplica fundido, deslizamiento vertical/lateral, zoom suave o ninguna animación a los cambios de versículo y estrofa. Los ajustes de fuente, color y posición no vuelven a animar el texto. Se respeta **Reducir movimiento** del dispositivo.
+- **Video en bucle** permite elegir un MP4 H.264 silencioso para el fondo. Se recomienda 5–20 segundos y 720p o menos; la aplicación admite hasta 30 segundos y 30 MB. El video queda detrás de la Biblia y las letras, se pausa durante otros medios y se conserva en IndexedDB del navegador donde se cargó.
+- La transición integrada se ejecuta al entrar o salir de YouTube o video local. Un MP4 propio opcional sustituye el efecto integrado; se recomienda que sea opaco, silencioso, de 1–3 segundos y 720p o menos. Se admiten hasta 8 segundos y 30 MB. Si Safari bloquea el clip o el archivo no se reproduce, se intenta el efecto integrado.
+- Los archivos guardados no se sincronizan entre dispositivos ni se publican en GitHub. En cada iPad hay que seleccionarlos una vez en el mismo Safari que se usará para el culto. Si Safari impide el inicio automático del fondo, el panel muestra el estado y mantiene visible el fondo estático de respaldo.
+
 ## Preparación recomendada para iPad
 
 1. Publica estos archivos juntos bajo una dirección HTTPS. La sincronización entre ventanas usa el canal local del navegador; la captura de pantalla requiere HTTPS.

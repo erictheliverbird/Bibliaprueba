@@ -160,3 +160,96 @@ body.operator-page {
         transition-duration: 0.01ms !important;
     }
 }
+
+@keyframes projection-enter-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes projection-enter-slide-up {
+    from { opacity: 0; transform: translate3d(0, 1.2rem, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes projection-enter-slide-left {
+    from { opacity: 0; transform: translate3d(1.6rem, 0, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes projection-enter-zoom {
+    from { opacity: 0; transform: scale(.94); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.projection-enter-fade,
+.projection-enter-slide-up,
+.projection-enter-slide-left,
+.projection-enter-zoom {
+    animation-duration: 350ms;
+    animation-timing-function: cubic-bezier(.2,.75,.25,1);
+    animation-fill-mode: both;
+    will-change: opacity, transform;
+}
+
+.projection-enter-fade { animation-name: projection-enter-fade; }
+.projection-enter-slide-up { animation-name: projection-enter-slide-up; }
+.projection-enter-slide-left { animation-name: projection-enter-slide-left; }
+.projection-enter-zoom { animation-name: projection-enter-zoom; }
+
+@keyframes projection-transition-fade {
+    0%, 22% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes projection-transition-wipe {
+    0%, 22% { clip-path: inset(0 0 0 0); }
+    100% { clip-path: inset(0 0 0 100%); }
+}
+
+@keyframes projection-transition-zoom {
+    0%, 22% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(.97); }
+}
+
+.projection-transition-curtain {
+    position: absolute;
+    inset: 0;
+    z-index: 60;
+    display: none;
+    overflow: hidden;
+    pointer-events: none;
+    background: #000;
+}
+
+.projection-transition-curtain.is-active { display: block; }
+.projection-transition-curtain.is-held { opacity: 1; transform: none; animation: none; }
+.projection-transition-curtain.effect-fade { animation: projection-transition-fade 680ms ease-in-out both; }
+.projection-transition-curtain.effect-wipe { animation: projection-transition-wipe 680ms cubic-bezier(.65,0,.35,1) both; }
+.projection-transition-curtain.effect-zoom { animation: projection-transition-zoom 680ms ease-in-out both; }
+
+.projection-transition-video {
+    position: absolute;
+    inset: 0;
+    z-index: 70;
+    display: none;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    background: #000;
+}
+
+.projection-transition-video.is-active { display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+    .projection-enter-fade,
+    .projection-enter-slide-up,
+    .projection-enter-slide-left,
+    .projection-enter-zoom,
+    .projection-transition-curtain.effect-fade,
+    .projection-transition-curtain.effect-wipe,
+    .projection-transition-curtain.effect-zoom {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+    }
+}
