@@ -9,12 +9,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Proyector Bíblico">
     <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" type="image/png" href="icon-192.png">
     <link rel="apple-touch-icon" href="icon-192.png">
-    <title>Proyector Bíblico Profesional & Buscador de Imágenes</title>
-    <!-- Firebase compat SDK para sincronización entre Safari y la app instalada -->
-    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <title>Proyector Bíblico · Consola de culto</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -156,7 +153,6 @@
           body[data-workspace="karaoke"] #karaoke-quick-controls { position:relative; }
           body[data-workspace="karaoke"] #karaoke-quick-controls button { flex:1 1 auto; }
         }
-        #btn-quick-screen-share { display:none !important; }
         body[data-workspace="design"] #workspace-control .flex-1.min-h-0.bg-gray-900 { min-width:0; }
         body[data-workspace="design"] #tab-estilos { display:block !important; }
         @media (max-width: 900px) {
@@ -199,10 +195,8 @@
         #operator-interface header h1 span { background:rgba(214,181,109,.10) !important; color:#dfc88f !important; border-color:rgba(214,181,109,.28) !important; }
         #operator-interface header > div:last-child { gap:8px !important; }
         /* Todos los botones de cabecera comparten una paleta sobria; los estados siguen siendo distinguibles. */
-        #btn-quick-screen-share,
         #btn-toggle-ext-projector,
         #btn-toggle-local-fs,
-        #btn-install-help,
         #operator-interface header label[for],
         #operator-interface header label:has(#json-bible-input) {
           background:linear-gradient(180deg,#202d42,#172236) !important;
@@ -210,17 +204,15 @@
           box-shadow:0 2px 7px rgba(0,0,0,.12) !important; border-radius:11px !important;
           font-weight:650 !important;
         }
-        #btn-quick-screen-share:hover,
         #btn-toggle-ext-projector:hover,
         #btn-toggle-local-fs:hover,
-        #btn-install-help:hover,
         #operator-interface header label:has(#json-bible-input):hover {
           background:linear-gradient(180deg,#2b3d57,#20304a) !important;
           border-color:rgba(126,169,235,.42) !important; color:#fff !important;
           box-shadow:0 4px 12px rgba(0,0,0,.20) !important;
         }
-        #btn-quick-screen-share i, #btn-toggle-ext-projector i, #btn-toggle-local-fs i,
-        #btn-install-help i, #operator-interface header label:has(#json-bible-input) i { color:#9bbce9 !important; }
+        #btn-toggle-ext-projector i, #btn-toggle-local-fs i,
+        #operator-interface header label:has(#json-bible-input) i { color:#9bbce9 !important; }
         #btn-toggle-ext-projector { border-color:rgba(93,151,238,.30) !important; }
         #btn-toggle-local-fs { border-color:rgba(112,164,154,.26) !important; }
         #operator-interface main { gap:14px !important; }
@@ -248,10 +240,20 @@
         /* Los colores de alerta se reservan para estados, no para decorar botones permanentes. */
         #btn-clear-projection { background:rgba(127,45,55,.16) !important; color:#e8a6ad !important; border-color:rgba(190,85,98,.28) !important; }
         #btn-standby { background:rgba(214,181,109,.09) !important; color:#e3cb91 !important; border-color:rgba(214,181,109,.28) !important; }
+        #karaoke-panel .text-fuchsia-200, #karaoke-panel .text-fuchsia-300 { color:#a9ccff !important; }
+        #karaoke-panel .border-fuchsia-400\/20, #karaoke-panel .border-fuchsia-400 { border-color:rgba(110,168,255,.28) !important; }
+        #karaoke-panel .accent-fuchsia-500 { accent-color:#6ea8ff !important; }
+        #karaoke-panel input:focus, #karaoke-panel select:focus, #karaoke-panel textarea:focus { border-color:rgba(110,168,255,.72) !important; }
+        #btn-open-youtube-monitor { background:linear-gradient(180deg,#263b59,#17263b) !important; border:1px solid rgba(110,168,255,.3) !important; box-shadow:none !important; }
+        #btn-open-youtube-monitor i { color:#9bbce9; }
+        #operator-interface .youtube-workflow { border-color:rgba(110,168,255,.25) !important; background:rgba(13,23,40,.78) !important; }
+        #operator-interface .youtube-workflow .youtube-capture-action { background:linear-gradient(135deg,#315d99,#244a7d) !important; }
+        #operator-interface .youtube-workflow .youtube-project-action { background:linear-gradient(135deg,#2563eb,#1d4ed8) !important; }
+        #operator-interface header .app-brand-mark { width:46px; height:46px; object-fit:contain; border-radius:13px; box-shadow:0 5px 16px rgba(0,0,0,.24); }
         @media(max-width:900px) {
           #operator-interface > header { padding-left:12px !important; padding-right:12px !important; gap:8px !important; }
           #operator-interface header > div:last-child { gap:5px !important; }
-          #btn-quick-screen-share, #btn-toggle-ext-projector, #btn-toggle-local-fs, #btn-install-help,
+          #btn-toggle-ext-projector, #btn-toggle-local-fs,
           #operator-interface header label:has(#json-bible-input) { padding:9px 10px !important; border-radius:10px !important; }
         }
 
@@ -284,35 +286,32 @@
             margin-top: 0 !important;
         }
 </style>
+<link rel="stylesheet" href="responsive.css">
 </head>
-<body class="bg-gray-950 text-gray-100 h-screen overflow-hidden flex flex-col font-['Inter'] antialiased select-none">
+<body class="operator-page bg-gray-950 text-gray-100 h-screen overflow-hidden flex flex-col font-['Inter'] antialiased select-none">
 
     <div id="operator-interface" class="h-full flex flex-col min-h-0">
         <!-- CABECERA DE LA CONSOLA -->
-        <header class="bg-gray-900 border-b border-gray-800 h-16 px-4 md:px-6 flex items-center justify-between shrink-0 gap-3">
+        <header class="bg-gray-900 border-b border-gray-800 min-h-16 px-4 md:px-6 flex items-center justify-between shrink-0 gap-3">
             <div class="flex items-center gap-3">
-                <div class="bg-blue-600 text-white p-2.5 rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/40 shrink-0">
-                    <i class="fa-solid fa-book-bible text-xl"></i>
-                </div>
+                <img src="icon-192.png" alt="Logo del Proyector Bíblico" class="app-brand-mark shrink-0">
                 <div>
                     <h1 class="font-black text-base md:text-lg leading-none tracking-wide text-white flex items-center gap-2">
                         PROYECTOR BÍBLICO
-                        <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-bold">PRO v4.0 HD</span>
+                        <span class="text-[10px] bg-blue-500/10 text-blue-200 border border-blue-400/25 px-2 py-0.5 rounded-full font-bold">CONSOLA DE CULTO</span>
                     </h1>
-                    <span class="text-[10px] text-gray-400 font-semibold tracking-wider uppercase hidden sm:inline-block">Con Buscador de Imágenes en Internet por Palabras Clave</span>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-[10px] text-gray-400 font-semibold tracking-wider uppercase hidden sm:inline-block">Biblia · multimedia · letras</span>
+                        <span id="session-save-status" class="text-[9px] font-bold text-emerald-300" role="status" aria-live="polite">Guardado local</span>
+                    </div>
                 </div>
             </div>
 
             <!-- Panel de Sincronización y Acciones de Cabecera -->
             <div class="flex items-center gap-2">
-                <button id="btn-quick-screen-share" class="bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg shadow-red-950/40">
-                    <i class="fa-solid fa-display text-xs"></i>
-                    <span class="hidden md:inline">Capturar Pantalla</span>
-                </button>
-
                 <label class="bg-amber-600 hover:bg-amber-500 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer transition shadow-lg shadow-amber-950/40">
                     <i class="fa-solid fa-file-import text-xs"></i>
-                    <span class="hidden lg:inline">Cargar Biblia JSON</span>
+                    <span class="hidden lg:inline">Importar Biblia</span>
                     <input type="file" id="json-bible-input" accept=".json" class="hidden">
                 </label>
 
@@ -321,19 +320,14 @@
                     <span id="ext-win-text" class="hidden sm:inline">Proyectar (Ventana)</span>
                 </button>
 
-                <button id="btn-open-youtube-monitor" type="button" disabled title="Prepara primero un enlace de YouTube" class="bg-red-700 hover:bg-red-600 disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg shadow-red-950/30">
+                <button id="btn-open-youtube-monitor" type="button" disabled title="Prepara primero un enlace de YouTube" class="bg-blue-700 hover:bg-blue-600 disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg shadow-blue-950/30">
                     <i class="fa-brands fa-youtube text-xs"></i>
                     <span class="hidden sm:inline">Monitor YouTube</span>
                 </button>
 
                 <button id="btn-toggle-local-fs" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg shadow-emerald-950/40">
-                    <i class="fa-solid fa-expand text-xs"></i>
-                    <span class="hidden md:inline">Simular Pantalla</span>
-                </button>
-
-                <button id="btn-install-help" class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition" title="Cómo instalar como aplicación en iPad">
-                    <i class="fa-solid fa-mobile-screen-button text-xs"></i>
-                    <span class="hidden xl:inline">Instalar app</span>
+                    <i class="fa-solid fa-up-right-and-down-left-from-center text-xs"></i>
+                    <span class="hidden md:inline">Vista ampliada</span>
                 </button>
             </div>
         </header>
@@ -344,6 +338,14 @@
             <!-- Columna 1: Libros y Capítulos -->
             <section id="workspace-bible-books" class="w-full lg:w-72 xl:w-80 h-64 lg:h-full flex flex-col bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-xl shrink-0">
                 <div class="p-3 border-b border-gray-800 bg-gray-900/80">
+                    <div class="flex items-center gap-2 mb-2.5">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-gray-500">Versión</span>
+                        <select id="bible-version-select" aria-label="Versión bíblica" class="min-w-0 flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2 py-1.5 text-[11px] text-gray-200">
+                            <option value="sample">Cargando versiones…</option>
+                        </select>
+                        <span id="bible-version-badge" class="shrink-0 rounded-full border border-amber-400/20 bg-amber-400/5 px-2 py-1 text-[9px] font-extrabold text-amber-200">DEMO</span>
+                    </div>
+                    <p id="bible-version-status" class="mb-2 text-[9px] leading-relaxed text-gray-500" role="status">Cargando la Biblia Reina-Valera 1960…</p>
                     <div class="relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
                         <input type="text" id="search-book" placeholder="Buscar libro..." class="w-full bg-gray-950 border border-gray-800 rounded-xl py-2 pl-8 pr-3 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500 transition">
@@ -415,6 +417,7 @@
                         <iframe id="preview-youtube" referrerpolicy="strict-origin-when-cross-origin" title="Reproductor de YouTube (vista previa)" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>
 
                         <div id="preview-overlay" class="absolute inset-0 bg-black/40 z-20 transition-all duration-300"></div>
+                        <div id="preview-karaoke" class="absolute inset-0 z-40 hidden flex items-center justify-center px-[8%] py-[6%] pointer-events-none"><div id="preview-karaoke-bg" class="absolute inset-0 z-0 pointer-events-none"></div><div id="preview-karaoke-stanza" class="relative z-10 w-full whitespace-pre-line leading-relaxed text-center"></div></div>
                         
                         <img id="preview-logo-standby" class="absolute max-w-[35%] max-h-[50%] object-contain z-30 hidden transition-all" alt="Standby Logo Preview" />
                         <img id="preview-logo-corner" class="absolute max-w-[12%] max-h-[18%] object-contain z-30 hidden transition-all" alt="Corner Logo Preview" />
@@ -439,6 +442,10 @@
                     <button id="btn-standby" type="button" title="Mostrar el logo de la iglesia centrado como pantalla de espera" class="w-full mt-2 bg-amber-950/70 hover:bg-amber-900/80 text-amber-200 border border-amber-800/70 py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
                         <i class="fa-solid fa-church"></i> Pantalla de espera (logo centrado)
                     </button>
+                    <details class="mt-2 rounded-lg border border-gray-800 bg-gray-950/40 px-3 py-2 text-[10px] text-gray-400">
+                        <summary class="cursor-pointer font-bold text-gray-300">Atajos de teclado</summary>
+                        <p class="mt-2 leading-relaxed">↑ / ↓ versículo · ← / → estrofa en Letras · L pantalla de espera con logo · B apagar · C ocultar texto · Esc cerrar vista ampliada</p>
+                    </details>
                 </div>
 
                 <div class="control-panel flex-1 min-h-0 bg-gray-900 border border-gray-800 rounded-2xl flex flex-col overflow-hidden shadow-xl">
@@ -491,15 +498,28 @@
                                 </div>
                                 <div class="flex gap-1.5">
                                     <input type="text" id="video-url-input" placeholder="Ej: https://youtube.com/watch?v=..." class="flex-1 bg-gray-950 border border-gray-800 rounded-xl px-2.5 py-2 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500">
-                                    <button id="btn-load-youtube" class="bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center">
+                                    <button id="btn-load-youtube" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center">
                                         <i class="fa-solid fa-check mr-1"></i> Preparar
                                     </button>
                                 </div>
-                                <div class="rounded-xl border border-amber-800/60 bg-amber-950/30 p-2.5 space-y-2">
+                                <div class="youtube-workflow rounded-xl border border-blue-400/20 bg-gray-950/60 p-2.5 space-y-2">
                                     <p id="youtube-staged-status" class="text-[10px] text-amber-200">Pega un enlace y pulsa Preparar. La proyección actual no cambiará.</p>
-                                    <button id="btn-launch-youtube-projection" type="button" disabled class="w-full disabled:opacity-40 disabled:cursor-not-allowed bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
-                                        <i class="fa-solid fa-display"></i> Enviar video a proyección
+                                    <p class="text-[10px] leading-relaxed text-amber-100/80">YouTube decide cuándo muestra anuncios, también al cargar videos nuevos; separar las ventanas no ofrece un control para quitarlos. Si necesitas reproducción continua sin anuncios, usa un video local que tengas derecho a proyectar.</p>
+                                    <button id="btn-project-youtube-direct" type="button" disabled class="youtube-project-action w-full disabled:opacity-40 disabled:cursor-not-allowed text-white px-3 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+                                        <i class="fa-solid fa-play"></i> Proyectar video en la pantalla externa
                                     </button>
+                                    <button id="btn-launch-youtube-projection" type="button" disabled class="youtube-capture-action w-full disabled:opacity-40 disabled:cursor-not-allowed text-white px-3 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+                                        <i class="fa-solid fa-window-restore"></i><span id="youtube-capture-action-label">Capturar ventana del monitor</span>
+                                    </button>
+                                    <p id="youtube-capture-help" class="text-[10px] leading-relaxed text-gray-400">En escritorio: abre Monitor YouTube y captura esa ventana. En iPad: usa la proyección directa; Safari comparte toda la pantalla y no entrega audio del sistema.</p>
+                                    <button id="btn-send-youtube-monitor-to-projector" type="button" disabled class="hidden w-full disabled:opacity-40 disabled:cursor-not-allowed bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-2.5 rounded-xl text-xs font-bold transition items-center justify-center gap-2">
+                                        <i class="fa-solid fa-tower-broadcast"></i> Enviar al proyector
+                                    </button>
+                                    <button id="btn-stop-youtube-monitor-capture" type="button" class="hidden w-full bg-red-950 hover:bg-red-900 border border-red-800 text-red-200 px-3 py-2.5 rounded-xl text-xs font-bold transition items-center justify-center gap-2">
+                                        <i class="fa-solid fa-stop"></i> Cancelar captura / detener proyección
+                                    </button>
+                                    <p id="youtube-monitor-capture-status" class="text-[10px] text-gray-300" role="status" aria-live="polite">Abre el monitor de YouTube para habilitar la captura.</p>
+                                    <a href="diagnostico-captura.html" target="_blank" rel="noopener" class="inline-flex min-h-10 items-center text-[10px] font-semibold text-blue-300 underline decoration-blue-500/50 underline-offset-2">Diagnóstico técnico de captura</a>
                                 </div>
                                 <div id="youtube-history-panel" class="rounded-xl border border-gray-800 bg-gray-950/60 p-2.5 space-y-2">
                                     <div class="flex items-center justify-between gap-2">
@@ -529,10 +549,10 @@
                                         <div class="flex items-center justify-between text-[10px] text-gray-400 tabular-nums"><span id="youtube-current-time">00:00</span><span id="youtube-duration">00:00</span></div>
                                         <input id="youtube-seek-slider" aria-label="Posición del video de YouTube" type="range" min="0" max="1000" value="0" class="w-full accent-red-500 disabled:opacity-40" disabled>
                                     </div>
-                                    <p class="text-[10px] text-gray-500">La barra y los saltos controlan el video de la pantalla externa. La vista previa no reproduce YouTube.</p>
+                                    <p id="youtube-controls-target" class="text-[10px] text-gray-500">Abre Monitor YouTube o envía un video para habilitar los controles.</p>
                                 </div>
                                 <button id="btn-open-youtube-window" type="button" class="hidden" aria-hidden="true" tabindex="-1">Ventana YouTube independiente desactivada</button>
-                                <p class="text-[10px] text-gray-400">YouTube se mostrará automáticamente en la misma ventana del proyector. Usa estos controles desde el iPad; la proyección no mostrará el panel de control.</p>
+                                <p class="text-[10px] text-gray-400">Los controles siguen el reproductor activo: Monitor YouTube en escritorio o la ventana del proyector en iPad.</p>
                                 <div id="projector-connection-status" class="flex items-center gap-2 text-[10px] text-amber-300" role="status" aria-live="polite">
                                     <span id="projector-connection-dot" class="inline-block w-2 h-2 rounded-full bg-amber-400"></span>
                                     <span id="projector-connection-label">Comprobando conexión con el proyector…</span>
@@ -541,7 +561,6 @@
                             </div>
 
                             <div id="screen-capture-controls-panel" class="bg-slate-900/90 border border-blue-400/20 p-4 md:p-6 rounded-2xl space-y-4 shadow-xl">
-                                <video id="screen-capture-source" muted playsinline autoplay aria-hidden="true" style="position:fixed;width:1px;height:1px;left:-10px;top:-10px;opacity:0;pointer-events:none"></video>
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm font-extrabold text-blue-200 uppercase tracking-wider flex items-center gap-2">
                                         <i class="fa-solid fa-desktop"></i> Captura de Pantalla
@@ -590,12 +609,13 @@
                                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Subir Archivo Local</label>
                                 <label class="w-full bg-gray-900 hover:bg-gray-850 border border-dashed border-gray-700 p-3 rounded-xl flex flex-col items-center justify-center cursor-pointer transition">
                                     <i class="fa-solid fa-file-video text-emerald-400 text-xl mb-1"></i>
-                                    <span class="text-xs font-bold text-gray-200">Seleccionar video (MP4, WEBM)</span>
+                                    <span class="text-xs font-bold text-gray-200">Seleccionar video (MP4 H.264 recomendado)</span>
                                     <input type="file" id="video-file-input" accept="video/*" class="hidden">
                                 </label>
                                 <button id="btn-remove-video" type="button" class="w-full bg-red-950/70 hover:bg-red-900 border border-red-900 text-red-200 p-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
                                     <i class="fa-solid fa-eject"></i> Quitar video y mostrar solo versículos
                                 </button>
+                                <p class="text-[10px] text-gray-500">Para iPad/Safari, usa MP4 con video H.264 y audio AAC. Si el archivo tiene audio pero no imagen, revisa el estado del proyector.</p>
                             </div>
                         </div>
 
@@ -614,7 +634,7 @@ Segunda línea
 
 Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="karaoke-load-manual" class="bg-gray-700 hover:bg-gray-600 rounded-xl px-4 py-2.5 text-sm font-bold">Usar estas letras</button><button id="karaoke-clear" class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-sm">Limpiar</button></div><div class="mt-3 rounded-xl border border-gray-700/80 bg-gray-900/60 p-3"><div class="flex items-center justify-between gap-2 mb-2"><h4 class="text-xs font-bold text-fuchsia-200"><i class="fa-solid fa-hand-pointer mr-1"></i>Proyección rápida</h4><span class="text-[10px] text-gray-500">Toca un bloque para proyectarlo</span></div><div id="karaoke-clickable-stanzas" class="grid grid-cols-1 sm:grid-cols-2 gap-2"><p class="text-xs text-gray-500">Carga una letra para seleccionar sus bloques aquí.</p></div></div></section>
                             <section id="karaoke-design-area" class="karaoke-area rounded-xl border border-gray-700/80 bg-gray-950/60 p-3 space-y-4"><div class="flex items-center justify-between gap-3"><h3 class="text-sm font-bold text-gray-200">Diseño de proyección</h3><label class="text-xs flex items-center gap-2"><input id="karaoke-transparent" type="checkbox" checked class="accent-fuchsia-500"> Fondo transparente</label></div>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3"><label class="text-xs text-gray-400">Tamaño (vw)<input id="karaoke-size" type="number" min="1.5" max="12" step="0.5" value="4.5" class="mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"></label><label class="text-xs text-gray-400">Color texto<input id="karaoke-color" type="color" value="#ffffff" class="mt-1 w-full h-10 bg-gray-900 border border-gray-700 rounded-lg p-1"></label><label class="text-xs text-gray-400">Fuente<select id="karaoke-font" class="mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"><option>Inter</option><option>Montserrat</option><option>Arial</option><option>Georgia</option><option>Roboto Slab</option><option>Playfair Display</option><option>Open Sans</option></select></label><label class="text-xs text-gray-400">Alineación<select id="karaoke-align" class="mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"><option value="center">Centro</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></label></div>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3"><label class="text-xs text-gray-400">Tamaño (vw)<input id="karaoke-size" type="number" min="1.5" max="12" step="0.5" value="4.5" class="mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"></label><label class="text-xs text-gray-400">Color texto<input id="karaoke-color" type="color" value="#ffffff" class="mt-1 w-full h-10 bg-gray-900 border border-gray-700 rounded-lg p-1"></label><label class="text-xs text-gray-400">Fuente<select id="karaoke-font" class="mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"><option>Inter</option><option>Montserrat</option><option>Cinzel</option><option>Playfair Display</option><option>EB Garamond</option><option>Lora</option><option>Merriweather</option><option>Libre Baskerville</option><option>Crimson Text</option><option>Cardo</option><option>Spectral</option><option>PT Serif</option><option>Roboto Slab</option><option>Open Sans</option><option>Source Sans 3</option><option>Fira Sans</option><option>Nunito Sans</option><option>Raleway</option><option>Poppins</option><option>Quicksand</option><option>Josefin Sans</option><option>Ubuntu</option><option>Oswald</option><option>Amatic SC</option><option>Archivo Black</option><option>Arial</option><option>Georgia</option></select></label><label class="text-xs text-gray-400">Alineación<select id="karaoke-align" class="mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"><option value="center">Centro</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></label></div>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-3"><label class="text-xs text-gray-400">Fondo<select id="karaoke-bg-type" class="mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"><option value="color">Color sólido</option><option value="gradient">Degradado</option><option value="image">Imagen de internet</option></select></label><label class="text-xs text-gray-400">Color del fondo<input id="karaoke-bg-color" type="color" value="#000000" class="mt-1 w-full h-10 bg-gray-900 border border-gray-700 rounded-lg p-1"></label><label class="text-xs text-gray-400">Degradado<select id="karaoke-bg-gradient" class="mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"><option value="linear-gradient(135deg,#020617 0%,#1e1b4b 100%)">Azul noche</option><option value="linear-gradient(135deg,#000000 0%,#434343 100%)">Negro y gris</option><option value="linear-gradient(135deg,#052e16 0%,#166534 100%)">Verde</option><option value="linear-gradient(135deg,#450a0a 0%,#991b1b 100%)">Rojo</option><option value="linear-gradient(135deg,#312e81 0%,#7e22ce 100%)">Violeta</option></select></label><label class="text-xs text-gray-400">Opacidad del fondo <span id="karaoke-bg-opacity-label">100%</span><input id="karaoke-bg-opacity" type="range" min="0" max="100" step="5" value="100" class="mt-2 w-full accent-fuchsia-500"></label></div>
                             <label class="flex items-center gap-2 text-xs text-gray-300"><input id="karaoke-shadow" type="checkbox" checked class="accent-fuchsia-500"> Sombreado de las letras</label>
                             <div id="karaoke-image-search-panel" class="hidden space-y-2 border-t border-gray-800 pt-3"><div class="flex gap-2"><input id="karaoke-image-query" class="min-w-0 flex-1 bg-gray-900 border border-gray-700 rounded-lg p-2 text-sm text-white" placeholder="Buscar imagen: cielo, cruz, montañas..."><button id="karaoke-image-search" type="button" class="bg-blue-600 hover:bg-blue-500 rounded-lg px-3 py-2 text-xs font-bold">Buscar</button></div><p id="karaoke-image-status" class="text-[10px] text-gray-500">Usa la clave Pixabay guardada en la pestaña de personalización.</p><div id="karaoke-image-results" class="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-48 overflow-y-auto"></div></div>
@@ -702,7 +722,8 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                                 </div>
                                 <div class="space-y-1.5">
                                     <div class="flex justify-between items-center"><label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Tamaño de la cita</label><span id="val-citation-size" class="text-xs font-extrabold text-amber-300">1.6vw</span></div>
-                                    <input type="range" id="citation-size" min="0.8" max="3.5" step="0.1" value="1.6" class="w-full accent-amber-500">
+                                    <input type="range" id="citation-size" min="0.8" max="10" step="0.1" value="1.6" class="w-full accent-amber-500">
+                                    <p class="text-[10px] leading-relaxed text-gray-500">El tamaño se adapta a la pantalla y permite letras grandes para auditorios.</p>
                                 </div>
                                 <div class="space-y-1.5">
                                     <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Color de la cita</label>
@@ -911,9 +932,9 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             <button type="button" class="workspace-nav-item" data-workspace="capture">
                 <i class="fa-solid fa-display"></i><span>Captura</span><small>Pantalla externa</small>
             </button>
-            <button type="button" class="workspace-nav-item" data-workspace="karaoke"><i class="fa-solid fa-music"></i><span>Karaoke Lyrics</span><small>Letras por estrofas</small></button>
+            <button type="button" class="workspace-nav-item" data-workspace="karaoke"><i class="fa-solid fa-music"></i><span>Letras</span><small>Canciones por estrofas</small></button>
             <button type="button" class="workspace-nav-item" data-workspace="design">
-                <i class="fa-solid fa-sliders"></i><span>Personalización</span><small>Diseño y logo</small>
+                <i class="fa-solid fa-sliders"></i><span>Diseño</span><small>Diseño y logo</small>
             </button>
         </nav>
     </div>
@@ -927,6 +948,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
         <iframe id="local-fs-youtube" referrerpolicy="strict-origin-when-cross-origin" title="Reproductor de YouTube" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>
 
         <div id="local-fs-overlay" class="absolute inset-0 z-20 bg-black/40"></div>
+        <div id="local-fs-karaoke" class="absolute inset-0 z-40 hidden flex items-center justify-center px-[8%] py-[6%] pointer-events-none"><div id="local-fs-karaoke-bg" class="absolute inset-0 z-0 pointer-events-none"></div><div id="local-fs-karaoke-stanza" class="relative z-10 w-full whitespace-pre-line leading-relaxed text-center"></div></div>
 
         <img id="local-fs-logo-standby" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[40%] max-h-[60%] object-contain z-30 hidden" alt="Standby Logo Sim" />
         <img id="local-fs-logo-corner" class="absolute max-w-[12%] max-h-[15%] object-contain z-30 hidden" alt="Corner Logo Sim" />
@@ -952,6 +974,72 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
     </div>
 
     <script>
+        const PROJECTOR_DB_NAME = 'proyector-biblico-local';
+        const RVR1960_BUNDLE_VERSION = 'rvr1960-2026-10-26-verse-cleanup';
+        let projectorDBPromise = null;
+        function openProjectorDB() {
+            if (!('indexedDB' in window)) return Promise.resolve(null);
+            if (projectorDBPromise) return projectorDBPromise;
+            projectorDBPromise = new Promise((resolve, reject) => {
+                const request = indexedDB.open(PROJECTOR_DB_NAME, 1);
+                request.onupgradeneeded = () => {
+                    const db = request.result;
+                    if (!db.objectStoreNames.contains('settings')) db.createObjectStore('settings');
+                    if (!db.objectStoreNames.contains('bibles')) db.createObjectStore('bibles', { keyPath: 'id' });
+                };
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error || new Error('No se pudo abrir el almacenamiento local.'));
+            });
+            return projectorDBPromise;
+        }
+        async function readLocalRecord(storeName, key) {
+            try {
+                const db = await openProjectorDB();
+                if (!db) return null;
+                return await new Promise((resolve, reject) => {
+                    const request = db.transaction(storeName, 'readonly').objectStore(storeName).get(key);
+                    request.onsuccess = () => resolve(request.result ?? null);
+                    request.onerror = () => reject(request.error);
+                });
+            } catch (error) { console.warn('No se pudo leer el almacenamiento local:', error); return null; }
+        }
+        async function writeLocalRecord(storeName, value, key) {
+            const db = await openProjectorDB();
+            if (!db) throw new Error('IndexedDB no está disponible en este navegador.');
+            return new Promise((resolve, reject) => {
+                const store = db.transaction(storeName, 'readwrite').objectStore(storeName);
+                const request = key === undefined ? store.put(value) : store.put(value, key);
+                request.onsuccess = () => resolve(true);
+                request.onerror = () => reject(request.error);
+            });
+        }
+        async function readAllLocalBibles() {
+            try {
+                const savedIndex = await readLocalRecord('settings', 'bible-index');
+                if (Array.isArray(savedIndex)) return savedIndex;
+                const db = await openProjectorDB();
+                if (!db) return [];
+                const records = await new Promise((resolve, reject) => {
+                    const request = db.transaction('bibles', 'readonly').objectStore('bibles').getAll();
+                    request.onsuccess = () => resolve(request.result || []);
+                    request.onerror = () => reject(request.error);
+                });
+                const index = records.map(({ id, name, updatedAt }) => ({ id, name, updatedAt }));
+                if (index.length) await writeLocalRecord('settings', index, 'bible-index');
+                return index;
+            } catch (_) { return []; }
+        }
+        async function storeBibleVersion(record) {
+            await writeLocalRecord('bibles', record);
+            const index = (await readAllLocalBibles()).filter(item => item.id !== record.id);
+            index.push({ id: record.id, name: record.name, updatedAt: record.updatedAt });
+            await writeLocalRecord('settings', index, 'bible-index');
+        }
+        function isAppleTouchDevice() {
+            const platform = String(navigator.platform || '');
+            return /iPad|iPhone|iPod/i.test(platform) || (platform === 'MacIntel' && Number(navigator.maxTouchPoints) > 1);
+        }
+
         // BIBLIOTECA BÍBLICA POR DEFECTO
         let bibleData = {
             "Génesis": {
@@ -994,6 +1082,11 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
         let selectedBook = "Salmos";
         let selectedChapter = "23";
         let selectedVerseIdx = null;
+        let selectedBibleId = 'sample';
+        let selectedBibleName = 'Biblioteca de muestra';
+        let bundledRvrAvailable = false;
+        let savedWorkspace = 'bible';
+        let operatorSaveTimer = 0;
 
         let currentText = "Jehová es mi pastor; nada me faltará.";
         let currentCitation = "Salmos 23:1";
@@ -1028,7 +1121,8 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
         };
 
         let mediaMode = 'none';
-        let karaokeStanzas = []; let karaokeIndex = 0; let karaokeActive = false; let karaokeTitle = '';
+        let karaokeStanzas = []; let karaokeOriginalStanzas = []; let karaokeDivisionMode = 'manual';
+        let karaokeIndex = 0; let karaokeActive = false; let karaokeTitle = '';
         let karaokeStyle = { transparent:true, size:4.5, color:'#ffffff', font:'Inter', align:'center', bgType:'color', bgColor:'#000000', bgGradient:'linear-gradient(135deg,#020617 0%,#1e1b4b 100%)', bgImage:'', bgOpacity:100, shadow:true };
         let activeVideoUrl = '';
         // URL preparada: no altera la proyección hasta pulsar el botón de envío.
@@ -1041,51 +1135,102 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
 
         let cultoList = [];
         let externalWindow = null;
-        let youtubeWindow = null;
         let youtubeSeparateWindowMode = false;
+        let youtubeWindowVideoId = '';
+        let youtubeWindowIsMonitor = false;
+        let youtubeWindowPlayerReady = false;
+        let youtubeWindowHeartbeatTimestamp = 0;
         let broadcastChannel = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('biblical-projector-channel') : null;
+        let localProjectorId = '';
+        const projectorControllerId = (() => {
+            const key = 'biblical_projector_controller_id';
+            try {
+                let id = sessionStorage.getItem(key);
+                if (!id) {
+                    id = 'controller-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+                    sessionStorage.setItem(key, id);
+                }
+                return id;
+            } catch (_) {
+                return 'controller-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+            }
+        })();
 
-        // Sincronización en la nube para comunicar Safari y la app instalada en iPadOS.
-        const FIREBASE_CONFIG = {
-            apiKey: 'AIzaSyAhEPSlcD45NiePlqC8tws4QGkEEeawwRM',
-            authDomain: 'proyector-iglesia.firebaseapp.com',
-            databaseURL: 'https://proyector-iglesia-default-rtdb.firebaseio.com',
-            projectId: 'proyector-iglesia',
-            storageBucket: 'proyector-iglesia.firebasestorage.app',
-            messagingSenderId: '373203685730',
-            appId: '1:373203685730:web:c6ec20d684b6771b9edc3b'
-        };
-        const CLOUD_PROJECTION_PATH = 'rooms/casa-bendiciones/state';
-        const CLOUD_YOUTUBE_COMMAND_PATH = 'rooms/casa-bendiciones/youtubeCommands';
-        const CLOUD_YOUTUBE_STATUS_PATH = 'rooms/casa-bendiciones/youtubeStatus';
         let youtubeCommandCounter = 0;
         let youtubeRemoteStatus = null;
+        let youtubeMonitorRemoteStatus = null;
         let youtubeSeekInProgress = false;
         let youtubeSeekPendingUntil = 0;
-        let cloudDatabase = null;
-        let cloudProjectionRef = null;
-        let cloudAuthReady = false;
-        let latestCloudPayload = null;
-        let cloudWriteTimer = null;
-        let cloudSyncWarningShown = false;
-
-        // Transferencia directa del archivo por WebRTC: el video no se guarda en Firebase.
-        // Firebase solo intercambia la señalización; el contenido viaja entre las dos ventanas.
-        const CLOUD_TRANSFER_PATH = 'rooms/casa-bendiciones/transfer';
-        let videoTransferReadyId = '';
+        // Los videos y su vista espejo viajan por BroadcastChannel local; WebRTC se reserva para captura de pantalla.
         let videoTransferPeer = null;
         let videoTransferChannel = null;
         let videoControlChannel = null;
         let videoMirrorChannel = null;
         let remoteVideoStatus = null;
         let videoSeekInProgress = false;
+        let videoStatusPollTimer = 0;
         let videoTransferSessionId = '';
-        let videoTransferAnswerListener = null;
+        let videoTransferLocalAnswerListener = null;
+        let videoTransferConnectTimeoutId = 0;
         let videoTransferInProgress = false;
-        // Captura de pantalla: conexión WebRTC dedicada; Firebase solo señaliza, nunca transporta video.
+        let localVideoTransferSessionId = '';
+        const localVideoTransferAckWaiters = new Map();
+        let localVideoPreviewTimestamp = 0;
+        // Captura de pantalla: conexión WebRTC dedicada entre las ventanas locales.
         let screenTransferPeer = null;
-        let screenTransferAnswerListener = null;
+        let screenTransferLocalAnswerListener = null;
+        let screenTransferLocalAnswerCandidateListener = null;
         let screenTransferSessionId = '';
+        let screenTransferConnectTimeoutId = 0;
+        let screenTransferDisconnectTimeoutId = 0;
+
+        function clearScreenTransferTimers() {
+            if (screenTransferConnectTimeoutId) clearTimeout(screenTransferConnectTimeoutId);
+            if (screenTransferDisconnectTimeoutId) clearTimeout(screenTransferDisconnectTimeoutId);
+            screenTransferConnectTimeoutId = 0;
+            screenTransferDisconnectTimeoutId = 0;
+        }
+
+        function getScreenCaptureSupportMessage() {
+            if (window.isSecureContext === false) return 'La captura de ventanas requiere HTTPS. Abre la versión segura del proyector.';
+            if (!navigator.mediaDevices || typeof navigator.mediaDevices.getDisplayMedia !== 'function') return 'Este navegador no ofrece captura de pantalla web. Actualiza Safari/iPadOS o usa un navegador compatible.';
+            if (typeof RTCPeerConnection !== 'function' || typeof MediaStream !== 'function') return 'Este navegador no ofrece WebRTC para transmitir la captura al proyector.';
+            return '';
+        }
+
+        function failScreenTransfer(sessionId, statusMessage, toastMessage) {
+            if (screenTransferSessionId !== sessionId) return;
+            clearScreenTransferTimers();
+            stopScreenCapture();
+            setScreenCaptureStatus(statusMessage);
+            if (toastMessage) showToast(toastMessage, 'error');
+        }
+
+        function failYouTubeMonitorTransfer(sessionId, statusMessage, toastMessage) {
+            if (screenCapturePurpose !== 'youtube-monitor') return;
+            failScreenTransfer(sessionId, statusMessage, toastMessage);
+        }
+
+        function pushScreenTransferCandidate(reference, candidate, sessionId) {
+            try {
+                if (!broadcastChannel || !localProjectorId) throw new Error('No hay canal local con el proyector.');
+                broadcastChannel.postMessage({
+                    type: '__screen_capture_candidate',
+                    direction: reference.localDirection,
+                    sessionId,
+                    projectorId: localProjectorId,
+                    candidate,
+                    timestamp: Date.now()
+                });
+            } catch (error) {
+                console.error('No se pudo enviar un candidato ICE de la captura por el canal local:', error);
+                if (screenCapturePurpose === 'youtube-monitor') {
+                    failYouTubeMonitorTransfer(sessionId, 'No se pudo completar la señalización local con el proyector. La proyección anterior sigue activa.', 'No se pudo señalizar la captura; se conservó la proyección anterior.');
+                } else if (screenTransferSessionId === sessionId) {
+                    failScreenTransfer(sessionId, 'No se pudo señalizar la captura. Se restauró el contenido anterior.', 'No se pudo señalizar la captura; se restauró el contenido anterior.');
+                }
+            }
+        }
 
         function waitForIceGathering(pc, timeoutMs = 12000) {
             return new Promise(resolve => {
@@ -1099,8 +1244,10 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
         }
 
         function closeVideoTransferPeer() {
-            try { if (videoTransferAnswerListener && cloudDatabase) cloudDatabase.ref(CLOUD_TRANSFER_PATH + '/answer').off('value', videoTransferAnswerListener); } catch (_) {}
-            videoTransferAnswerListener = null;
+            if (videoTransferConnectTimeoutId) clearTimeout(videoTransferConnectTimeoutId);
+            videoTransferConnectTimeoutId = 0;
+            stopVideoStatusPolling();
+            videoTransferLocalAnswerListener = null;
             try { if (videoTransferChannel) videoTransferChannel.close(); } catch (_) {}
             try { if (videoControlChannel) videoControlChannel.close(); } catch (_) {}
             try { if (videoMirrorChannel) videoMirrorChannel.close(); } catch (_) {}
@@ -1111,19 +1258,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             remoteVideoStatus = null;
             videoTransferPeer = null;
             videoTransferSessionId = '';
-        }
-
-        function setupControllerVideoTransfer() {
-            if (!cloudDatabase) return;
-            cloudDatabase.ref(CLOUD_TRANSFER_PATH + '/projectorReady').on('value', snapshot => {
-                const ready = snapshot.val();
-                const nextId = ready && ready.id ? String(ready.id) : '';
-                if (!nextId || nextId === videoTransferReadyId) return;
-                videoTransferReadyId = nextId;
-                closeVideoTransferPeer();
-                // Si el proyector se recarga durante un video, vuelve a enviarlo sin pedirlo en la pantalla externa.
-                if (activeVideoFile && mediaMode === 'video') setTimeout(() => sendLocalVideoToProjection(activeVideoFile), 350);
-            });
+            refreshVideoControls();
         }
 
         async function waitForDataChannelCapacity(channel, threshold = 512 * 1024) {
@@ -1143,8 +1278,33 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 try { channel.send(JSON.stringify(message)); return true; }
                 catch (error) { console.warn('No se pudo enviar el control multimedia:', error); }
             }
-            // El estado Firebase sigue siendo respaldo para play/pausa; seek requiere el canal directo.
+            // Safari comparte la orden directamente entre las ventanas del mismo origen.
+            if (broadcastChannel && localProjectorId) {
+                try {
+                    broadcastChannel.postMessage({ type: '__local_video_control', projectorId: localProjectorId, command: message });
+                    return true;
+                } catch (error) { console.warn('No se pudo enviar el control multimedia por el canal local:', error); }
+            }
             return false;
+        }
+
+        function stopVideoStatusPolling() {
+            if (videoStatusPollTimer) clearInterval(videoStatusPollTimer);
+            videoStatusPollTimer = 0;
+        }
+
+        function startVideoStatusPolling() {
+            stopVideoStatusPolling();
+            const requestStatus = () => {
+                if (mediaMode !== 'video' || !activeVideoUrl) return;
+                if (remoteVideoStatus && remoteVideoStatus.sourceKey === activeVideoUrl) {
+                    stopVideoStatusPolling();
+                    return;
+                }
+                sendVideoControlCommand('get-status');
+            };
+            requestStatus();
+            videoStatusPollTimer = setInterval(requestStatus, 1000);
         }
 
         function handleRemoteVideoStatusMessage(event) {
@@ -1154,8 +1314,9 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             if (message.type !== 'video-status') return;
             if (message.sourceKey && activeVideoUrl && message.sourceKey !== activeVideoUrl) return;
             // Única autoridad: el video real de proyector.html. La vista previa NO reproduce,
-            // no busca y no recibe órdenes multimedia; solo muestra fotogramas recibidos por WebRTC.
+            // no busca ni recibe órdenes; el estado puede llegar por WebRTC o el canal local.
             remoteVideoStatus = message;
+            if (message.sourceKey && message.sourceKey === activeVideoUrl) stopVideoStatusPolling();
             isVideoPlaying = !!message.playing;
             if (typeof message.loop === 'boolean') videoLoop = message.loop;
             if (Number.isFinite(message.currentTime)) {
@@ -1172,13 +1333,25 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 }
             }
             const status = document.getElementById('video-playback-status');
-            if (status) status.textContent = message.playing ? 'Proyectando · reproduciendo' : (message.ended ? 'Video finalizado' : 'Proyectando · en pausa');
+            const errorCode = Number(message.errorCode) || 0;
+            const readyState = Number(message.readyState);
+            const videoWidth = Number(message.videoWidth);
+            const videoHeight = Number(message.videoHeight);
+            const hasNoDecodedPicture = Number.isFinite(readyState) && readyState >= 2 && Number.isFinite(videoWidth) && videoWidth === 0;
+            const videoFormatProblem = errorCode === 3 || errorCode === 4 || hasNoDecodedPicture;
+            const playbackProblem = videoFormatProblem
+                ? 'Sin fotogramas de video: revisa la pista de imagen/códec'
+                : errorCode ? 'No se pudo leer el archivo de video' : '';
+            const playbackState = (message.playing ? 'Proyectando · reproduciendo' : (message.ended ? 'Video finalizado' : 'Proyectando · en pausa')) + (isBlackout ? ' · pantalla apagada (Apagar activo)' : '');
+            const frameSize = Number.isFinite(videoWidth) && videoWidth > 0 && Number.isFinite(videoHeight) && videoHeight > 0
+                ? `${videoWidth} × ${videoHeight}` : '';
+            if (status) status.textContent = playbackProblem || [playbackState, frameSize].filter(Boolean).join(' · ');
             const icon = document.getElementById('video-play-pause-icon');
             const label = document.getElementById('video-play-pause-label');
             if (icon) icon.className = `fa-solid ${message.playing ? 'fa-pause' : 'fa-play'} mr-1`;
             if (label) label.textContent = message.playing ? 'Pausar' : 'Reproducir';
             const indicator = document.getElementById('video-sync-indicator');
-            if (indicator) indicator.textContent = videoControlChannel && videoControlChannel.readyState === 'open' ? 'Proyector conectado' : 'Sin enlace directo';
+            if (indicator) indicator.textContent = playbackProblem ? 'Revisa el formato del archivo' : (videoControlChannel && videoControlChannel.readyState === 'open' ? 'Proyector conectado por WebRTC' : (isLocalProjectorReady() ? 'Video y controles por canal local' : 'Sin enlace al proyector'));
         }
 
         function seekLocalVideoTo(target) {
@@ -1188,7 +1361,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             if (!Number.isFinite(duration) || duration <= 0) return;
             const clamped = Math.max(0, Math.min(duration, target));
             videoSeekId += 1;
-            // No mover la vista previa ni publicar un segundo seek por Firebase: el proyector manda.
+            // No mover la vista previa ni publicar un segundo seek: el proyector manda.
             const sent = sendVideoControlCommand('seek', { target: clamped, seekId: videoSeekId });
             if (!sent) {
                 showToast('El proyector aún no está conectado. Espera a que indique «Proyector conectado» y vuelve a intentar.', 'warning');
@@ -1197,33 +1370,129 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             refreshVideoControls();
         }
 
-        async function transferVideoFileOverChannel(file, sourceKey) {
-            const channel = videoTransferChannel;
-            if (!channel || channel.readyState !== 'open' || !file) return;
+        function waitForLocalVideoTransferAck(sessionId, ack, timeoutMs = 12000) {
+            const key = `${sessionId}:${ack}`;
+            return new Promise((resolve, reject) => {
+                const waiter = { resolve, reject, timer: 0 };
+                waiter.timer = setTimeout(() => {
+                    if (localVideoTransferAckWaiters.get(key) !== waiter) return;
+                    localVideoTransferAckWaiters.delete(key);
+                    reject(new Error('El proyector no confirmó la recepción del video.'));
+                }, timeoutMs);
+                localVideoTransferAckWaiters.set(key, waiter);
+            });
+        }
+
+        function postLocalVideoTransferMessage(message, ack, timeoutMs = 12000) {
+            if (!broadcastChannel) return Promise.reject(new Error('El navegador no ofrece el canal local entre ventanas.'));
+            const pendingAck = waitForLocalVideoTransferAck(message.sessionId, ack, timeoutMs);
+            try { broadcastChannel.postMessage(message); }
+            catch (error) {
+                const key = `${message.sessionId}:${ack}`;
+                const waiter = localVideoTransferAckWaiters.get(key);
+                if (waiter) { clearTimeout(waiter.timer); localVideoTransferAckWaiters.delete(key); }
+                return Promise.reject(error);
+            }
+            return pendingAck;
+        }
+
+        function handleLocalVideoTransferAck(message) {
+            if (!message || message.projectorId !== localProjectorId || !message.sessionId || !message.ack) return;
+            const key = `${message.sessionId}:${message.ack}`;
+            const waiter = localVideoTransferAckWaiters.get(key);
+            if (!waiter) return;
+            clearTimeout(waiter.timer);
+            localVideoTransferAckWaiters.delete(key);
+            if (message.error) waiter.reject(new Error(message.error));
+            else waiter.resolve(message);
+        }
+
+        function cancelLocalVideoTransfer() {
+            const sessionId = localVideoTransferSessionId;
+            if (!sessionId) return;
+            try {
+                if (broadcastChannel && localProjectorId) broadcastChannel.postMessage({
+                    type: '__local_video_transfer_cancel', sessionId, projectorId: localProjectorId, timestamp: Date.now()
+                });
+            } catch (_) {}
+            localVideoTransferSessionId = '';
+            videoTransferInProgress = false;
+            for (const [key, waiter] of localVideoTransferAckWaiters) {
+                if (!key.startsWith(`${sessionId}:`)) continue;
+                clearTimeout(waiter.timer);
+                localVideoTransferAckWaiters.delete(key);
+                const error = new Error('Se canceló la transferencia porque cambió el video.');
+                error.name = 'AbortError';
+                waiter.reject(error);
+            }
+        }
+
+        function showLocalVideoPreviewFrame(frame, timestamp) {
+            if (mediaMode !== 'video' || typeof frame !== 'string') return;
+            const frameTimestamp = Number(timestamp) || Date.now();
+            if (frameTimestamp <= localVideoPreviewTimestamp) return;
+            localVideoPreviewTimestamp = frameTimestamp;
+            ['preview-video-mirror', 'local-fs-video-mirror'].forEach(id => {
+                const mirror = document.getElementById(id);
+                if (mirror) { if (mirror.src !== frame) mirror.src = frame; mirror.classList.remove('hidden'); }
+            });
+        }
+
+        async function transferVideoFileOverLocalChannel(file, sourceKey) {
+            if (!broadcastChannel || !localProjectorId || !file) throw new Error('No hay una ventana de proyección conectada por el canal local.');
             if (videoTransferInProgress) return;
             videoTransferInProgress = true;
-            const chunkSize = 48 * 1024;
+            const sessionId = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+            localVideoTransferSessionId = sessionId;
+            const projectorId = localProjectorId;
+            const chunkSize = 256 * 1024;
             const totalChunks = Math.ceil(file.size / chunkSize);
             try {
-                channel.send(JSON.stringify({ type: 'video-file-meta', sourceKey, name: file.name || 'video', mime: file.type || 'video/mp4', size: file.size, totalChunks, timestamp: Date.now() }));
-                for (let offset = 0; offset < file.size; offset += chunkSize) {
-                    if (channel.readyState !== 'open') throw new Error('Se interrumpió el canal de video.');
-                    await waitForDataChannelCapacity(channel);
-                    const buffer = await file.slice(offset, Math.min(offset + chunkSize, file.size)).arrayBuffer();
-                    channel.send(buffer);
+                await postLocalVideoTransferMessage({
+                    type: '__local_video_transfer_start', sessionId, projectorId, sourceKey,
+                    name: file.name || 'video', mime: file.type || 'video/mp4',
+                    size: file.size, chunkSize, totalChunks, timestamp: Date.now()
+                }, 'ready');
+                for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+                    if (localVideoTransferSessionId !== sessionId || activeVideoFile !== file || mediaMode !== 'video') {
+                        const error = new Error('Se canceló la transferencia porque cambió el video.');
+                        error.name = 'AbortError';
+                        throw error;
+                    }
+                    const start = chunkIndex * chunkSize;
+                    const buffer = await file.slice(start, Math.min(start + chunkSize, file.size)).arrayBuffer();
+                    const ack = `chunk:${chunkIndex}`;
+                    await postLocalVideoTransferMessage({
+                        type: '__local_video_transfer_chunk', sessionId, projectorId,
+                        chunkIndex, buffer, timestamp: Date.now()
+                    }, ack);
+                    if (chunkIndex === totalChunks - 1 || chunkIndex % 16 === 15) {
+                        const percent = Math.round((chunkIndex + 1) / totalChunks * 100);
+                        const status = document.getElementById('video-playback-status');
+                        if (status) status.textContent = `Enviando video al proyector · ${percent}%`;
+                    }
                 }
-                showToast('Video enviado al proyector; preparando reproducción…', 'success');
+                if (localVideoTransferSessionId === sessionId) showToast('Video recibido por el proyector; preparando reproducción…', 'success');
             } catch (error) {
-                console.error('Transferencia directa del video fallida:', error);
-                showToast('No se pudo transferir el video. Mantén abiertas ambas ventanas y vuelve a cargarlo.', 'error');
-            } finally { videoTransferInProgress = false; }
+                if (error.name !== 'AbortError') {
+                    try { broadcastChannel.postMessage({ type: '__local_video_transfer_cancel', sessionId, projectorId, timestamp: Date.now() }); } catch (_) {}
+                    console.error('Transferencia local del video fallida:', error);
+                    showToast(error.message || 'No se pudo transferir el video. Mantén abiertas ambas ventanas y vuelve a intentar.', 'error');
+                }
+                throw error;
+            } finally {
+                if (localVideoTransferSessionId === sessionId) {
+                    localVideoTransferSessionId = '';
+                    videoTransferInProgress = false;
+                }
+            }
         }
 
         async function sendLocalVideoToProjection(file, attempt = 0) {
             if (!file) return;
-            // La autenticación y el aviso de proyector pueden llegar unos instantes después
-            // de que el usuario elija el archivo. Esperamos automáticamente en vez de perderlo.
-            if (!cloudDatabase || !cloudAuthReady || !videoTransferReadyId) {
+            // El proyector se anuncia por el canal local al abrirse; espera ese latido
+            // para no depender de un servicio remoto.
+            if (!isLocalProjectorKnown()) {
                 if (attempt < 24) {
                     setTimeout(() => {
                         if (activeVideoFile === file && mediaMode === 'video') sendLocalVideoToProjection(file, attempt + 1);
@@ -1233,84 +1502,40 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 showToast('No se encontró la ventana de proyección. Ábrela y vuelve a cargar el video.', 'warning');
                 return;
             }
-            if (videoTransferChannel && videoTransferChannel.readyState === 'open') {
-                await transferVideoFileOverChannel(file, activeVideoUrl);
-                return;
-            }
-            // Si hay una conexión viva en negociación, no crear otra oferta que la sustituya.
-            // Si la anterior falló o se cerró, limpiarla para permitir un nuevo intento.
-            if (videoTransferPeer && videoTransferSessionId && ['new', 'connecting', 'connected'].includes(videoTransferPeer.connectionState)) return;
             closeVideoTransferPeer();
-            const sessionId = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
-            videoTransferSessionId = sessionId;
             try {
-                const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-                videoTransferPeer = pc;
-                const channel = pc.createDataChannel('local-video-transfer', { ordered: true });
-                videoTransferChannel = channel;
-                channel.binaryType = 'arraybuffer';
-                channel.onopen = () => transferVideoFileOverChannel(file, activeVideoUrl);
-                channel.onerror = error => console.error('Canal de transferencia de video:', error);
-                const controlChannel = pc.createDataChannel('video-control', { ordered: true });
-                videoControlChannel = controlChannel;
-                controlChannel.onopen = () => {
-                    const indicator = document.getElementById('video-sync-indicator');
-                    if (indicator) indicator.textContent = 'Proyector conectado';
-                    try { controlChannel.send(JSON.stringify({ type: 'video-control', action: 'get-status', sourceKey: activeVideoUrl })); } catch (_) {}
-                };
-                controlChannel.onmessage = handleRemoteVideoStatusMessage;
-                controlChannel.onerror = error => console.error('Canal de controles multimedia:', error);
-                const mirrorChannel = pc.createDataChannel('preview-mirror', { ordered: false, maxRetransmits: 0 });
-                videoMirrorChannel = mirrorChannel;
-                mirrorChannel.onmessage = event => {
-                    if (typeof event.data !== 'string') return;
-                    let frameMessage;
-                    try { frameMessage = JSON.parse(event.data); } catch (_) { return; }
-                    if (frameMessage.type !== 'preview-frame' || typeof frameMessage.frame !== 'string') return;
-                    if (mediaMode === 'video') {
-                        ['preview-video-mirror', 'local-fs-video-mirror'].forEach(id => {
-                            const mirror = document.getElementById(id);
-                            if (mirror) { if (mirror.src !== frameMessage.frame) mirror.src = frameMessage.frame; mirror.classList.remove('hidden'); }
-                        });
-                    }
-                };
-                mirrorChannel.onerror = error => console.error('Canal de vista espejo:', error);
-                pc.onconnectionstatechange = () => {
-                    if (['failed', 'closed', 'disconnected'].includes(pc.connectionState)) console.warn('Conexión de video:', pc.connectionState);
-                };
-                const answerRef = cloudDatabase.ref(CLOUD_TRANSFER_PATH + '/answer');
-                videoTransferAnswerListener = snapshot => {
-                    const answer = snapshot.val();
-                    if (!answer || answer.sessionId !== sessionId || !answer.sdp || pc.signalingState !== 'have-local-offer') return;
-                    pc.setRemoteDescription({ type: 'answer', sdp: answer.sdp }).catch(error => console.error('No se pudo aceptar la respuesta WebRTC:', error));
-                };
-                answerRef.on('value', videoTransferAnswerListener);
-                const offer = await pc.createOffer();
-                await pc.setLocalDescription(offer);
-                await waitForIceGathering(pc);
-                await cloudDatabase.ref(CLOUD_TRANSFER_PATH + '/offer').set({ sessionId, type: 'offer', sdp: pc.localDescription.sdp, timestamp: Date.now(), projectorId: videoTransferReadyId });
-                showToast('Conectando el video con la pantalla externa…', 'info');
+                startVideoStatusPolling();
+                await transferVideoFileOverLocalChannel(file, activeVideoUrl);
             } catch (error) {
-                console.error('No se pudo iniciar WebRTC para video:', error);
-                showToast('No se pudo conectar el video con la pantalla externa. Revisa las reglas de Firebase.', 'error');
+                if (error.name !== 'AbortError') console.error('No se pudo enviar el video al proyector:', error);
             }
         }
 
         function closeScreenTransferPeer() {
-            try { if (screenTransferAnswerListener && cloudDatabase) cloudDatabase.ref(CLOUD_TRANSFER_PATH + '/screenAnswer').off('value', screenTransferAnswerListener); } catch (_) {}
-            screenTransferAnswerListener = null;
+            clearScreenTransferTimers();
+            const closingSessionId = screenTransferSessionId;
+            if (closingSessionId && broadcastChannel && localProjectorId) {
+                try { broadcastChannel.postMessage({ type: '__screen_capture_stop', sessionId: closingSessionId, projectorId: localProjectorId, timestamp: Date.now() }); } catch (_) {}
+            }
+            screenTransferLocalAnswerListener = null;
+            screenTransferLocalAnswerCandidateListener = null;
             try { if (screenTransferPeer) screenTransferPeer.close(); } catch (_) {}
             screenTransferPeer = null;
             screenTransferSessionId = '';
         }
 
         async function sendScreenStreamToProjector(stream, attempt = 0) {
-            if (!stream || mediaMode !== 'screen') return;
-            if (!cloudDatabase || !cloudAuthReady || !videoTransferReadyId) {
+            if (!stream || window.screenStream !== stream || (screenCapturePurpose !== 'youtube-monitor' && mediaMode !== 'screen')) return;
+            if (!isLocalProjectorKnown()) {
                 if (attempt < 30) { setTimeout(() => sendScreenStreamToProjector(stream, attempt + 1), 400); return; }
-                const status = document.getElementById('screen-capture-status');
-                if (status) status.textContent = 'La captura está activa, pero no se encontró el proyector conectado.';
-                showToast('Abre la ventana del proyector y vuelve a iniciar la captura.', 'warning');
+                if (screenCapturePurpose === 'youtube-monitor' && window.screenStream === stream) {
+                    stopScreenCapture();
+                    setScreenCaptureStatus('No se encontró el proyector conectado. La proyección anterior se mantuvo; vuelve a intentar cuando esté listo.');
+                    showToast('No se encontró el proyector. Se conservó la proyección anterior.', 'error');
+                } else {
+                    setScreenCaptureStatus('La captura está activa, pero no se encontró el proyector conectado.');
+                    showToast('Abre la ventana del proyector y vuelve a iniciar la captura.', 'warning');
+                }
                 return;
             }
             closeScreenTransferPeer();
@@ -1319,6 +1544,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             try {
                 const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
                 screenTransferPeer = pc;
+                const offerCandidateRef = { localDirection: 'offer' };
                 const track = stream.getVideoTracks()[0];
                 if (!track) throw new Error('La captura no contiene una pista de vídeo.');
                 // Transmitir todas las pistas que iPadOS entregue: vídeo y, si está disponible, audio.
@@ -1327,85 +1553,115 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 try {
                     const params = videoSender.getParameters();
                     params.encodings = params.encodings && params.encodings.length ? params.encodings : [{}];
-                    params.encodings[0].maxBitrate = 12000000;
-                    params.degradationPreference = 'maintain-framerate';
+                    params.encodings[0].maxBitrate = screenCapturePurpose === 'youtube-monitor' ? 9000000 : 12000000;
+                    // En captura de pantalla prioriza mantener resolución; Safari
+                    // puede reducir la tasa de cuadros cuando falta ancho de banda.
+                    params.degradationPreference = 'maintain-resolution';
                     await videoSender.setParameters(params);
                 } catch (e) { console.info('Se usarán los parámetros WebRTC predeterminados para la captura.', e); }
+                pc.onicecandidate = event => {
+                    if (!event.candidate || screenTransferSessionId !== sessionId || window.screenStream !== stream) return;
+                    const candidate = typeof event.candidate.toJSON === 'function' ? event.candidate.toJSON() : event.candidate;
+                    pushScreenTransferCandidate(offerCandidateRef, candidate, sessionId);
+                };
+                let answerDescriptionApplied = false;
+                const pendingAnswerCandidates = [];
+                const receiveAnswerCandidate = value => {
+                    if (!value || screenTransferSessionId !== sessionId || window.screenStream !== stream) return;
+                    const candidate = new RTCIceCandidate(value);
+                    if (!answerDescriptionApplied) pendingAnswerCandidates.push(candidate);
+                    else pc.addIceCandidate(candidate).catch(error => console.warn('No se pudo añadir un candidato ICE del proyector:', error));
+                };
+                screenTransferLocalAnswerCandidateListener = message => {
+                    if (!message || message.projectorId !== localProjectorId || message.sessionId !== sessionId || message.direction !== 'answer') return;
+                    receiveAnswerCandidate(message.candidate);
+                };
                 pc.onconnectionstatechange = () => {
-                    const status = document.getElementById('screen-capture-status');
-                    if (pc.connectionState === 'connected' && status && mediaMode === 'screen') {
-                        const hasAudio = stream.getAudioTracks().some(track => track.readyState === 'live');
-                        status.textContent = hasAudio ? 'Vídeo y pista de audio conectados al proyector' : 'Vídeo en tiempo real conectado; audio del sistema no capturado';
+                    if (screenTransferSessionId !== sessionId || window.screenStream !== stream) return;
+                    if (pc.connectionState === 'connected') {
+                        if (screenTransferConnectTimeoutId) clearTimeout(screenTransferConnectTimeoutId);
+                        if (screenTransferDisconnectTimeoutId) clearTimeout(screenTransferDisconnectTimeoutId);
+                        screenTransferConnectTimeoutId = 0;
+                        screenTransferDisconnectTimeoutId = 0;
                     }
-                    if (['failed', 'disconnected'].includes(pc.connectionState) && status && mediaMode === 'screen') status.textContent = 'Conexión de vídeo interrumpida. Mantén ambas ventanas abiertas.';
+                    if (pc.connectionState === 'connected' && screenCapturePurpose === 'youtube-monitor' && mediaMode !== 'screen') {
+                        // Toma la salida en vivo solo después de confirmar que la
+                        // misma ventana del monitor ya llegó al proyector.
+                        mediaMode = 'screen';
+                        syncToProjector();
+                    }
+                    if (pc.connectionState === 'connected' && mediaMode === 'screen') {
+                        const hasAudio = stream.getAudioTracks().some(track => track.readyState === 'live');
+                        setScreenCaptureStatus(screenCapturePurpose === 'youtube-monitor'
+                            ? (hasAudio ? 'Monitor YouTube en vivo con audio; se conserva el reproductor y su posición.' : 'Monitor YouTube en vivo; el navegador no envió pista de audio.')
+                            : (hasAudio ? 'Vídeo y pista de audio conectados al proyector' : 'Vídeo en tiempo real conectado; audio del sistema no capturado'));
+                    }
+                    if (['failed', 'closed'].includes(pc.connectionState)) {
+                        const isYouTubeMonitor = screenCapturePurpose === 'youtube-monitor';
+                        failScreenTransfer(sessionId,
+                            isYouTubeMonitor ? 'No se pudo establecer la conexión. La proyección anterior se restauró; vuelve a intentar cuando haya conexión.' : 'La conexión de captura falló. Se restauró el contenido anterior.',
+                            isYouTubeMonitor ? 'No se conectó el monitor YouTube; se restauró el contenido anterior.' : 'La captura perdió conexión; se restauró el contenido anterior.');
+                    } else if (pc.connectionState === 'disconnected') {
+                        setScreenCaptureStatus(screenCapturePurpose === 'youtube-monitor' ? 'La conexión del monitor se interrumpió. Intentando recuperarla…' : 'La conexión de captura se interrumpió. Intentando recuperarla…');
+                        if (!screenTransferDisconnectTimeoutId) {
+                            screenTransferDisconnectTimeoutId = setTimeout(() => {
+                                if (screenTransferSessionId === sessionId && pc.connectionState !== 'connected') {
+                                    const isYouTubeMonitor = screenCapturePurpose === 'youtube-monitor';
+                                    failScreenTransfer(sessionId,
+                                        isYouTubeMonitor ? 'La conexión no se recuperó. La proyección anterior se restauró; vuelve a capturar el monitor.' : 'La conexión no se recuperó. Se restauró el contenido anterior.',
+                                        isYouTubeMonitor ? 'Se perdió la conexión con Monitor YouTube; se restauró la proyección anterior.' : 'Se perdió la conexión de captura; se restauró el contenido anterior.');
+                                }
+                            }, 8000);
+                        }
+                    }
                 };
-                const answerRef = cloudDatabase.ref(CLOUD_TRANSFER_PATH + '/screenAnswer');
-                screenTransferAnswerListener = snapshot => {
-                    const answer = snapshot.val();
-                    if (!answer || answer.sessionId !== sessionId || !answer.sdp || pc.signalingState !== 'have-local-offer') return;
-                    pc.setRemoteDescription({ type: 'answer', sdp: answer.sdp }).catch(error => console.error('No se pudo aceptar la respuesta WebRTC de pantalla:', error));
+                screenTransferConnectTimeoutId = setTimeout(() => {
+                    if (screenTransferSessionId === sessionId && pc.connectionState !== 'connected') {
+                        const isYouTubeMonitor = screenCapturePurpose === 'youtube-monitor';
+                        failScreenTransfer(sessionId,
+                            isYouTubeMonitor ? 'El proyector no confirmó la conexión a tiempo. Se restauró el contenido anterior; comprueba que la ventana de proyección siga abierta.' : 'La conexión de captura tardó demasiado. Se restauró el contenido anterior.',
+                            isYouTubeMonitor ? 'El monitor no llegó al proyector; se restauró el contenido anterior.' : 'La captura tardó demasiado; se restauró el contenido anterior.');
+                    }
+                }, 30000);
+                let answerApplied = false;
+                const receiveAnswer = answer => {
+                    if (!answer || answerApplied || answer.sessionId !== sessionId || !answer.sdp || pc.signalingState !== 'have-local-offer') return;
+                    if (answer.projectorId !== localProjectorId) return;
+                    answerApplied = true;
+                    pc.setRemoteDescription({ type: 'answer', sdp: answer.sdp }).then(async () => {
+                        answerDescriptionApplied = true;
+                        for (const candidate of pendingAnswerCandidates.splice(0)) await pc.addIceCandidate(candidate);
+                    }).catch(error => {
+                        console.error('No se pudo aceptar la respuesta WebRTC de pantalla:', error);
+                        if (screenTransferSessionId === sessionId) {
+                            if (screenCapturePurpose === 'youtube-monitor') {
+                                failYouTubeMonitorTransfer(sessionId, 'No se pudo completar la conexión WebRTC. La proyección anterior se restauró; vuelve a intentarlo.', 'No se pudo conectar Monitor YouTube; se restauró la proyección anterior.');
+                            } else {
+                                failScreenTransfer(sessionId, 'No se pudo completar WebRTC. Se restauró el contenido anterior.', 'No se pudo conectar la captura; se restauró el contenido anterior.');
+                            }
+                        }
+                    });
                 };
-                answerRef.on('value', screenTransferAnswerListener);
+                screenTransferLocalAnswerListener = receiveAnswer;
                 const offer = await pc.createOffer();
                 await pc.setLocalDescription(offer);
-                await waitForIceGathering(pc);
-                await cloudDatabase.ref(CLOUD_TRANSFER_PATH + '/screenOffer').set({ sessionId, type: 'offer', sdp: pc.localDescription.sdp, timestamp: Date.now(), projectorId: videoTransferReadyId });
-                const status = document.getElementById('screen-capture-status');
-                if (status) status.textContent = 'Conectando vídeo en tiempo real con el proyector…';
+                if (screenTransferSessionId !== sessionId || window.screenStream !== stream || stream.getVideoTracks()[0]?.readyState !== 'live') return;
+                if (!broadcastChannel || !isLocalProjectorKnown()) throw new Error('La ventana del proyector dejó de responder por el canal local.');
+                broadcastChannel.postMessage({ type: '__screen_capture_offer', sessionId, sdp: pc.localDescription.sdp, timestamp: Date.now(), projectorId: localProjectorId });
+                setScreenCaptureStatus('Conectando la captura con la ventana local del proyector…');
             } catch (error) {
                 console.error('No se pudo iniciar la transmisión WebRTC de pantalla:', error);
-                closeScreenTransferPeer();
-                const status = document.getElementById('screen-capture-status');
-                if (status) status.textContent = 'No se pudo conectar el vídeo. Comprueba que el proyector esté abierto.';
-                showToast('No se pudo conectar la captura al proyector.', 'error');
-            }
-        }
-
-        function initializeCloudProjectionSync() {
-            if (!window.firebase || !firebase.database || !firebase.auth) {
-                console.warn('Firebase SDK no está disponible; se mantiene la sincronización local.');
-                return;
-            }
-            try {
-                if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-                cloudDatabase = firebase.database();
-                cloudProjectionRef = cloudDatabase.ref(CLOUD_PROJECTION_PATH);
-                firebase.auth().signInAnonymously().then(() => {
-                    cloudAuthReady = true;
-                    setupControllerVideoTransfer();
-                    cloudDatabase.ref(CLOUD_YOUTUBE_STATUS_PATH).on('value', snapshot => {
-                        const status = snapshot.val();
-                        youtubeRemoteStatus = status && typeof status === 'object' ? status : null;
-                        refreshYouTubeControls();
-                    }, error => console.warn('No se pudo leer el estado de YouTube:', error));
-                    if (latestCloudPayload) writeCloudProjection(latestCloudPayload);
-                    const label = document.getElementById('projector-connection-label');
-                    if (label && !isProjectorConnected() && !isYouTubeWindowConnected()) label.textContent = 'Sincronización en nube lista · abre el proyector';
-                }).catch(error => {
-                    console.error('Firebase Auth: no se pudo iniciar sesión anónima.', error);
-                    if (!cloudSyncWarningShown) {
-                        cloudSyncWarningShown = true;
-                        showToast('Sincronización remota pendiente: revisa que Firebase Authentication anónimo esté habilitado.', 'warning');
-                    }
-                });
-            } catch (error) { console.error('No se pudo iniciar Firebase:', error); }
-        }
-
-        function writeCloudProjection(payload) {
-            if (!cloudAuthReady || !cloudProjectionRef || !payload) return;
-            cloudProjectionRef.set(payload).catch(error => {
-                console.error('No se pudo sincronizar con Firebase:', error);
-                if (!cloudSyncWarningShown) {
-                    cloudSyncWarningShown = true;
-                    showToast('No se pudo sincronizar con la nube. Revisa las reglas de Realtime Database.', 'warning');
+                if (screenTransferSessionId !== sessionId || window.screenStream !== stream) return;
+                if (screenCapturePurpose === 'youtube-monitor') {
+                    stopScreenCapture();
+                    setScreenCaptureStatus('No se pudo conectar el monitor. La proyección anterior se mantuvo; vuelve a intentar cuando haya conexión.');
+                    showToast('No se conectó el monitor YouTube; se conservó el contenido anterior.', 'error');
+                } else {
+                    closeScreenTransferPeer();
+                    setScreenCaptureStatus('No se pudo conectar el vídeo. Comprueba la conexión con el proyector.');
+                    showToast('No se pudo conectar la captura al proyector.', 'error');
                 }
-            });
-        }
-
-        function scheduleCloudProjectionSync(payload) {
-            latestCloudPayload = payload;
-            if (cloudWriteTimer) clearTimeout(cloudWriteTimer);
-            cloudWriteTimer = setTimeout(() => writeCloudProjection(latestCloudPayload), 120);
+            }
         }
 
         let projectorLastHeartbeat = 0;
@@ -1416,8 +1672,119 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             return Date.now() - projectorLastHeartbeat < 9000;
         }
 
+        function isLocalProjectorReady() {
+            return !!(broadcastChannel && localProjectorId && isProjectorConnected());
+        }
+
+        function isLocalProjectorKnown() {
+            return !!(broadcastChannel && localProjectorId && Date.now() - projectorLastHeartbeat < 9000);
+        }
+
         function isYouTubeWindowConnected() {
-            return Date.now() - youtubeWindowLastHeartbeat < 9000;
+            if (youtubeMonitorWindow && youtubeMonitorWindow.closed) return false;
+            // Safari may suspend background tabs and their timers while the operator
+            // switches back from the preview to the console to start the capture.
+            return Date.now() - youtubeWindowLastHeartbeat < 30000;
+        }
+
+        function isYouTubeMonitorReadyForStagedVideo() {
+            const embedUrl = getYouTubeEmbedUrl(stagedYouTubeUrl);
+            if (!embedUrl || !isYouTubeWindowConnected() || !youtubeWindowIsMonitor || !youtubeWindowPlayerReady) return false;
+            try {
+                const expectedId = new URL(embedUrl).pathname.split('/').filter(Boolean).pop();
+                return !!expectedId && youtubeWindowVideoId === expectedId;
+            } catch (_) { return false; }
+        }
+
+        function getYouTubeVideoIdFromUrl(value) {
+            const embedUrl = getYouTubeEmbedUrl(value);
+            if (!embedUrl) return '';
+            try { return new URL(embedUrl).pathname.split('/').filter(Boolean).pop() || ''; }
+            catch (_) { return ''; }
+        }
+
+        function isYouTubeMonitorTargetActive() {
+            if (isYouTubeMonitorReadyForStagedVideo()) return true;
+            // Durante una captura, conserva los controles del mismo monitor aunque
+            // Safari reduzca los heartbeats de la ventana que está compartiendo.
+            return screenCapturePurpose === 'youtube-monitor'
+                && !!window.screenStream
+                && youtubeWindowIsMonitor
+                && youtubeWindowPlayerReady
+                && youtubeWindowVideoId === getYouTubeVideoIdFromUrl(stagedYouTubeUrl);
+        }
+
+        function getYouTubeControlTarget() {
+            if (isYouTubeMonitorTargetActive()) {
+                return { source: 'monitor', videoId: youtubeWindowVideoId, status: youtubeMonitorRemoteStatus };
+            }
+            if (mediaMode === 'youtube') {
+                return {
+                    source: 'projector',
+                    videoId: getYouTubeVideoIdFromUrl(activeVideoUrl) || (youtubeRemoteStatus && youtubeRemoteStatus.videoId) || '',
+                    status: youtubeRemoteStatus
+                };
+            }
+            return null;
+        }
+
+        function updateYouTubeMonitorCaptureUI() {
+            const startButton = document.getElementById('btn-launch-youtube-projection');
+            const sendButton = document.getElementById('btn-send-youtube-monitor-to-projector');
+            const stopButton = document.getElementById('btn-stop-youtube-monitor-capture');
+            const directButton = document.getElementById('btn-project-youtube-direct');
+            const monitorButton = document.getElementById('btn-open-youtube-monitor');
+            const captureHelp = document.getElementById('youtube-capture-help');
+            const status = document.getElementById('youtube-monitor-capture-status');
+            const appleTouch = isAppleTouchDevice();
+            const monitorCaptureActive = screenCapturePurpose === 'youtube-monitor' && !!window.screenStream;
+            const monitorCapturePrepared = monitorCaptureActive && hasLiveScreenCaptureVideo(window.screenStream) && !screenCaptureSending && mediaMode !== 'screen';
+            const busy = screenCapturePending || (!!window.screenStream && !monitorCaptureActive);
+            const captureSupportMessage = getScreenCaptureSupportMessage();
+            if (startButton) {
+                startButton.disabled = busy || monitorCaptureActive || !isYouTubeMonitorReadyForStagedVideo() || !isLocalProjectorReady() || !!captureSupportMessage;
+                startButton.classList.toggle('hidden', monitorCaptureActive || appleTouch);
+            }
+            if (directButton) directButton.disabled = !stagedYouTubeUrl || !isLocalProjectorReady() || monitorCaptureActive;
+            if (monitorButton) {
+                monitorButton.classList.toggle('hidden', appleTouch);
+                monitorButton.disabled = !stagedYouTubeUrl;
+            }
+            if (captureHelp) captureHelp.textContent = appleTouch
+                ? 'En iPad, Safari solo entrega la pantalla completa y no el audio del sistema. Usa “Proyectar video” para cargarlo directamente en la ventana del proyector.'
+                : 'En escritorio: abre Monitor YouTube, reproduce el video y captura esa ventana. La proyección directa está disponible si la captura no funciona.';
+            if (sendButton) {
+                // Una vez capturado el monitor, Safari puede suspender su heartbeat en segundo plano.
+                // La pista de captura viva es la señal fiable para conservar el botón Enviar.
+                sendButton.disabled = !monitorCapturePrepared || !isLocalProjectorKnown();
+                sendButton.classList.toggle('hidden', !monitorCapturePrepared);
+                sendButton.classList.toggle('flex', monitorCapturePrepared);
+            }
+            if (stopButton) {
+                stopButton.classList.toggle('hidden', !monitorCaptureActive);
+                stopButton.classList.toggle('flex', monitorCaptureActive);
+            }
+            if (!status) return;
+            if (monitorCaptureActive && mediaMode === 'screen') status.textContent = screenCaptureStatusMessage || 'Monitor YouTube en vivo. El reproductor conserva su posición.';
+            else if (monitorCaptureActive && screenCaptureSending) status.textContent = screenCaptureStatusMessage || 'Conectando la fuente capturada; la proyección anterior se conserva hasta que el proyector confirme.';
+            else if (monitorCaptureActive && !hasLiveScreenCaptureVideo(window.screenStream)) status.textContent = 'La captura terminó. Pulsa Cancelar captura y vuelve a elegir la ventana del monitor.';
+            else if (monitorCapturePrepared && screenCaptureSurface === 'monitor') status.textContent = screenCaptureStatusMessage || 'Fuente preparada como pantalla completa. Confirma que sea la pantalla dedicada al monitor y pulsa Enviar cuando quieras salir en vivo.';
+            else if (monitorCapturePrepared) status.textContent = screenCaptureStatusMessage || 'Fuente lista. La proyección actual sigue activa; pulsa Enviar al proyector cuando quieras salir en vivo.';
+            else if (screenCapturePending) status.textContent = 'En el selector, elige la ventana o pestaña del monitor; si solo ofrece pantalla completa, comparte una pantalla donde el monitor permanezca visible…';
+            else if (captureSupportMessage) status.textContent = captureSupportMessage;
+            else if (appleTouch && mediaMode === 'youtube' && getYouTubeVideoIdFromUrl(activeVideoUrl)) status.textContent = 'YouTube se está reproduciendo directamente en la ventana local del proyector.';
+            else if (appleTouch && stagedYouTubeUrl && !isLocalProjectorReady()) status.textContent = 'Abre la ventana del proyector; después podrás proyectar el enlace directamente desde Safari.';
+            else if (appleTouch && stagedYouTubeUrl) status.textContent = 'En iPad está lista la proyección directa. No hace falta capturar la pantalla.';
+            else if (!stagedYouTubeUrl) status.textContent = 'Prepara un enlace de YouTube primero.';
+            else if (!isYouTubeWindowConnected()) status.textContent = 'Abre Monitor YouTube y espera a que aparezca «Video listo».';
+            else if (youtubeWindowIsMonitor && youtubeMonitorRemoteStatus && youtubeMonitorRemoteStatus.status === 'api-load-error') status.textContent = 'Monitor YouTube no pudo cargar. Comprueba la conexión a Internet y vuelve a abrirlo.';
+            else if (youtubeWindowIsMonitor && youtubeMonitorRemoteStatus && youtubeMonitorRemoteStatus.status === 'invalid-url') status.textContent = 'El monitor recibió un enlace de YouTube no válido. Prepara el enlace de nuevo.';
+            else if (youtubeWindowIsMonitor && youtubeMonitorRemoteStatus && youtubeMonitorRemoteStatus.status === 'player-error') status.textContent = 'YouTube no permite reproducir este video. Prueba otro enlace.';
+            else if (!youtubeWindowIsMonitor || !youtubeWindowPlayerReady) status.textContent = 'Abre Monitor YouTube y espera a que aparezca «Video listo».';
+            else if (!isYouTubeMonitorReadyForStagedVideo()) status.textContent = 'El monitor tiene otro video. Ábrelo de nuevo desde este enlace preparado.';
+            else if (!isLocalProjectorReady()) status.textContent = 'Esperando conexión local con la ventana del proyector…';
+            else if (youtubeCaptureVideoOnlyFallback) status.textContent = 'Safari no entregó audio de pantalla; la próxima captura intentará transmitir solo el video.';
+            else status.textContent = 'Monitor listo. Reproduce y revisa el video; después elige esa ventana en el selector.';
         }
 
         function updateProjectorConnectionStatus() {
@@ -1427,21 +1794,97 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             const ytConnected = isYouTubeWindowConnected();
             if (dot) dot.className = 'inline-block w-2 h-2 rounded-full ' + ((connected || ytConnected) ? 'bg-emerald-400' : 'bg-amber-400');
             if (label) label.textContent = connected ? 'Proyector bíblico conectado' : (ytConnected ? 'Ventana YouTube interactiva conectada' : 'Ventana de proyección no detectada');
+            updateYouTubeMonitorCaptureUI();
+        }
+
+        function receiveYouTubeWindowHeartbeat(data) {
+            const heartbeatTimestamp = Number(data && data.timestamp) || Date.now();
+            if (heartbeatTimestamp <= youtubeWindowHeartbeatTimestamp) return;
+            youtubeWindowHeartbeatTimestamp = heartbeatTimestamp;
+            youtubeWindowLastHeartbeat = Date.now();
+            youtubeWindowVideoId = typeof data.videoId === 'string' ? data.videoId : '';
+            youtubeWindowIsMonitor = data.monitorMode === true;
+            youtubeWindowPlayerReady = data.playerReady === true;
+            youtubeMonitorRemoteStatus = youtubeWindowIsMonitor ? {
+                videoId: youtubeWindowVideoId,
+                status: typeof data.status === 'string' ? data.status : '',
+                timestamp: heartbeatTimestamp,
+                playerState: Number.isFinite(Number(data.playerState)) ? Number(data.playerState) : -1,
+                currentTime: Number.isFinite(Number(data.currentTime)) ? Number(data.currentTime) : 0,
+                duration: Number.isFinite(Number(data.duration)) ? Number(data.duration) : 0
+            } : null;
+            updateProjectorConnectionStatus();
+            refreshYouTubeControls();
         }
 
         if (broadcastChannel) {
             broadcastChannel.addEventListener('message', event => {
                 const data = event.data;
                 if (!data || typeof data !== 'object') return;
+                if (data.type === '__local_video_transfer_ack') {
+                    handleLocalVideoTransferAck(data);
+                    return;
+                }
+                if (data.type === '__local_video_preview_frame') {
+                    if (data.projectorId === localProjectorId) showLocalVideoPreviewFrame(data.frame, data.timestamp);
+                    return;
+                }
+                if (data.type === '__local_video_status') {
+                    if (!localProjectorId || data.projectorId !== localProjectorId) return;
+                    const statusMessage = { ...data, type: 'video-status' };
+                    delete statusMessage.projectorId;
+                    handleRemoteVideoStatusMessage({ data: JSON.stringify(statusMessage) });
+                    return;
+                }
                 if (data.type === '__projector_heartbeat') {
-                    projectorLastHeartbeat = Date.now();
+                    if (data.controllerId !== projectorControllerId) return;
+                    const nextProjectorId = typeof data.projectorId === 'string' ? data.projectorId : '';
+                    const heartbeatAt = Date.now();
+                    if (localProjectorId && nextProjectorId && nextProjectorId !== localProjectorId && heartbeatAt - projectorLastHeartbeat < 9000) return;
+                    projectorLastHeartbeat = heartbeatAt;
+                    const projectorIdentityChanged = !!(nextProjectorId && nextProjectorId !== localProjectorId);
+                    localProjectorId = nextProjectorId;
+                    if (projectorIdentityChanged) localVideoPreviewTimestamp = 0;
+                    refreshVideoControls();
+                    if (projectorIdentityChanged && activeVideoFile && mediaMode === 'video') {
+                        cancelLocalVideoTransfer();
+                        closeVideoTransferPeer();
+                        setTimeout(() => {
+                            if (activeVideoFile && mediaMode === 'video') sendLocalVideoToProjection(activeVideoFile);
+                        }, 350);
+                    }
+                    if (projectorIdentityChanged && window.screenStream && screenCaptureSending) {
+                        closeScreenTransferPeer();
+                        setTimeout(() => {
+                            if (window.screenStream && screenCaptureSending) sendScreenStreamToProjector(window.screenStream);
+                        }, 350);
+                    }
                     updateProjectorConnectionStatus();
                 }
-                if (data.type === '__youtube_window_heartbeat') {
-                    youtubeWindowLastHeartbeat = Date.now();
-                    updateProjectorConnectionStatus();
+                if (data.type === '__screen_capture_answer') {
+                    if (screenTransferLocalAnswerListener) screenTransferLocalAnswerListener(data);
+                    return;
                 }
+                if (data.type === '__video_transfer_answer') {
+                    if (videoTransferLocalAnswerListener) videoTransferLocalAnswerListener(data);
+                    return;
+                }
+                if (data.type === '__screen_capture_candidate') {
+                    if (data.direction === 'answer' && screenTransferLocalAnswerCandidateListener) screenTransferLocalAnswerCandidateListener(data);
+                    return;
+                }
+                if (data.type === '__screen_capture_offer' || data.type === '__screen_capture_stop' || data.type === '__video_transfer_offer') return;
+                if (data.type === '__youtube_window_heartbeat') receiveYouTubeWindowHeartbeat(data);
                 if (data.type === '__youtube_status') {
+                    youtubeRemoteStatus = {
+                        videoId: typeof data.videoId === 'string' ? data.videoId : '',
+                        status: typeof data.status === 'string' ? data.status : '',
+                        timestamp: Number(data.timestamp) || Date.now(),
+                        playerState: Number.isFinite(Number(data.playerState)) ? Number(data.playerState) : -1,
+                        currentTime: Number.isFinite(Number(data.currentTime)) ? Number(data.currentTime) : 0,
+                        duration: Number.isFinite(Number(data.duration)) ? Number(data.duration) : 0
+                    };
+                    refreshYouTubeControls();
                     const label = document.getElementById('projector-connection-label');
                     if (label && data.status === 'autoplay-blocked') {
                         label.textContent = 'Proyector conectado · YouTube requiere pulsar reproducir';
@@ -1450,15 +1893,27 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 // La respuesta no depende de externalWindow: BroadcastChannel sigue funcionando
                 // cuando Safari separa la pestaña del proyector en otra ventana.
             });
-            try { broadcastChannel.postMessage({ type: '__controller_hello', timestamp: Date.now() }); } catch (_) {}
+            try { broadcastChannel.postMessage({ type: '__controller_hello', controllerId: projectorControllerId, timestamp: Date.now() }); } catch (_) {}
         }
+        window.addEventListener('message', event => {
+            if (event.origin !== location.origin || !event.data || event.data.type !== '__youtube_window_heartbeat') return;
+            if (youtubeMonitorWindow && event.source !== youtubeMonitorWindow) return;
+            receiveYouTubeWindowHeartbeat(event.data);
+        });
         projectorConnectionCheckTimer = setInterval(updateProjectorConnectionStatus, 1500);
         window.addEventListener('focus', () => {
-            try { if (broadcastChannel) broadcastChannel.postMessage({ type: '__controller_hello', timestamp: Date.now() }); } catch (_) {}
+            try { if (broadcastChannel) broadcastChannel.postMessage({ type: '__controller_hello', controllerId: projectorControllerId, timestamp: Date.now() }); } catch (_) {}
             updateProjectorConnectionStatus();
         });
         
         window.screenStream = null;
+        let screenCapturePurpose = 'screen';
+        let screenCapturePreviousMode = 'none';
+        let screenCapturePending = false;
+        let screenCaptureSending = false;
+        let screenCaptureSurface = '';
+        let screenCaptureStatusMessage = 'Captura detenida';
+        let youtubeCaptureVideoOnlyFallback = false;
 
         // BUSCADOR DE IMÁGENES: resultados reales de Pixabay, consultas alternativas
         // y sin imágenes aleatorias que no correspondan con la palabra buscada.
@@ -1700,7 +2155,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 btn.onclick = () => {
                     projectionStyles.bgType = 'image';
                     projectionStyles.bgImage = img.full;
-                    updateBgTypeUI('image', { skipSearch: true });
+                    updateBgTypeUI('image', { skipSearch: true, revealProjection: true });
                     syncToProjector();
                     showToast('Imagen aplicada correctamente', 'success');
                     // No volver a buscar al seleccionar: evita recargas innecesarias.
@@ -1712,7 +2167,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             });
         }
 
-        function saveOperatorState() {
+        function legacySaveOperatorState() {
             const stateToSave = {
                 selectedBook,
                 selectedChapter,
@@ -1729,7 +2184,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             } catch(e) {}
         }
 
-        function loadOperatorState() {
+        function legacyLoadOperatorState() {
             try {
                 const savedStr = localStorage.getItem('biblical_operator_state');
                 if (savedStr) {
@@ -1791,6 +2246,284 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 }
             } catch(e) {}
         }
+
+        function collectOperatorState() {
+            const value = id => document.getElementById(id)?.value ?? '';
+            const checked = id => !!document.getElementById(id)?.checked;
+            return {
+                selectedBibleId, selectedBook, selectedChapter, selectedVerseIdx,
+                currentText, currentCitation, isBlackout, isClearText, isStandby, cultoList,
+                projectionStyles,
+                workspace: document.body.dataset.workspace || savedWorkspace,
+                karaoke: {
+                    track: value('karaoke-track'), artist: value('karaoke-artist'),
+                    manualText: value('karaoke-manual'),
+                    originalStanzas: karaokeOriginalStanzas, stanzas: karaokeStanzas,
+                    index: karaokeIndex, active: karaokeActive, title: karaokeTitle,
+                    divisionMode: value('karaoke-split-mode') || karaokeDivisionMode,
+                    style: karaokeStyle
+                }
+            };
+        }
+
+        function setPersistenceStatus(message, isError = false) {
+            const status = document.getElementById('session-save-status');
+            if (!status) return;
+            status.textContent = message;
+            status.classList.toggle('text-rose-300', isError);
+            status.classList.toggle('text-emerald-300', !isError);
+        }
+
+        function compactOperatorState(state) {
+            const compact = {
+                ...state,
+                projectionStyles: { ...state.projectionStyles },
+                karaoke: { ...state.karaoke, style: { ...(state.karaoke?.style || {}) } }
+            };
+            if (compact.projectionStyles.bgImage?.startsWith('data:')) compact.projectionStyles.bgImage = '';
+            if (compact.projectionStyles.logoUrl?.startsWith('data:')) compact.projectionStyles.logoUrl = '';
+            if (compact.karaoke.style.bgImage?.startsWith('data:')) compact.karaoke.style.bgImage = '';
+            return compact;
+        }
+
+        function saveOperatorState() {
+            const state = collectOperatorState();
+            try {
+                // Las imágenes locales se guardan completas en IndexedDB, fuera del límite bajo de localStorage.
+                localStorage.setItem('biblical_operator_state', JSON.stringify(compactOperatorState(state)));
+            } catch (_) {}
+            setPersistenceStatus('Guardando…');
+            clearTimeout(operatorSaveTimer);
+            operatorSaveTimer = setTimeout(async () => {
+                try {
+                    await writeLocalRecord('settings', collectOperatorState(), 'operator');
+                    setPersistenceStatus('Guardado en este iPad');
+                } catch (error) {
+                    console.warn('No se pudo guardar la sesión en IndexedDB:', error);
+                    setPersistenceStatus('Guardado limitado', true);
+                }
+            }, 180);
+        }
+
+        function normalizeBibleData(parsed) {
+            const isPlainObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+            const cleanVerse = value => String(value).trim().replace(/([,;:.!?])(?=[A-Za-zÁÉÍÓÚÜÑáéíóúüñ])/g, '$1 ');
+            const bookEntries = isPlainObject(parsed) ? Object.entries(parsed).filter(([name]) => !['lang', 'version', 'metadata'].includes(name.toLowerCase())) : [];
+            const valid = bookEntries.length >= 60 && bookEntries.every(([, chapters]) => isPlainObject(chapters)
+                && Object.keys(chapters).length > 0
+                && Object.values(chapters).every(verses => (Array.isArray(verses) && verses.every(verse => typeof verse === 'string'))
+                    || (isPlainObject(verses) && Object.keys(verses).length > 0 && Object.values(verses).every(verse => typeof verse === 'string'))));
+            if (!valid) throw new Error('La Biblia debe contener sus libros, capítulos y versículos en formato JSON.');
+            return Object.fromEntries(bookEntries.map(([book, chapters]) => [book,
+                Object.fromEntries(Object.entries(chapters).map(([chapter, verses]) => [chapter,
+                    Array.isArray(verses) ? verses.map(cleanVerse) : Object.entries(verses)
+                        .sort(([a], [b]) => Number(a) - Number(b))
+                        .map(([, text]) => cleanVerse(text))
+                ]))
+            ]));
+        }
+
+        function bibleVersionDetails(fileName, fixedRvr = false) {
+            const baseName = String(fileName || 'Biblia importada').replace(/\.json$/i, '').replace(/[_-]+/g, ' ').trim();
+            const looksRvr = fixedRvr || /rvr\s*1960|reina[ -]?valera\s*1960/i.test(baseName);
+            const name = looksRvr ? 'Reina-Valera 1960 (RVR1960)' : (/king\s*james/i.test(baseName) ? 'King James en Español' : baseName || 'Biblia importada');
+            const id = looksRvr ? 'rvr1960' : name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'biblia-importada';
+            return { id, name };
+        }
+
+        function updateBibleVersionBadge() {
+            const badge = document.getElementById('bible-version-badge');
+            if (!badge) return;
+            badge.textContent = selectedBibleId === 'sample' ? 'DEMO' : (selectedBibleId === 'rvr1960' ? 'RVR1960' : (/king\s*james/i.test(selectedBibleName) ? 'KJV' : 'LOCAL'));
+            badge.title = selectedBibleName;
+            const status = document.getElementById('bible-version-status');
+            if (status) status.textContent = selectedBibleId === 'sample'
+                ? 'Biblioteca de muestra. Publica biblia.json junto a index.html para cargar la RVR1960 completa.'
+                : (selectedBibleId === 'rvr1960' ? 'Biblia completa cargada · Reina-Valera 1960' : 'Versión guardada en este navegador · ' + selectedBibleName);
+        }
+
+        async function renderBibleVersionOptions() {
+            const select = document.getElementById('bible-version-select');
+            if (!select) return;
+            const records = await readAllLocalBibles();
+            select.innerHTML = '';
+            const hasRvr = bundledRvrAvailable || records.some(record => record.id === 'rvr1960');
+            if (!hasRvr) {
+                const sample = document.createElement('option');
+                sample.value = 'sample'; sample.textContent = 'Biblioteca de muestra'; select.appendChild(sample);
+            }
+            records.sort((a, b) => a.name.localeCompare(b.name, 'es')).forEach(record => {
+                const option = document.createElement('option');
+                option.value = record.id; option.textContent = record.name; select.appendChild(option);
+            });
+            if (bundledRvrAvailable && !records.some(record => record.id === 'rvr1960')) {
+                const option = document.createElement('option'); option.value = 'rvr1960'; option.textContent = 'Reina-Valera 1960 (RVR1960)'; select.appendChild(option);
+            }
+            if (!Array.from(select.options).some(option => option.value === selectedBibleId)) {
+                selectedBibleId = hasRvr ? 'rvr1960' : 'sample';
+                selectedBibleName = hasRvr ? 'Reina-Valera 1960 (RVR1960)' : 'Biblioteca de muestra';
+            }
+            select.value = selectedBibleId;
+            updateBibleVersionBadge();
+        }
+
+        async function loadSelectedBible() {
+            if (selectedBibleId === 'sample') {
+                selectedBibleName = 'Biblioteca de muestra';
+                await renderBibleVersionOptions();
+                return;
+            }
+            const record = await readLocalRecord('bibles', selectedBibleId);
+            if (record && record.data) {
+                bibleData = record.data;
+                selectedBibleName = record.name;
+            } else {
+                selectedBibleId = 'sample';
+                selectedBibleName = 'Biblioteca de muestra';
+            }
+            await renderBibleVersionOptions();
+        }
+
+        async function loadBundledRvr1960() {
+            try {
+                const cached = await readLocalRecord('bibles', 'rvr1960');
+                if (cached && cached.data) {
+                    bundledRvrAvailable = true;
+                    bibleData = cached.data;
+                    if (selectedBibleId === 'sample' || selectedBibleId === 'rvr1960') {
+                        selectedBibleId = 'rvr1960'; selectedBibleName = 'Reina-Valera 1960 (RVR1960)';
+                    }
+                    if (cached.bundleVersion === RVR1960_BUNDLE_VERSION) return true;
+                }
+                const response = await fetch(new URL('biblia.json', window.location.href));
+                if (!response.ok) throw new Error('No se encontró biblia.json junto a index.html.');
+                const data = normalizeBibleData(await response.json());
+                const version = bibleVersionDetails('Reina-Valera 1960', true);
+                bundledRvrAvailable = true;
+                bibleData = data;
+                try { await storeBibleVersion({ ...version, data, bundleVersion: RVR1960_BUNDLE_VERSION, updatedAt: Date.now() }); }
+                catch (storageError) { console.warn('La RVR1960 está disponible en el archivo web, pero no se pudo guardar en este iPad:', storageError); }
+                if (selectedBibleId === 'sample' || selectedBibleId === 'rvr1960') {
+                    selectedBibleId = version.id;
+                    selectedBibleName = version.name;
+                }
+                return true;
+            } catch (error) {
+                console.info('Se usará la Biblia local guardada o la de muestra:', error.message || error);
+                return false;
+            }
+        }
+
+        async function chooseBibleVersion(id) {
+            if (!id || id === selectedBibleId) return;
+            if (id === 'sample') {
+                selectedBibleId = 'sample'; selectedBibleName = 'Biblioteca de muestra'; saveOperatorState();
+                location.reload();
+                return;
+            }
+            const record = await readLocalRecord('bibles', id);
+            if (id === 'rvr1960' && bundledRvrAvailable && !record) {
+                selectedBibleId = 'rvr1960'; selectedBibleName = 'Reina-Valera 1960 (RVR1960)';
+                await renderBibleVersionOptions(); renderBooks(); renderChapters(); renderVerses(); syncToProjector(); return;
+            }
+            if (!record || !record.data) { showToast('No se pudo abrir esa versión bíblica guardada.', 'error'); return; }
+            bibleData = record.data; selectedBibleId = record.id; selectedBibleName = record.name;
+            if (!bibleData[selectedBook] || !bibleData[selectedBook][selectedChapter]) {
+                selectedBook = Object.keys(bibleData)[0];
+                selectedChapter = Object.keys(bibleData[selectedBook] || {})[0] || '1';
+                selectedVerseIdx = null;
+            }
+            const match = /^(.*)\s+(\d+):(\d+)$/.exec(currentCitation || '');
+            if (match && bibleData[match[1]]?.[match[2]]) {
+                selectedBook = match[1]; selectedChapter = match[2]; selectedVerseIdx = Number(match[3]) - 1;
+                currentText = bibleData[selectedBook][selectedChapter][selectedVerseIdx] || currentText;
+            }
+            await renderBibleVersionOptions();
+            renderBooks(); renderChapters(); renderVerses(); syncToProjector();
+            showToast('Versión bíblica cambiada a ' + selectedBibleName, 'success');
+        }
+
+        async function loadOperatorState() {
+            let saved = await readLocalRecord('settings', 'operator');
+            if (!saved) {
+                try { saved = JSON.parse(localStorage.getItem('biblical_operator_state') || 'null'); } catch (_) {}
+            }
+            if (!saved) { await renderBibleVersionOptions(); return; }
+            selectedBibleId = saved.selectedBibleId || 'sample';
+            selectedBook = saved.selectedBook || selectedBook;
+            selectedChapter = saved.selectedChapter || selectedChapter;
+            selectedVerseIdx = saved.selectedVerseIdx !== undefined ? saved.selectedVerseIdx : selectedVerseIdx;
+            currentText = saved.currentText ?? currentText;
+            currentCitation = saved.currentCitation ?? currentCitation;
+            isBlackout = !!saved.isBlackout; isClearText = !!saved.isClearText;
+            isStandby = !!saved.isStandby;
+            if (Array.isArray(saved.cultoList)) cultoList = saved.cultoList;
+            if (saved.projectionStyles) projectionStyles = { ...projectionStyles, ...saved.projectionStyles };
+            if (['bible','local','youtube','capture','karaoke','design'].includes(saved.workspace)) savedWorkspace = saved.workspace;
+
+            const karaoke = saved.karaoke || {};
+            document.getElementById('karaoke-track').value = karaoke.track || '';
+            document.getElementById('karaoke-artist').value = karaoke.artist || '';
+            document.getElementById('karaoke-manual').value = karaoke.manualText || '';
+            karaokeTitle = karaoke.title || '';
+            karaokeOriginalStanzas = Array.isArray(karaoke.originalStanzas) ? karaoke.originalStanzas : String(karaoke.manualText || '').trim().split(/\n\s*\n+/).filter(Boolean);
+            karaokeStanzas = Array.isArray(karaoke.stanzas) ? karaoke.stanzas : karaokeOriginalStanzas.slice();
+            karaokeIndex = Math.max(0, Math.min(Number(karaoke.index) || 0, Math.max(karaokeStanzas.length - 1, 0)));
+            karaokeActive = !!karaoke.active; karaokeDivisionMode = karaoke.divisionMode || 'manual';
+            if (karaoke.style) karaokeStyle = { ...karaokeStyle, ...karaoke.style };
+            document.getElementById('karaoke-split-mode').value = karaokeDivisionMode;
+            document.getElementById('karaoke-transparent').checked = !!karaokeStyle.transparent;
+            document.getElementById('karaoke-size').value = karaokeStyle.size || 4.5;
+            document.getElementById('karaoke-color').value = karaokeStyle.color || '#ffffff';
+            document.getElementById('karaoke-font').value = karaokeStyle.font || 'Inter';
+            document.getElementById('karaoke-align').value = karaokeStyle.align || 'center';
+            document.getElementById('karaoke-bg-type').value = karaokeStyle.bgType || 'color';
+            document.getElementById('karaoke-bg-color').value = karaokeStyle.bgColor || '#000000';
+            document.getElementById('karaoke-bg-gradient').value = karaokeStyle.bgGradient || 'linear-gradient(135deg,#020617 0%,#1e1b4b 100%)';
+            document.getElementById('karaoke-bg-opacity').value = karaokeStyle.bgOpacity ?? 100;
+            document.getElementById('karaoke-shadow').checked = karaokeStyle.shadow !== false;
+
+            document.getElementById('style-font').value = projectionStyles.font;
+            document.getElementById('style-size').value = projectionStyles.size;
+            document.getElementById('val-font-size').innerText = projectionStyles.size + 'vw';
+            document.getElementById('style-overlay-opacity').value = projectionStyles.bgOpacity;
+            document.getElementById('val-overlay-opacity').innerText = projectionStyles.bgOpacity + '%';
+            document.getElementById('style-bgcolor').value = projectionStyles.bgcolor;
+            document.getElementById('style-textcolor').value = projectionStyles.textcolor;
+            projectionStyles.citationSize = String(Math.min(10, Math.max(0.8, Number(projectionStyles.citationSize) || 1.6)));
+            projectionStyles.citationFont = projectionStyles.citationFont || projectionStyles.font || 'Inter';
+            projectionStyles.citationColor = projectionStyles.citationColor || projectionStyles.textcolor || '#ffffff';
+            projectionStyles.citationBold = projectionStyles.citationBold !== false;
+            projectionStyles.citationItalic = !!projectionStyles.citationItalic;
+            projectionStyles.citationShadow = projectionStyles.citationShadow !== false;
+            projectionStyles.citationAlign = projectionStyles.citationAlign || 'center';
+            projectionStyles.citationPosition = projectionStyles.citationPosition || 'bottom-center';
+            document.getElementById('citation-font').value = projectionStyles.citationFont;
+            document.getElementById('citation-size').value = projectionStyles.citationSize;
+            document.getElementById('val-citation-size').innerText = projectionStyles.citationSize + 'vw';
+            document.getElementById('citation-color').value = projectionStyles.citationColor;
+            document.getElementById('citation-bold').checked = projectionStyles.citationBold;
+            document.getElementById('citation-italic').checked = projectionStyles.citationItalic;
+            document.getElementById('citation-shadow').checked = projectionStyles.citationShadow;
+            document.getElementById('citation-position').value = projectionStyles.citationPosition;
+            if (projectionStyles.logoUrl) {
+                document.getElementById('logo-thumbnail-img').src = projectionStyles.logoUrl;
+                document.getElementById('logo-thumbnail-img').classList.remove('hidden');
+                document.getElementById('logo-placeholder-icon').classList.add('hidden');
+                document.getElementById('btn-remove-logo').classList.remove('hidden');
+                document.getElementById('logo-options-box').classList.remove('hidden');
+            }
+            document.getElementById('toggle-logo-corner').checked = projectionStyles.showLogoCorner !== false;
+            if (isBlackout) document.getElementById('btn-blackout').className = 'bg-red-600 hover:bg-red-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-red-950/50';
+            if (isClearText) document.getElementById('btn-cleartext').className = 'bg-amber-600 hover:bg-amber-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-amber-950/50';
+            updateCitationAlignButtons(); updateFormatButtons(); updateBgTypeUI(projectionStyles.bgType); updateLogoPositionUI();
+            await renderBibleVersionOptions();
+        }
+
+        window.addEventListener('pagehide', () => {
+            clearTimeout(operatorSaveTimer);
+            try { void writeLocalRecord('settings', collectOperatorState(), 'operator'); } catch (_) {}
+        });
 
         function updateFormatButtons() {
             const btnBold = document.getElementById('btn-format-bold');
@@ -1873,16 +2606,11 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             } catch (_) { return url; }
         }
 
-        // YouTube: priorizar SIEMPRE el reproductor de la ventana de proyección.
-        // La vista previa se deja congelada/oculta para evitar dos reproductores compitiendo
-        // por audio, decodificación y políticas de reproducción automática en Safari.
+        // Durante la previsualización y la captura OBS-like, los controles se envían
+        // al mismo reproductor del monitor para no crear ni reiniciar otro iframe.
         function sendYouTubeCommand(command, target = null) {
             if (!['playVideo', 'pauseVideo', 'stopVideo', 'seekTo'].includes(command)) return;
             if (command === 'seekTo' && (!Number.isFinite(Number(target)) || Number(target) < 0)) return;
-            if (mediaMode !== 'youtube') {
-                showToast('Carga primero un enlace de YouTube para controlar ese reproductor.', 'warning');
-                return;
-            }
             const timestamp = Date.now();
             const commandData = {
                 command,
@@ -1891,16 +2619,19 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 timestamp
             };
 
-            // Firebase es el canal principal entre Safari y la app instalada.
-            if (cloudAuthReady && cloudDatabase) {
-                cloudDatabase.ref(CLOUD_YOUTUBE_COMMAND_PATH).push(commandData)
-                    .then(() => {
-                        if (command !== 'seekTo') showToast(command === 'playVideo' ? 'Reproducción enviada al proyector.' : (command === 'pauseVideo' ? 'Pausa enviada al proyector.' : 'Orden enviada al proyector.'), 'info');
-                    })
-                    .catch(error => {
-                        console.error('No se pudo enviar el comando de YouTube por Firebase:', error);
-                        showToast('No se pudo enviar la orden a YouTube. Revisa la conexión con Firebase.', 'error');
-                    });
+            const routeToMonitor = isYouTubeMonitorTargetActive();
+            if (routeToMonitor) {
+                const message = { type: '__youtube_monitor_command', ...commandData };
+                try { if (broadcastChannel) broadcastChannel.postMessage(message); } catch (_) {}
+                try { if (youtubeMonitorWindow && !youtubeMonitorWindow.closed) youtubeMonitorWindow.postMessage(message, location.origin); } catch (_) {}
+                const statusLabel = document.getElementById('youtube-playback-status');
+                if (statusLabel && command !== 'seekTo') statusLabel.textContent = command === 'playVideo' ? 'Reproducción enviada al monitor' : 'Pausa enviada al monitor';
+                if (command !== 'seekTo') showToast(command === 'playVideo' ? 'Reproducción enviada al monitor YouTube.' : 'Pausa enviada al monitor YouTube.', 'info');
+                return;
+            }
+
+            if (mediaMode !== 'youtube') {
+                showToast('Abre primero el monitor de YouTube o envía un video a la proyección.', 'warning');
                 return;
             }
 
@@ -1924,20 +2655,32 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             const back = document.getElementById('btn-youtube-back');
             const forward = document.getElementById('btn-youtube-forward');
             const statusLabel = document.getElementById('youtube-playback-status');
+            const targetLabel = document.getElementById('youtube-controls-target');
             const currentLabel = document.getElementById('youtube-current-time');
             const durationLabel = document.getElementById('youtube-duration');
-            const status = youtubeRemoteStatus;
-            const fresh = !!(status && Number.isFinite(Number(status.timestamp)) && Date.now() - Number(status.timestamp) < 8000);
-            const active = mediaMode === 'youtube';
-            const duration = fresh && Number(status.duration) > 0 ? Number(status.duration) : 0;
+            const target = getYouTubeControlTarget();
+            const status = target && target.status;
+            const matchesActiveVideo = !!(target && status && (!target.videoId || !status.videoId || status.videoId === target.videoId));
+            const fresh = !!(status && matchesActiveVideo && Number.isFinite(Number(status.timestamp)) && Date.now() - Number(status.timestamp) < 8000);
+            const active = !!target;
+            const playerState = fresh ? Number(status.playerState) : -1;
+            const playerReadyForControls = [0, 1, 2, 3, 5].includes(playerState);
+            const duration = fresh && playerReadyForControls && Number(status.duration) > 0 ? Number(status.duration) : 0;
             const current = fresh && Number.isFinite(Number(status.currentTime)) ? Math.max(0, Number(status.currentTime)) : 0;
-            const enabled = active && fresh && duration > 0;
+            const enabled = active && fresh && playerReadyForControls && duration > 0;
             if (slider) slider.disabled = !enabled;
             if (back) back.disabled = !enabled;
             if (forward) forward.disabled = !enabled;
+            if (targetLabel) targetLabel.textContent = target
+                ? (target.source === 'monitor' ? 'Destino: Monitor YouTube' : 'Destino: proyector')
+                : 'Abre Monitor YouTube o envía un video para habilitar los controles.';
             if (statusLabel) {
                 if (!active) statusLabel.textContent = 'YouTube inactivo';
                 else if (!fresh) statusLabel.textContent = 'Conectando…';
+                else if (status.status === 'autoplay-blocked') statusLabel.textContent = 'Toca Reproducir en la pantalla';
+                else if (status.status === 'api-load-error') statusLabel.textContent = 'No se pudo conectar con YouTube';
+                else if (status.status === 'invalid-url') statusLabel.textContent = 'El enlace de YouTube no es válido';
+                else if (status.status === 'player-error') statusLabel.textContent = 'YouTube no permite este video';
                 else if (Number(status.playerState) === 1) statusLabel.textContent = 'Reproduciendo';
                 else if (Number(status.playerState) === 2) statusLabel.textContent = 'En pausa';
                 else if (Number(status.playerState) === 0) statusLabel.textContent = 'Finalizado';
@@ -1950,8 +2693,9 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
         }
 
         function getYouTubeVideoDurationStatus() {
-            const status = youtubeRemoteStatus;
-            if (!status || Date.now() - Number(status.timestamp || 0) >= 8000) return null;
+            const target = getYouTubeControlTarget();
+            const status = target && target.status;
+            if (!status || (target.videoId && status.videoId && target.videoId !== status.videoId) || Date.now() - Number(status.timestamp || 0) >= 8000) return null;
             if (!Number.isFinite(Number(status.duration)) || Number(status.duration) <= 0) return null;
             return status;
         }
@@ -1968,7 +2712,8 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
         function refreshVideoControls() {
             const video = document.getElementById('preview-video');
             const hasLocalVideo = mediaMode === 'video' && !!activeVideoUrl;
-            const remote = (videoControlChannel && videoControlChannel.readyState === 'open' && remoteVideoStatus && (!remoteVideoStatus.sourceKey || remoteVideoStatus.sourceKey === activeVideoUrl)) ? remoteVideoStatus : null;
+            const controlRelayAvailable = (videoControlChannel && videoControlChannel.readyState === 'open') || isLocalProjectorReady();
+            const remote = (controlRelayAvailable && remoteVideoStatus && (!remoteVideoStatus.sourceKey || remoteVideoStatus.sourceKey === activeVideoUrl)) ? remoteVideoStatus : null;
             const playButton = document.getElementById('btn-video-play-pause');
             const slider = document.getElementById('video-seek-slider');
             const backButton = document.getElementById('btn-video-back');
@@ -1981,7 +2726,12 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             const current = remote && Number.isFinite(remote.currentTime) ? remote.currentTime : 0;
             const playing = remote ? !!remote.playing : false;
             if (slider) slider.disabled = !hasLocalVideo || duration <= 0;
-            if (status && !remote) status.textContent = hasLocalVideo ? 'Esperando al proyector…' : (mediaMode === 'youtube' ? 'Controla en YouTube' : 'Sin video local');
+            if (status && !remote) {
+                if (!hasLocalVideo) status.textContent = mediaMode === 'youtube' ? 'Controla en YouTube' : 'Sin video local';
+                else if (!isLocalProjectorReady()) status.textContent = 'Ventana de proyección no detectada';
+                else if (!videoControlChannel || videoControlChannel.readyState !== 'open') status.textContent = 'Canal local disponible · consultando el video…';
+                else status.textContent = 'Enlace abierto · esperando el estado del video…';
+            }
             const icon = document.getElementById('video-play-pause-icon');
             const label = document.getElementById('video-play-pause-label');
             if (icon) icon.className = `fa-solid ${playing ? 'fa-pause' : 'fa-play'} mr-1`;
@@ -1992,7 +2742,11 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             if (durationLabel) durationLabel.textContent = formatVideoTime(duration);
             if (slider && duration > 0 && !videoSeekInProgress) slider.value = String(Math.round(current / duration * 1000));
             const indicator = document.getElementById('video-sync-indicator');
-            if (indicator && !remote) indicator.textContent = videoControlChannel && videoControlChannel.readyState === 'open' ? 'Proyector conectado' : 'Conectando proyector…';
+            if (indicator && !remote) {
+                if (videoControlChannel && videoControlChannel.readyState === 'open') indicator.textContent = 'Canal abierto · consultando';
+                else if (isLocalProjectorReady()) indicator.textContent = 'Canal local de respaldo disponible';
+                else indicator.textContent = 'Ventana no detectada';
+            }
         }
 
         function showToast(msg, type = "info") {
@@ -2018,12 +2772,19 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             }, 3000);
         }
 
+        const BIBLE_BOOK_ORDER = ['Génesis','Éxodo','Levítico','Números','Deuteronomio','Josué','Jueces','Rut','1 Samuel','2 Samuel','1 Reyes','2 Reyes','1 Crónicas','2 Crónicas','Esdras','Nehemías','Ester','Job','Salmos','Proverbios','Eclesiastés','Cantares','Isaías','Jeremías','Lamentaciones','Ezequiel','Daniel','Oseas','Joel','Amós','Abdías','Jonás','Miqueas','Nahúm','Habacuc','Sofonías','Hageo','Zacarías','Malaquías','S. Mateo','S. Marcos','S. Lucas','S.Juan','Hechos','Romanos','1 Corintios','2 Corintios','Gálatas','Efesios','Filipenses','Colosenses','1 Tesalonicenses','2 Tesalonicenses','1 Timoteo','2 Timoteo','Tito','Filemón','Hebreos','Santiago','1 Pedro','2 Pedro','1 Juan','2 Juan','3 Juan','Judas','Apocalipsis'];
+        function getBibleBookNames() {
+            const present = Object.keys(bibleData);
+            const canonical = BIBLE_BOOK_ORDER.filter(book => present.includes(book));
+            return canonical.concat(present.filter(book => !canonical.includes(book)).sort((a, b) => a.localeCompare(b, 'es')));
+        }
+
         function renderBooks() {
             const container = document.getElementById('books-container');
             const filter = document.getElementById('search-book').value.toLowerCase().trim();
             container.innerHTML = '';
 
-            const books = Object.keys(bibleData);
+            const books = getBibleBookNames();
             books.forEach(book => {
                 if (filter && !book.toLowerCase().includes(filter)) return;
 
@@ -2135,6 +2896,40 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             showToast(`Proyectando: ${citation}`, "success");
         }
 
+        function moveBibleVerse(delta) {
+            const books = getBibleBookNames();
+            let bookIndex = books.indexOf(selectedBook);
+            if (bookIndex < 0) return false;
+            let chapterNames = Object.keys(bibleData[selectedBook] || {}).sort((a, b) => Number(a) - Number(b));
+            let chapterIndex = chapterNames.indexOf(selectedChapter);
+            let verseIndex = Number.isInteger(selectedVerseIdx) ? selectedVerseIdx : -1;
+            if (verseIndex < 0) {
+                const citation = /^(.*)\s+(\d+):(\d+)$/.exec(currentCitation || '');
+                if (citation && citation[1] === selectedBook && citation[2] === selectedChapter) verseIndex = Number(citation[3]) - 1;
+            }
+            const direction = delta < 0 ? -1 : 1;
+            const verses = bibleData[selectedBook]?.[selectedChapter] || [];
+            let nextVerseIndex = verseIndex + direction;
+            if (nextVerseIndex < 0 || nextVerseIndex >= verses.length) {
+                chapterIndex += direction;
+                if (chapterIndex < 0 || chapterIndex >= chapterNames.length) {
+                    bookIndex += direction;
+                    if (bookIndex < 0 || bookIndex >= books.length) return false;
+                    selectedBook = books[bookIndex];
+                    chapterNames = Object.keys(bibleData[selectedBook] || {}).sort((a, b) => Number(a) - Number(b));
+                    chapterIndex = direction > 0 ? 0 : chapterNames.length - 1;
+                }
+                selectedChapter = chapterNames[chapterIndex];
+                const nextVerses = bibleData[selectedBook]?.[selectedChapter] || [];
+                nextVerseIndex = direction > 0 ? 0 : nextVerses.length - 1;
+            }
+            const nextVerses = bibleData[selectedBook]?.[selectedChapter] || [];
+            if (nextVerseIndex < 0 || !nextVerses[nextVerseIndex]) return false;
+            renderBooks(); renderChapters();
+            projectVerse(nextVerses[nextVerseIndex], `${selectedBook} ${selectedChapter}:${nextVerseIndex + 1}`, nextVerseIndex);
+            return true;
+        }
+
         function addToCultoList(text, citation) {
             cultoList.push({ id: Date.now(), text: text, citation: citation });
             renderCultoList();
@@ -2179,6 +2974,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
         }
 
         function syncToProjector() {
+            if (mediaMode !== 'video') stopVideoStatusPolling();
             const payload = {
                 text: isClearText ? "" : currentText,
                 citation: isClearText ? "" : currentCitation,
@@ -2194,18 +2990,26 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 videoSeekTo: videoSeekTo,
                 videoSeekId: videoSeekId,
                 youtubeSeparateWindow: youtubeSeparateWindowMode,
+                controllerId: projectorControllerId,
                 timestamp: Date.now()
             };
 
             try { if (broadcastChannel) broadcastChannel.postMessage(payload); } catch (e) {}
-            try { localStorage.setItem('biblical_projector_data', JSON.stringify(payload)); } catch (e) {}
+            try {
+                const storagePayload = { ...payload, styles: { ...payload.styles }, karaoke: { ...payload.karaoke, style: { ...payload.karaoke.style } } };
+                if (storagePayload.styles.bgImage?.startsWith('data:')) storagePayload.styles.bgImage = '';
+                if (storagePayload.styles.logoUrl?.startsWith('data:')) storagePayload.styles.logoUrl = '';
+                if (storagePayload.karaoke.style.bgImage?.startsWith('data:')) storagePayload.karaoke.style.bgImage = '';
+                localStorage.setItem('biblical_projector_data', JSON.stringify(storagePayload));
+            } catch (e) {}
             // Canal directo adicional: útil mientras la referencia de la ventana siga disponible.
             try { if (externalWindow && !externalWindow.closed) externalWindow.postMessage(payload, '*'); } catch (e) {}
-            scheduleCloudProjectionSync(payload);
             refreshYouTubeControls();
 
             updateProjectorDOM(document, payload, false);
-            if (externalWindow && !externalWindow.closed) {
+            if (externalWindow && !externalWindow.closed && payload.mediaMode !== 'video') {
+                // El blob: de la consola no existe en la otra ventana. Durante video,
+                // proyector.html conserva su URL local recibida y aplica el estado por canal.
                 try { updateProjectorDOM(externalWindow.document, payload); } catch (e) {}
             }
             updateProjectorDOM(document, payload, true);
@@ -2245,6 +3049,12 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             const youtubeEl = docObj.getElementById(prefix + 'youtube');
             const logoStandbyEl = docObj.getElementById(prefix + 'logo-standby');
             const logoCornerEl = docObj.getElementById(prefix + 'logo-corner');
+            const karaokeBoxEl = docObj.getElementById(prefix + 'karaoke');
+            const karaokeBgEl = docObj.getElementById(prefix + 'karaoke-bg');
+            const karaokeTextEl = docObj.getElementById(prefix + 'karaoke-stanza');
+            const karaoke = data.karaoke || {};
+            const karaokeStyle = karaoke.style || {};
+            const karaokeVisible = !!karaoke.active && !!String(karaoke.stanza || '').trim() && !data.isClearText && !data.isStandby && !data.isBlackout && data.mediaMode !== 'screen';
 
             if (!textEl) return;
 
@@ -2254,6 +3064,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 if (citationEl) citationEl.innerText = '';
                 if (logoStandbyEl) logoStandbyEl.classList.add('hidden');
                 if (logoCornerEl) logoCornerEl.classList.add('hidden');
+                if (karaokeBoxEl) karaokeBoxEl.classList.add('hidden');
                 if (videoEl) videoEl.classList.add('hidden');
                 if (youtubeEl) youtubeEl.classList.add('hidden');
                 return;
@@ -2325,7 +3136,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             }
 
             if (textEl) {
-                textEl.innerText = data.text;
+                textEl.innerText = karaokeVisible ? '' : (data.text || '');
                 textEl.style.fontFamily = `"${data.styles.font}", sans-serif`;
                 textEl.style.fontSize = isLocalFs ? (parseFloat(data.styles.size) * 1.2) + 'vw' : (docObj === document && !isLocalFs ? '12px' : data.styles.size + 'vw');
                 textEl.style.fontWeight = data.styles.isBold ? '800' : '400';
@@ -2339,7 +3150,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             if (citationEl) {
                 const citationFont = data.styles.citationFont || data.styles.font || 'Inter';
                 const citationSize = parseFloat(data.styles.citationSize || '1.6');
-                citationEl.innerText = data.citation;
+                citationEl.innerText = karaokeVisible ? '' : (data.citation || '');
                 citationEl.style.fontFamily = `"${citationFont}", sans-serif`;
                 citationEl.style.fontSize = (docObj === document && !isLocalFs) ? Math.max(7, citationSize * 4.5) + 'px' : (isLocalFs ? (citationSize * 1.2) : citationSize) + 'vw';
                 citationEl.style.fontWeight = (data.styles.citationBold !== undefined ? data.styles.citationBold : true) ? '800' : '400';
@@ -2374,7 +3185,6 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                     backdropEl.style.backgroundImage = 'none';
                 } else if (data.styles.bgType === 'gradient') {
                     backdropEl.style.background = data.styles.gradient;
-                    backdropEl.style.backgroundImage = 'none';
                 } else if (data.styles.bgType === 'image') {
                     backdropEl.style.background = 'none';
                     backdropEl.style.backgroundImage = `url("${data.styles.bgImage}")`;
@@ -2384,10 +3194,13 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             }
 
             if (overlayEl) {
-                overlayEl.style.backgroundColor = `rgba(0, 0, 0, ${data.styles.bgOpacity / 100})`;
+                const backgroundOverlayOpacity = data.styles.bgType === 'image'
+                    ? Math.max(0, Math.min(100, Number(data.styles.bgOpacity) || 0)) / 100
+                    : 0;
+                overlayEl.style.backgroundColor = `rgba(0, 0, 0, ${backgroundOverlayOpacity})`;
             }
 
-            const hasText = data.text.trim().length > 0;
+            const hasText = !karaokeVisible && String(data.text || '').trim().length > 0;
             if (logoStandbyEl) {
                 if (data.isStandby === true && data.styles.logoUrl && data.mediaMode === 'none') {
                     logoStandbyEl.src = data.styles.logoUrl;
@@ -2415,9 +3228,55 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                     logoCornerEl.classList.add('hidden');
                 }
             }
+
+            if (karaokeBoxEl) {
+                if (karaokeVisible && karaokeTextEl) {
+                    karaokeBoxEl.classList.remove('hidden');
+                    karaokeTextEl.textContent = String(karaoke.stanza || '');
+                    karaokeTextEl.style.fontFamily = `"${karaokeStyle.font || 'Inter'}", sans-serif`;
+                    karaokeTextEl.style.fontSize = docObj === document && !isLocalFs
+                        ? Math.max(9, (docObj.getElementById('projector-preview-container')?.clientWidth || 480) * (Number(karaokeStyle.size) || 4.5) / 100) + 'px'
+                        : (Number(karaokeStyle.size) || 4.5) + 'vw';
+                    karaokeTextEl.style.color = karaokeStyle.color || '#ffffff';
+                    karaokeTextEl.style.textAlign = karaokeStyle.align || 'center';
+                    karaokeTextEl.style.fontWeight = '700';
+                    karaokeTextEl.style.textShadow = karaokeStyle.shadow === false ? 'none' : '0 2px 12px rgba(0,0,0,.95), 0 4px 24px rgba(0,0,0,.75)';
+                    karaokeTextEl.style.whiteSpace = 'pre-line';
+                    if (karaokeBgEl) {
+                        const opacity = karaokeStyle.bgOpacity === undefined ? 100 : Number(karaokeStyle.bgOpacity);
+                        karaokeBgEl.style.opacity = String(Math.max(0, Math.min(100, Number.isFinite(opacity) ? opacity : 100)) / 100);
+                        if (karaokeStyle.transparent) {
+                            karaokeBgEl.style.background = 'transparent';
+                            karaokeBgEl.style.backgroundImage = 'none';
+                        } else if (karaokeStyle.bgType === 'image' && karaokeStyle.bgImage) {
+                            karaokeBgEl.style.background = 'none';
+                            karaokeBgEl.style.backgroundImage = `url("${String(karaokeStyle.bgImage).replace(/"/g, '%22')}")`;
+                            karaokeBgEl.style.backgroundSize = 'cover';
+                            karaokeBgEl.style.backgroundPosition = 'center';
+                        } else if (karaokeStyle.bgType === 'gradient') {
+                            karaokeBgEl.style.background = karaokeStyle.bgGradient || 'linear-gradient(135deg,#020617,#1e1b4b)';
+                            karaokeBgEl.style.backgroundImage = 'none';
+                        } else {
+                            karaokeBgEl.style.background = karaokeStyle.bgColor || '#000000';
+                            karaokeBgEl.style.backgroundImage = 'none';
+                        }
+                    }
+                } else {
+                    karaokeBoxEl.classList.add('hidden');
+                }
+            }
+        }
+
+        function clearBlackoutForVisibleContent() {
+            if (!isBlackout) return;
+            isBlackout = false;
+            const blackoutButton = document.getElementById('btn-blackout');
+            if (blackoutButton) blackoutButton.className = 'bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5';
+            saveOperatorState();
         }
 
         function updateBgTypeUI(type, options = {}) {
+            if (options.revealProjection) clearBlackoutForVisibleContent();
             projectionStyles.bgType = type;
             const btnColor = document.getElementById('btn-bg-color');
             const btnGrad = document.getElementById('btn-bg-grad');
@@ -2465,69 +3324,145 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             });
         }
 
-        async function startScreenCapture() {
-            const status = document.getElementById('screen-capture-status');
+        function setScreenCaptureStatus(message) {
+            screenCaptureStatusMessage = message;
+            ['screen-capture-status', 'youtube-monitor-capture-status'].forEach(id => {
+                const status = document.getElementById(id);
+                if (status) status.textContent = message;
+            });
+        }
+
+        async function startScreenCapture(options = {}) {
+            const purpose = options && options.source === 'youtube-monitor' ? 'youtube-monitor' : 'screen';
+            if (window.screenStream || screenCapturePending) {
+                showToast('Ya hay una captura activa o esperando selección.', 'warning');
+                return false;
+            }
+            if (purpose === 'youtube-monitor' && !isYouTubeMonitorReadyForStagedVideo()) {
+                updateYouTubeMonitorCaptureUI();
+                showToast('Abre el monitor del video preparado antes de enviarlo.', 'warning');
+                return false;
+            }
+            if (purpose === 'youtube-monitor' && !isLocalProjectorReady()) {
+                updateYouTubeMonitorCaptureUI();
+                showToast('Abre la ventana de proyección local y espera la conexión antes de capturar.', 'warning');
+                return false;
+            }
+            const captureSupportMessage = getScreenCaptureSupportMessage();
+            if (captureSupportMessage) {
+                setScreenCaptureStatus(captureSupportMessage);
+                showToast(captureSupportMessage, 'error');
+                return false;
+            }
+
+            screenCapturePreviousMode = mediaMode === 'screen' ? 'none' : mediaMode;
+            screenCapturePurpose = purpose;
+            screenCapturePending = true;
+            const requestAudio = purpose === 'youtube-monitor' && !youtubeCaptureVideoOnlyFallback;
+            updateYouTubeMonitorCaptureUI();
             try {
-                if (!navigator.mediaDevices || typeof navigator.mediaDevices.getDisplayMedia !== 'function') {
-                    if (status) status.textContent = 'Este navegador no permite capturar pantalla. Prueba desde Safari actualizado o un navegador compatible.';
-                    showToast("Este navegador no permite capturar pantalla", "error");
-                    return;
-                }
-                // Solicitar captura directamente desde la interacción del usuario.
-                // Pedir hasta 60 FPS, sin solicitar captura de audio del sistema.
-                // Esto permite comprobar si Apple Music mantiene la reproducción mientras se captura solo el vídeo.
+                // La llamada sigue dentro del gesto del operador para que el navegador
+                // pueda mostrar su selector nativo de ventana/pestaña.
                 window.screenStream = await navigator.mediaDevices.getDisplayMedia({
-                    video: { frameRate: { ideal: 60, max: 60 } },
-                    audio: false
+                    // Omitir restricciones de video evita incompatibilidades del
+                    // selector de captura de Safari; WebRTC ajusta luego el bitrate.
+                    video: true,
+                    audio: requestAudio
                 });
-                const sourceVideo = document.getElementById('screen-capture-source');
-                if (!sourceVideo) throw new Error('No se encontró la fuente de captura');
-                sourceVideo.muted = true;
-                sourceVideo.playsInline = true;
-                sourceVideo.srcObject = window.screenStream;
-                await sourceVideo.play();
-                mediaMode = 'screen';
+                screenCapturePending = false;
+                if (purpose === 'youtube-monitor' && !requestAudio) youtubeCaptureVideoOnlyFallback = false;
+                const track = window.screenStream.getVideoTracks()[0];
+                if (!track || track.readyState !== 'live') throw new Error('La captura no entregó una pista de vídeo activa.');
+                if (purpose !== 'youtube-monitor') mediaMode = 'screen';
                 document.getElementById('btn-start-screen-capture').classList.add('hidden');
                 document.getElementById('btn-stop-screen-capture').classList.remove('hidden');
-                const track = window.screenStream.getVideoTracks()[0];
-                if (track) track.onended = stopScreenCapture;
+                track.onended = stopScreenCapture;
                 const hasAudio = window.screenStream.getAudioTracks().length > 0;
-                if (status) status.textContent = hasAudio
-                    ? 'Captura iniciada a hasta 60 FPS; se detectó una pista de audio.'
-                    : 'Vídeo capturado hasta 60 FPS. Audio no capturado: usa la salida normal del iPad para Apple Music.';
-                syncToProjector();
-                // Enviar la pista de vídeo original; no convertirla en imágenes ni subir medios a Firebase.
-                sendScreenStreamToProjector(window.screenStream);
-                showToast("Captura activa; conectando vídeo en tiempo real", "success");
+                if (purpose === 'youtube-monitor' && requestAudio && !hasAudio) youtubeCaptureVideoOnlyFallback = true;
+                const surface = track && typeof track.getSettings === 'function' ? track.getSettings().displaySurface : '';
+                screenCaptureSurface = surface || '';
+                screenCaptureSending = purpose !== 'youtube-monitor';
+                const captureMessage = purpose === 'youtube-monitor'
+                    ? (hasAudio ? 'Fuente capturada con audio. La proyección no ha cambiado; revisa la fuente y pulsa Enviar cuando quieras salir en vivo.' : 'Fuente capturada. La proyección no ha cambiado; revisa la fuente y pulsa Enviar cuando quieras salir en vivo.')
+                    : (hasAudio ? 'Captura iniciada; se detectó una pista de audio.' : 'Video capturado. Audio de pantalla no capturado.');
+                setScreenCaptureStatus(purpose === 'youtube-monitor' && surface === 'monitor'
+                    ? `${captureMessage} El selector eligió una pantalla completa; comprueba que sea la pantalla dedicada al monitor.`
+                    : captureMessage);
+                updateYouTubeMonitorCaptureUI();
+                if (purpose !== 'youtube-monitor') {
+                    syncToProjector();
+                    // Se envía el MediaStream original por WebRTC entre las dos ventanas locales.
+                    sendScreenStreamToProjector(window.screenStream);
+                }
+                showToast(purpose === 'youtube-monitor' ? 'Fuente preparada. La proyección sigue sin cambios hasta que pulses Enviar al proyector.' : 'Captura activa; conectando video en tiempo real.', purpose === 'youtube-monitor' ? 'info' : 'success');
+                return true;
             } catch (err) {
                 console.warn('No se pudo iniciar la captura de pantalla', err);
+                const canceled = err && err.name === 'NotAllowedError';
+                const retryWithoutAudio = purpose === 'youtube-monitor' && requestAudio && !canceled;
+                if (retryWithoutAudio) youtubeCaptureVideoOnlyFallback = true;
                 if (window.screenStream) { window.screenStream.getTracks().forEach(track => track.stop()); window.screenStream = null; }
-                const sourceVideo = document.getElementById('screen-capture-source');
-                if (sourceVideo) { try { sourceVideo.pause(); sourceVideo.srcObject = null; } catch (_) {} }
-                if (status) status.textContent = err && err.name === 'NotAllowedError' ? 'Captura cancelada. Pulsa Iniciar y autoriza compartir una pantalla o ventana.' : 'No se pudo iniciar. El navegador o iPadOS puede no admitir esta captura.';
-                showToast("No se pudo iniciar la captura de pantalla", "error");
+                screenCapturePending = false;
+                screenCapturePurpose = 'screen';
+                screenCapturePreviousMode = 'none';
+                screenCaptureSending = false;
+                screenCaptureSurface = '';
+                setScreenCaptureStatus(retryWithoutAudio
+                    ? 'Safari rechazó la captura de audio. Pulsa de nuevo para intentar compartir el video sin audio.'
+                    : (canceled ? 'Captura cancelada. Elige Monitor YouTube o comparte una pantalla donde siga visible.' : 'No se pudo iniciar. Este navegador o iPadOS puede no admitir la captura seleccionada.'));
+                updateYouTubeMonitorCaptureUI();
+                showToast(retryWithoutAudio ? 'Safari rechazó el audio; puedes reintentar con video solamente.' : (canceled ? 'Captura cancelada o denegada.' : 'No se pudo iniciar la captura de pantalla.'), 'error');
+                return false;
             }
         }
 
         function stopScreenCapture() {
+            if (!window.screenStream && !screenCapturePending) return;
             closeScreenTransferPeer();
             if (window.screenStream) {
                 window.screenStream.getTracks().forEach(track => track.stop());
                 window.screenStream = null;
             }
-            const sourceVideo = document.getElementById('screen-capture-source');
-            if (sourceVideo) { try { sourceVideo.pause(); sourceVideo.srcObject = null; } catch (_) {} }
-            const status = document.getElementById('screen-capture-status');
-            if (status) status.textContent = 'Captura detenida';
+            screenCapturePending = false;
+            mediaMode = screenCapturePreviousMode || 'none';
+            screenCapturePreviousMode = 'none';
+            screenCapturePurpose = 'screen';
+            screenCaptureSending = false;
+            screenCaptureSurface = '';
+            setScreenCaptureStatus('Captura detenida. El proyector volvió al contenido anterior.');
             document.getElementById('btn-start-screen-capture').classList.remove('hidden');
             document.getElementById('btn-stop-screen-capture').classList.add('hidden');
-            mediaMode = 'none';
+            updateYouTubeMonitorCaptureUI();
             syncToProjector();
             showToast("Transmisión de pantalla detenida", "info");
         }
 
+        function projectStagedYouTubeDirectly() {
+            const embedUrl = getYouTubeEmbedUrl(stagedYouTubeUrl);
+            if (!embedUrl) { showToast('Primero prepara un enlace válido de YouTube.', 'warning'); return false; }
+            if (!isLocalProjectorReady()) {
+                showToast('Abre Proyectar (Ventana) y espera a que la ventana se conecte.', 'warning');
+                updateYouTubeMonitorCaptureUI();
+                return false;
+            }
+            if (window.screenStream && screenCapturePurpose === 'youtube-monitor') stopScreenCapture();
+            activeVideoUrl = withYouTubeLoop(embedUrl, videoLoop);
+            mediaMode = 'youtube';
+            isStandby = false;
+            isBlackout = false;
+            isClearText = true;
+            isVideoPlaying = true;
+            youtubeSeparateWindowMode = false;
+            document.getElementById('btn-cleartext').className = 'bg-amber-600 hover:bg-amber-500 text-white py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-amber-950/50';
+            syncToProjector();
+            setTimeout(() => sendYouTubeCommand('playVideo'), 350);
+            setScreenCaptureStatus('YouTube se proyecta directamente en la ventana local. Safari no necesita capturar la pantalla.');
+            showToast('YouTube enviado a la ventana del proyector.', 'success');
+            return true;
+        }
+
         function openInteractiveYouTubeWindow() {
-            showToast('YouTube ahora se proyecta automáticamente en la misma ventana que los versículos. No hace falta abrir otra ventana.', 'info');
+            return projectStagedYouTubeDirectly();
         }
 
         let youtubeMonitorWindow = null;
@@ -2547,23 +3482,82 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             } else {
                 youtubeMonitorWindow = window.open(monitorUrl.href, 'BiblicalYouTubeMonitor', 'width=1000,height=650');
             }
-            if (youtubeMonitorWindow) showToast('Monitor abierto. La proyección principal sigue sin cambios.', 'success');
-            else showToast('Safari bloqueó la ventana. Permite ventanas emergentes para este sitio.', 'error');
+            if (youtubeMonitorWindow) {
+                showToast('Monitor abierto. La proyección principal sigue sin cambios.', 'success');
+                setScreenCaptureStatus('Monitor abierto. Reproduce y revisa el video allí; luego vuelve a esta consola para transmitir esa misma ventana.');
+            } else showToast('Safari bloqueó la ventana. Permite ventanas emergentes para este sitio.', 'error');
+            updateYouTubeMonitorCaptureUI();
+        }
+
+        function startYouTubeMonitorCapture() {
+            if (isAppleTouchDevice()) return projectStagedYouTubeDirectly();
+            if (!isYouTubeMonitorReadyForStagedVideo()) {
+                updateYouTubeMonitorCaptureUI();
+                showToast('Espera a que Monitor YouTube muestre «Video listo» para el enlace preparado.', 'warning');
+                return false;
+            }
+            if (!isLocalProjectorReady()) {
+                updateYouTubeMonitorCaptureUI();
+                showToast('Abre la ventana local del proyector y espera a que se conecte antes de capturar.', 'warning');
+                return false;
+            }
+            // La llamada conserva el gesto del clic necesario para que Safari abra
+            // su selector nativo de pantalla, ventana o pestaña.
+            return startScreenCapture({ source: 'youtube-monitor' });
+        }
+
+        function hasLiveScreenCaptureVideo(stream) {
+            try { return !!stream && stream.getVideoTracks().some(track => track.readyState === 'live'); }
+            catch (_) { return false; }
+        }
+
+        function sendYouTubeMonitorCaptureToProjector() {
+            const stream = window.screenStream;
+            if (screenCapturePurpose !== 'youtube-monitor' || !stream || screenCaptureSending) {
+                showToast('Primero captura la ventana de Monitor YouTube.', 'warning');
+                return false;
+            }
+            if (!hasLiveScreenCaptureVideo(stream)) {
+                setScreenCaptureStatus('La captura de la fuente terminó. Cancélala y vuelve a elegir la ventana del monitor.');
+                updateYouTubeMonitorCaptureUI();
+                showToast('La fuente capturada ya no está activa; no se cambió la proyección.', 'warning');
+                return false;
+            }
+            if (!isLocalProjectorKnown()) {
+                setScreenCaptureStatus('La fuente está preparada, pero la ventana del proyector no está conectada. La proyección actual sigue activa.');
+                updateYouTubeMonitorCaptureUI();
+                showToast('Espera a que se conecte localmente el proyector antes de salir en vivo.', 'warning');
+                return false;
+            }
+            screenCaptureSending = true;
+            setScreenCaptureStatus('Enviando la fuente capturada al proyector. La proyección cambiará al confirmar la conexión…');
+            updateYouTubeMonitorCaptureUI();
+            // La salida es el mismo MediaStream que se capturó del monitor; no se crea otro reproductor.
+            sendScreenStreamToProjector(stream);
+            showToast('Conectando la fuente preparada con el proyector…', 'info');
+            return true;
         }
 
         function toggleExternalProjector() {
             // Si la ventana fue separada manualmente y Safari perdió la referencia,
             // el heartbeat permite evitar abrir una segunda proyección duplicada.
-            if ((!externalWindow || externalWindow.closed) && isProjectorConnected()) {
+            if (!externalWindow && isProjectorConnected()) {
                 showToast('La ventana de proyección ya está abierta. Busca la ventana “Proyección en Vivo” y muévela al monitor externo; no abras otra.', 'info');
                 return;
             }
             if (externalWindow && !externalWindow.closed) {
                 externalWindow.close();
                 externalWindow = null;
+                localProjectorId = '';
+                projectorLastHeartbeat = 0;
                 document.getElementById('ext-win-text').innerText = "Proyectar (Ventana)";
                 showToast("Ventana externa cerrada", "info");
                 return;
+            }
+            if (externalWindow && externalWindow.closed) {
+                externalWindow = null;
+                localProjectorId = '';
+                projectorLastHeartbeat = 0;
             }
 
             // Abrir una página real e independiente alojada junto a index.html.
@@ -2571,6 +3565,9 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             // de forma distinta cuando Safari mueve la ventana a una pantalla externa.
             const projectorUrl = new URL('proyector.html', window.location.href);
             projectorUrl.searchParams.set('projection', '1');
+            projectorUrl.searchParams.set('controller', projectorControllerId);
+            localProjectorId = '';
+            projectorLastHeartbeat = 0;
             externalWindow = window.open(projectorUrl.href, 'BiblicalProjectorWindow', 'width=1280,height=720');
             if (externalWindow) {
                 document.getElementById('ext-win-text').innerText = "Cerrar Ventana";
@@ -2585,14 +3582,6 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
         }
 
         function setupEventListeners() {
-            const installHelp = document.getElementById('install-help-modal');
-            const showInstallHelp = () => { installHelp.classList.remove('hidden'); installHelp.classList.add('flex'); };
-            const hideInstallHelp = () => { installHelp.classList.add('hidden'); installHelp.classList.remove('flex'); };
-            document.getElementById('btn-install-help').onclick = showInstallHelp;
-            document.getElementById('btn-close-install-help').onclick = hideInstallHelp;
-            document.getElementById('btn-close-install-help-bottom').onclick = hideInstallHelp;
-            installHelp.addEventListener('click', event => { if (event.target === installHelp) hideInstallHelp(); });
-
             // Ventana Externa y Simulador
             document.getElementById('btn-toggle-ext-projector').onclick = toggleExternalProjector;
             document.getElementById('btn-open-youtube-monitor').onclick = openYouTubeMonitorWindow;
@@ -2609,56 +3598,36 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 const file = e.target.files[0];
                 if (file) {
                     const reader = new FileReader();
-                    reader.onload = (event) => {
+                    reader.onload = async (event) => {
                         try {
                             const parsed = JSON.parse(event.target.result);
-                            const isPlainObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
-                            // Algunos archivos bíblicos incluyen metadatos, por ejemplo "lang": "SPAN", además de los libros.
-                            const bookEntries = isPlainObject(parsed) ? Object.entries(parsed).filter(([name]) => name.toLowerCase() !== 'lang') : [];
-                            const isValidBible = bookEntries.length > 0
-                                && bookEntries.every(([, chapters]) => isPlainObject(chapters)
-                                    && Object.keys(chapters).length > 0
-                                    && Object.values(chapters).every(verses =>
-                                        (Array.isArray(verses) && verses.every(verse => typeof verse === 'string'))
-                                        || (isPlainObject(verses) && Object.keys(verses).length > 0
-                                            && Object.values(verses).every(verse => typeof verse === 'string'))));
-                            if (isValidBible) {
-                                // Admite biblias con versículos en arreglo y el formato común con claves "1", "2", etc.
-                                // Se normaliza todo a arreglos para que la navegación y la cita funcionen correctamente.
-                                bibleData = Object.fromEntries(bookEntries.map(([book, chapters]) => [
-                                    book,
-                                    Object.fromEntries(Object.entries(chapters).map(([chapter, verses]) => [
-                                        chapter,
-                                        Array.isArray(verses) ? verses : Object.entries(verses)
-                                            .sort(([a], [b]) => {
-                                                const na = Number(a), nb = Number(b);
-                                                return Number.isFinite(na) && Number.isFinite(nb) ? na - nb : a.localeCompare(b, 'es');
-                                            })
-                                            .map(([, text]) => text)
-                                    ]))
-                                ]));
-                                const firstBook = Object.keys(bibleData)[0];
-                                if (firstBook) {
-                                    selectedBook = firstBook;
-                                    selectedChapter = Object.keys(bibleData[firstBook] || {})[0] || "1";
-                                    selectedVerseIdx = null;
-                                    renderBooks();
-                                    renderChapters();
-                                    renderVerses();
-                                    saveOperatorState();
-                                    showToast("Biblia JSON cargada con éxito", "success");
-                                }
+                            const normalized = normalizeBibleData(parsed);
+                            const version = bibleVersionDetails(file.name);
+                            await storeBibleVersion({ ...version, fileName: file.name, data: normalized, updatedAt: Date.now() });
+                            bibleData = normalized; selectedBibleId = version.id; selectedBibleName = version.name;
+                            const cited = /^(.*)\s+(\d+):(\d+)$/.exec(currentCitation || '');
+                            if (cited && bibleData[cited[1]]?.[cited[2]]) {
+                                selectedBook = cited[1]; selectedChapter = cited[2]; selectedVerseIdx = Number(cited[3]) - 1;
+                                currentText = bibleData[selectedBook][selectedChapter][selectedVerseIdx] || currentText;
                             } else {
-                                showToast("Estructura bíblica inválida. Se esperaba libro > capítulo > versículos (arreglo o claves numéricas).", "error");
+                                selectedBook = Object.keys(bibleData)[0];
+                                selectedChapter = Object.keys(bibleData[selectedBook] || {})[0] || '1';
+                                selectedVerseIdx = null;
                             }
+                            await renderBibleVersionOptions();
+                            renderBooks(); renderChapters(); renderVerses(); syncToProjector();
+                            showToast('Biblia guardada en este iPad: ' + version.name, 'success');
                         } catch (err) {
-                            showToast("Formato JSON inválido", "error");
+                            console.error('No se pudo guardar la Biblia JSON:', err);
+                            showToast(err.message || 'No se pudo guardar la Biblia en este navegador.', 'error');
                         }
                     };
                     reader.readAsText(file);
                     e.target.value = '';
                 }
             };
+
+            document.getElementById('bible-version-select').addEventListener('change', event => chooseBibleVersion(event.target.value));
 
             document.getElementById('search-book').oninput = renderBooks;
             document.getElementById('btn-prev-chapter').onclick = () => {
@@ -2698,9 +3667,6 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             };
             document.getElementById('btn-standby').onclick = () => {
                 // Pantalla de espera: fondo + logo centrado, sin texto, cita ni medios.
-                currentText = "";
-                currentCitation = "";
-                selectedVerseIdx = null;
                 isBlackout = false;
                 isClearText = true;
                 isStandby = true;
@@ -2718,7 +3684,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 showToast('Pantalla de espera activada', 'success');
             };
             document.getElementById('btn-clear-projection').onclick = () => {
-                currentText = ""; currentCitation = ""; selectedVerseIdx = null; renderVerses(); syncToProjector(); showToast("Proyección limpiada", "info");
+                currentText = ""; currentCitation = ""; isStandby = false; isClearText = false; renderVerses(); syncToProjector(); showToast("Proyección limpiada", "info");
             };
 
             // Navegación estética principal: los controles originales conservan sus IDs y lógica.
@@ -2738,9 +3704,10 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                     const panel = document.getElementById('workspace-control');
                     if (panel) panel.scrollTop = 0;
                 }
+                saveOperatorState();
             }
             workspaceNavItems.forEach(item => item.addEventListener('click', () => activateWorkspace(item.dataset.workspace)));
-            activateWorkspace('bible');
+            activateWorkspace(savedWorkspace);
 
             // Navegación de Pestañas
             const tabElements = {
@@ -2801,7 +3768,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             youtubeSeekSlider.addEventListener('change', () => {
                 const remote = getYouTubeVideoDurationStatus();
                 youtubeSeekInProgress = false;
-                if (!remote || mediaMode !== 'youtube') { refreshYouTubeControls(); return; }
+                if (!remote) { refreshYouTubeControls(); return; }
                 const target = Math.max(0, Math.min(Number(remote.duration), Number(youtubeSeekSlider.value) / 1000 * Number(remote.duration)));
                 youtubeSeekPendingUntil = Date.now() + 1800;
                 sendYouTubeCommand('seekTo', target);
@@ -2850,47 +3817,28 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                     rememberYouTubeUrl(url);
                     const launchButton = document.getElementById('btn-launch-youtube-projection');
                     const stagedStatus = document.getElementById('youtube-staged-status');
-                    if (launchButton) launchButton.disabled = false;
+                    if (launchButton) launchButton.disabled = true;
                     const monitorButton = document.getElementById('btn-open-youtube-monitor');
                     if (monitorButton) monitorButton.disabled = false;
-                    if (stagedStatus) stagedStatus.textContent = 'Video preparado. La proyección actual sigue sin cambios. Abre «Monitor YouTube» para revisar el video y, cuando estés listo, envíalo a proyección.';
+                    if (stagedStatus) stagedStatus.textContent = isAppleTouchDevice()
+                        ? 'Enlace preparado. En iPad, pulsa «Proyectar video» para enviarlo directamente a la ventana del proyector.'
+                        : 'Enlace preparado sin cambiar la proyección. Abre «Monitor YouTube», revisa el video y elige cómo enviarlo.';
+                    updateYouTubeMonitorCaptureUI();
                     showToast('Video preparado sin cambiar la proyección actual.', 'success');
                 } else {
+                    stagedYouTubeUrl = '';
                     const monitorButton = document.getElementById('btn-open-youtube-monitor');
                     if (monitorButton) monitorButton.disabled = true;
+                    updateYouTubeMonitorCaptureUI();
                     showToast("Enlace de YouTube no válido", "error");
                 }
             };
-            document.getElementById('btn-launch-youtube-projection').onclick = () => {
-                if (!stagedYouTubeUrl) {
-                    showToast('Primero prepara un enlace válido de YouTube.', 'warning');
-                    return;
-                }
-                const embedUrl = getYouTubeEmbedUrl(stagedYouTubeUrl);
-                if (!embedUrl) {
-                    stagedYouTubeUrl = '';
-                    document.getElementById('btn-launch-youtube-projection').disabled = true;
-                    showToast('El enlace preparado ya no es válido. Vuelve a prepararlo.', 'error');
-                    return;
-                }
-                videoLoop = document.getElementById('video-loop-toggle').checked;
-                activeVideoUrl = withYouTubeLoop(embedUrl, videoLoop);
-                mediaMode = 'youtube';
-                youtubeSeparateWindowMode = false;
-                isVideoPlaying = false;
-                syncToProjector();
-                const stagedStatus = document.getElementById('youtube-staged-status');
-                if (stagedStatus) stagedStatus.textContent = 'Video enviado a la proyección. Puedes preparar otro enlace sin cambiar lo que se proyecta hasta volver a enviarlo.';
-                if (location.protocol === 'file:') {
-                    showToast('Abre la aplicación desde GitHub Pages (HTTPS) para proyectar YouTube.', 'warning');
-                } else {
-                    showToast('Video enviado a la proyección. Pulsa «Reproducir YouTube» cuando corresponda.', 'success');
-                }
-            };
+            document.getElementById('btn-launch-youtube-projection').onclick = startYouTubeMonitorCapture;
+            document.getElementById('btn-project-youtube-direct').onclick = projectStagedYouTubeDirectly;
+            document.getElementById('btn-send-youtube-monitor-to-projector').onclick = sendYouTubeMonitorCaptureToProjector;
+            document.getElementById('btn-stop-youtube-monitor-capture').onclick = stopScreenCapture;
             // Karaoke Lyrics: búsqueda de letras y proyección por estrofas.
             const karaokeStatus = document.getElementById('karaoke-status');
-            let karaokeOriginalStanzas = [];
-            let karaokeDivisionMode = 'manual';
             function karaokeSplit(text) { return String(text || '').replace(/\r/g,'').trim().split(/\n\s*\n+/).map(x=>x.trim()).filter(Boolean); }
             function karaokeDivideStanzas(stanzas, mode) {
                 const output = [];
@@ -2928,6 +3876,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 karaokeIndex = keepPosition && karaokeStanzas.length ? Math.min(previousIndex, karaokeStanzas.length - 1) : 0;
                 karaokeRefreshNav();
                 if (karaokeActive && karaokeStanzas.length) syncToProjector();
+                else saveOperatorState();
             }
             const KARAOKE_HISTORY_KEY = 'proyector_karaoke_history_v1';
             function karaokeGetHistory() { try { const data = JSON.parse(localStorage.getItem(KARAOKE_HISTORY_KEY) || '[]'); return Array.isArray(data) ? data : []; } catch (_) { return []; } }
@@ -3025,6 +3974,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             ['karaoke-bg-type','karaoke-bg-color','karaoke-bg-gradient','karaoke-bg-opacity'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{document.getElementById('karaoke-transparent').checked=false;karaokeApplyStyle();}));
             document.getElementById('karaoke-image-search').addEventListener('click',karaokeSearchImages);
             document.getElementById('karaoke-image-query').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();karaokeSearchImages();}});
+            ['karaoke-track','karaoke-artist','karaoke-manual'].forEach(id => document.getElementById(id).addEventListener('input', saveOperatorState));
             karaokeApplyStyle();
             karaokeRefreshNav();
             karaokeRenderHistory();
@@ -3033,11 +3983,15 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             document.getElementById('video-file-input').onchange = (e) => {
                 const file = e.target.files[0];
                 if (file) {
+                    cancelLocalVideoTransfer();
+                    clearBlackoutForVisibleContent();
+                    isStandby = false;
                     activeVideoFile = file;
                     remoteVideoStatus = null;
                     if (activeVideoUrl && activeVideoUrl.startsWith('blob:')) URL.revokeObjectURL(activeVideoUrl);
                     activeVideoUrl = URL.createObjectURL(file);
                     mediaMode = 'video';
+                    startVideoStatusPolling();
                     isVideoPlaying = true;
                     videoSeekTo = 0;
                     // No reproducción local en el panel: el único reproductor real es el del proyector.
@@ -3046,20 +4000,21 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                     refreshVideoControls();
                     syncToProjector();
                     showToast("Video local cargado; enviándolo al proyector…", "success");
-                    // CRÍTICO: Firebase sincroniza el estado, pero el archivo blob: no se puede
-                    // abrir en la otra app. Transferimos el archivo binario por WebRTC explícitamente.
+                    // El URL blob: no existe en la otra ventana: transferimos el archivo por WebRTC.
                     sendLocalVideoToProjection(file);
                 }
             };
 
             const controlVideo = document.getElementById('preview-video');
             document.getElementById('btn-remove-video').onclick = () => {
+                cancelLocalVideoTransfer();
                 if (mediaMode === 'screen') stopScreenCapture();
                 if (activeVideoUrl && activeVideoUrl.startsWith('blob:')) URL.revokeObjectURL(activeVideoUrl);
                 activeVideoUrl = '';
                 activeVideoFile = null;
                 remoteVideoStatus = null;
                 mediaMode = 'none';
+                stopVideoStatusPolling();
                 isVideoPlaying = false;
                 videoSeekTo = null;
                 try { controlVideo.pause(); controlVideo.removeAttribute('src'); controlVideo.srcObject = null; controlVideo.load(); } catch (_) {}
@@ -3072,8 +4027,8 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             };
             document.getElementById('btn-video-play-pause').onclick = () => {
                 if (mediaMode !== 'video' || !activeVideoUrl) return;
-                // El botón nunca controla directamente la copia de vista previa ni usa Firebase
-                // para reproducir: envía una única orden al reproductor proyectado.
+                // El botón nunca controla directamente la copia de vista previa: envía
+                // una orden al reproductor proyectado.
                 const remotePlaying = remoteVideoStatus && remoteVideoStatus.sourceKey === activeVideoUrl
                     ? !!remoteVideoStatus.playing : !!isVideoPlaying;
                 const action = remotePlaying ? 'pause' : 'play';
@@ -3183,16 +4138,18 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 document.getElementById(id).onclick = () => { projectionStyles.citationAlign = align; updateCitationAlignButtons(); syncToProjector(); };
             });
 
-            document.getElementById('btn-bg-color').onclick = () => updateBgTypeUI('color');
-            document.getElementById('btn-bg-grad').onclick = () => updateBgTypeUI('gradient');
-            document.getElementById('btn-bg-img').onclick = () => updateBgTypeUI('image');
+            document.getElementById('btn-bg-color').onclick = () => updateBgTypeUI('color', { revealProjection: true });
+            document.getElementById('btn-bg-grad').onclick = () => updateBgTypeUI('gradient', { revealProjection: true });
+            document.getElementById('btn-bg-img').onclick = () => updateBgTypeUI('image', { revealProjection: true });
 
             document.getElementById('style-bgcolor').oninput = (e) => {
+                clearBlackoutForVisibleContent();
                 projectionStyles.bgcolor = e.target.value;
                 if(projectionStyles.bgType === 'color') syncToProjector();
             };
             document.querySelectorAll('.btn-color-preset').forEach(btn => {
                 btn.onclick = () => {
+                    clearBlackoutForVisibleContent();
                     const col = btn.getAttribute('data-color');
                     document.getElementById('style-bgcolor').value = col;
                     projectionStyles.bgcolor = col;
@@ -3202,6 +4159,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
 
             document.querySelectorAll('.btn-grad-preset').forEach(btn => {
                 btn.onclick = () => {
+                    clearBlackoutForVisibleContent();
                     projectionStyles.gradient = btn.getAttribute('data-grad');
                     if(projectionStyles.bgType === 'gradient') syncToProjector();
                 };
@@ -3256,7 +4214,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                     reader.onload = (event) => {
                         projectionStyles.bgType = 'image';
                         projectionStyles.bgImage = event.target.result;
-                        updateBgTypeUI('image');
+                        updateBgTypeUI('image', { revealProjection: true });
                         syncToProjector();
                         showToast("Imagen local aplicada como fondo", "success");
                     };
@@ -3265,6 +4223,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             };
 
             document.getElementById('style-overlay-opacity').oninput = (e) => {
+                clearBlackoutForVisibleContent();
                 projectionStyles.bgOpacity = e.target.value;
                 document.getElementById('val-overlay-opacity').innerText = e.target.value + "%";
                 syncToProjector();
@@ -3328,24 +4287,48 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 }
             });
 
-            // Atajos de Teclado Globales
+            // Atajos compatibles con el Magic Keyboard: las flechas no interfieren con campos de edición.
             window.onkeydown = (e) => {
-                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
-                if (e.key.toLowerCase() === 'b') {
+                if (e.metaKey || e.ctrlKey || e.altKey) return;
+                if (e.target.closest('input, textarea, select, [contenteditable="true"]')) return;
+                const key = e.key.toLowerCase();
+                if (e.key.startsWith('Arrow')) {
+                    const delta = (e.key === 'ArrowLeft' || e.key === 'ArrowUp') ? -1 : 1;
+                    if (document.body.dataset.workspace === 'karaoke') {
+                        const button = document.getElementById(delta < 0 ? 'karaoke-prev' : 'karaoke-next');
+                        if (button && !button.disabled) { e.preventDefault(); button.click(); }
+                    } else if (moveBibleVerse(delta)) e.preventDefault();
+                } else if (key === 'l') {
+                    document.getElementById('btn-standby').click();
+                } else if (key === 'b') {
                     document.getElementById('btn-blackout').click();
-                } else if (e.key.toLowerCase() === 'c') {
+                } else if (key === 'c') {
                     document.getElementById('btn-cleartext').click();
+                } else if (e.key === ' ') {
+                    if (mediaMode === 'youtube') {
+                        e.preventDefault(); sendYouTubeCommand(isVideoPlaying ? 'pauseVideo' : 'playVideo');
+                        isVideoPlaying = !isVideoPlaying; saveOperatorState();
+                    } else if (mediaMode === 'video') {
+                        e.preventDefault(); document.getElementById('btn-video-play-pause').click();
+                    }
                 } else if (e.key === 'Escape') {
                     document.getElementById('local-fullscreen-container').classList.add('hidden');
                 }
             };
         }
 
-        window.onload = () => {
-            loadOperatorState();
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadOperatorState();
+            const bundledBibleLoaded = await loadBundledRvr1960();
+            if (!bundledBibleLoaded || selectedBibleId !== 'rvr1960') await loadSelectedBible();
+            else await renderBibleVersionOptions();
+            if (!bundledBibleLoaded && selectedBibleId === 'sample') showToast('No se pudo leer biblia.json. Abre la web por HTTPS/servidor local o impórtala una vez.', 'warning');
+            if (!bibleData[selectedBook]) selectedBook = bibleData['Salmos'] ? 'Salmos' : getBibleBookNames()[0];
+            if (!bibleData[selectedBook]?.[selectedChapter]) selectedChapter = Object.keys(bibleData[selectedBook] || {})[0] || '1';
+            if (selectedVerseIdx !== null && (!Number.isInteger(selectedVerseIdx) || selectedVerseIdx < 0 || selectedVerseIdx >= (bibleData[selectedBook]?.[selectedChapter] || []).length)) selectedVerseIdx = null;
             // Sincroniza los controles nuevos incluso si el estado guardado es de una versión anterior.
             projectionStyles.citationFont = projectionStyles.citationFont || projectionStyles.font || 'Inter';
-            projectionStyles.citationSize = projectionStyles.citationSize || '1.6';
+            projectionStyles.citationSize = String(Math.min(10, Math.max(0.8, Number(projectionStyles.citationSize) || 1.6)));
             projectionStyles.citationColor = projectionStyles.citationColor || projectionStyles.textcolor || '#ffffff';
             projectionStyles.citationBold = projectionStyles.citationBold !== undefined ? projectionStyles.citationBold : true;
             projectionStyles.citationItalic = projectionStyles.citationItalic || false;
@@ -3366,27 +4349,8 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             renderVerses();
             renderCultoList();
             setupEventListeners();
-            initializeCloudProjectionSync();
             syncToProjector();
-        };
+        });
     </script>
-    <div id="install-help-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 p-4" role="dialog" aria-modal="true" aria-labelledby="install-help-title">
-        <div class="w-full max-w-lg rounded-2xl border border-gray-700 bg-gray-900 p-6 shadow-2xl">
-            <div class="mb-3 flex items-center justify-between gap-3">
-                <h2 id="install-help-title" class="text-lg font-extrabold text-white"><i class="fa-solid fa-mobile-screen-button mr-2 text-blue-400"></i>Usar como aplicación en iPad</h2>
-                <button id="btn-close-install-help" class="rounded-lg px-3 py-1 text-gray-300 hover:bg-gray-800" aria-label="Cerrar">✕</button>
-            </div>
-            <p class="mb-4 text-sm leading-6 text-gray-300">Para abrir el panel de control sin la barra de direcciones de Safari, añade esta web a la pantalla de inicio.</p>
-            <ol class="mb-5 list-decimal space-y-2 pl-5 text-sm leading-6 text-gray-200">
-                <li>Abre esta página en <strong>Safari</strong> (no desde una pestaña de otro navegador).</li>
-                <li>Toca <strong>Compartir</strong> y selecciona <strong>Añadir a pantalla de inicio</strong>.</li>
-                <li>Si aparece la opción <strong>Abrir como app web</strong>, actívala y toca <strong>Añadir</strong>.</li>
-                <li>En adelante, inicia el proyector desde el nuevo icono de la pantalla de inicio.</li>
-            </ol>
-            <p class="mb-5 rounded-xl bg-amber-950/50 p-3 text-xs leading-5 text-amber-200">La ventana externa puede seguir mostrando controles de Safari según la versión de iPadOS. En esa ventana, toca «Pantalla completa» si aparece el aviso. iPadOS no permite que una página web fuerce siempre ese modo sin interacción.</p>
-            <button id="btn-close-install-help-bottom" class="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white hover:bg-blue-500">Entendido</button>
-        </div>
-    </div>
-
 </body>
 </html>
