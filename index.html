@@ -20,6 +20,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Merriweather:wght@300;400;700&family=Montserrat:wght@400;600;800&family=Open+Sans:wght@300;400;600;700&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Poppins:wght@300;400;600;700&family=Quicksand:wght@400;600;700&family=Raleway:wght@300;400;600;700&family=Roboto+Slab:wght@400;700&family=Ubuntu:wght@400;700&family=Fira+Sans:wght@400;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=Spectral:ital,wght@0,400;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,700;1,400&family=Cardo:wght@400;700&family=Josefin+Sans:wght@400;600;700&family=Nunito+Sans:wght@400;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Archivo+Black&display=swap" rel="stylesheet">
+    <script src="background-loop.js"></script>
     
     <style>
         ::-webkit-scrollbar {
@@ -66,7 +67,7 @@
         #operator-interface button { -webkit-tap-highlight-color: transparent; }
         #operator-interface button:not(.workspace-nav-item) { transition: background-color .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease; }
         #operator-interface button:not(:disabled):active { transform: scale(.985); }
-        .workspace-nav { display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); gap: 8px; padding: 9px max(12px, env(safe-area-inset-left)) calc(9px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-right)); background: rgba(9,14,26,.97); border-top: 1px solid rgba(148,163,184,.18); box-shadow: 0 -10px 28px rgba(0,0,0,.16); }
+        .workspace-nav { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 8px; padding: 9px max(12px, env(safe-area-inset-left)) calc(9px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-right)); background: rgba(9,14,26,.97); border-top: 1px solid rgba(148,163,184,.18); box-shadow: 0 -10px 28px rgba(0,0,0,.16); }
         .workspace-nav-item { min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px 5px 8px; border:1px solid transparent; border-radius:14px; color:#8b98ad; background:transparent; position:relative; }
         .workspace-nav-item i { font-size:19px; line-height:1; }
         .workspace-nav-item span { font-size:12px; font-weight:750; letter-spacing:.01em; color:#d1d9e6; }
@@ -78,6 +79,7 @@
         body[data-workspace="youtube"] #workspace-bible-books, body[data-workspace="youtube"] #workspace-bible-verses,
         body[data-workspace="design"] #workspace-bible-books, body[data-workspace="design"] #workspace-bible-verses,
         body[data-workspace="capture"] #workspace-bible-books, body[data-workspace="capture"] #workspace-bible-verses { display:none !important; }
+        body[data-workspace="culto"] #workspace-bible-books, body[data-workspace="culto"] #workspace-bible-verses { display:none !important; }
         body[data-workspace="local"] #workspace-control, body[data-workspace="youtube"] #workspace-control, body[data-workspace="design"] #workspace-control, body[data-workspace="capture"] #workspace-control { width:auto !important; flex:1 1 auto !important; min-width:0; }
         body[data-workspace="local"] #workspace-control, body[data-workspace="youtube"] #workspace-control, body[data-workspace="design"] #workspace-control, body[data-workspace="capture"] #workspace-control { display:flex; flex-direction:row; gap:16px; }
         body[data-workspace="local"] #projector-preview-card, body[data-workspace="youtube"] #projector-preview-card, body[data-workspace="design"] #projector-preview-card { width:min(42%, 560px); flex:0 0 min(42%, 560px); align-self:flex-start; }
@@ -95,6 +97,13 @@
         body[data-workspace="capture"] #tab-culto, body[data-workspace="capture"] #youtube-controls-panel, body[data-workspace="capture"] #video-playback-controls, body[data-workspace="capture"] #local-video-file-panel { display:none !important; }
         body[data-workspace="capture"] #tab-video { display:flex !important; flex-direction:column; height:100%; overflow-y:auto; }
         body[data-workspace="capture"] #screen-capture-controls-panel { display:block !important; width:100%; max-width:900px; margin:0 auto; background:linear-gradient(145deg,rgba(23,35,56,.95),rgba(15,23,42,.95)); border:1px solid rgba(96,165,250,.22); }
+        body[data-workspace="culto"] #workspace-control { width:100% !important; flex:1 1 auto !important; min-width:0; display:flex; flex-direction:column; }
+        body[data-workspace="culto"] #projector-preview-card { display:none !important; }
+        body[data-workspace="culto"] #workspace-control > .control-panel { width:100%; flex:1 1 auto; min-width:0; }
+        body[data-workspace="culto"] #workspace-control > .control-panel > div:last-child { display:flex !important; flex-direction:column; min-height:0; }
+        body[data-workspace="culto"] #tab-video, body[data-workspace="culto"] #tab-estilos { display:none !important; }
+        body[data-workspace="culto"] #tab-culto { display:flex !important; flex:1 1 auto; min-height:0; height:100%; }
+        body[data-workspace="culto"] #culto-list-search-wrap { display:block !important; }
         body[data-workspace="karaoke"] #workspace-bible-books, body[data-workspace="karaoke"] #workspace-bible-verses { display:none !important; }
         body[data-workspace="karaoke"] #workspace-control { width:100% !important; flex:1 1 auto !important; min-width:0; display:flex; flex-direction:row; }
         body[data-workspace="karaoke"] #projector-preview-card { display:none !important; }
@@ -156,7 +165,7 @@
         body[data-workspace="design"] #workspace-control .flex-1.min-h-0.bg-gray-900 { min-width:0; }
         body[data-workspace="design"] #tab-estilos { display:block !important; }
         @media (max-width: 900px) {
-          .workspace-nav { grid-template-columns: repeat(6,minmax(0,1fr)); gap:4px; padding-left:6px; padding-right:6px; }
+          .workspace-nav { grid-template-columns: repeat(7,minmax(0,1fr)); gap:4px; padding-left:6px; padding-right:6px; }
           .workspace-nav-item { padding:9px 2px 7px; border-radius:11px; }
           .workspace-nav-item i { font-size:17px; }
           .workspace-nav-item span { font-size:10px; }
@@ -356,12 +365,12 @@
                     <!-- Libros cargados por JS -->
                 </div>
 
-                <div class="p-3 bg-gray-950 border-t border-gray-800 flex flex-col h-48 lg:h-56 shrink-0">
+            <div class="p-3 bg-gray-950 border-t border-gray-800 flex flex-col h-56 lg:h-64 xl:h-72 shrink-0">
                     <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2 flex items-center justify-between">
                         <span class="flex items-center gap-1.5"><i class="fa-solid fa-list-numeric text-blue-400"></i> Capítulos</span>
                         <span id="selected-book-label" class="text-blue-400 text-xs font-bold">Salmos</span>
                     </span>
-                    <div class="flex-1 min-h-0 overflow-y-auto grid grid-cols-5 gap-1.5 content-start pr-1" id="chapters-container">
+                    <div class="bible-chapter-grid flex-1 min-h-0 overflow-y-auto pr-1" id="chapters-container">
                         <!-- Capítulos cargados por JS -->
                     </div>
                 </div>
@@ -411,10 +420,12 @@
                     <!-- Cuadro de Vista Previa 16:9 -->
                     <div id="projector-preview-container" class="w-full aspect-video rounded-xl relative overflow-hidden flex flex-col items-center justify-center p-3 border border-gray-800 shadow-inner bg-slate-950">
                         <div id="preview-backdrop" class="absolute inset-0 z-0 bg-slate-950 bg-cover bg-center transition-all duration-300"></div>
-                        <video id="preview-background-video" class="absolute inset-0 z-[1] w-full h-full object-cover hidden pointer-events-none" muted playsinline loop preload="metadata" aria-hidden="true"></video>
+                        <video id="preview-background-video" class="absolute inset-0 z-[1] w-full h-full object-cover pointer-events-none projection-background-loop-layer" muted playsinline loop autoplay preload="auto" aria-hidden="true"></video>
+                        <video id="preview-background-video-next" class="absolute inset-0 z-[1] w-full h-full object-cover pointer-events-none projection-background-loop-layer" muted playsinline loop autoplay preload="auto" aria-hidden="true"></video>
                         
                         <video id="preview-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline muted></video>
                         <img id="preview-video-mirror" alt="Vista espejo del video proyectado" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" />
+                        <div id="preview-screen-capture-note" class="absolute inset-0 z-50 hidden items-center justify-center bg-black text-center text-sm font-semibold text-gray-300" style="display:none"><span><i class="fa-solid fa-tower-broadcast mr-2 text-blue-400"></i>Captura enviada directamente al proyector</span></div>
                         <iframe id="preview-youtube" referrerpolicy="strict-origin-when-cross-origin" title="Reproductor de YouTube (vista previa)" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>
 
                         <div id="preview-overlay" class="absolute inset-0 bg-black/40 z-20 transition-all duration-300"></div>
@@ -468,13 +479,19 @@
                         <!-- TAB 1: LISTA DE CULTO -->
                         <div id="tab-culto" class="space-y-3 h-full flex flex-col min-h-0">
                             <div class="flex items-center justify-between text-xs text-gray-400 shrink-0">
-                                <span>Pasajes agregados:</span>
-                                <button id="btn-clear-culto-list" class="text-gray-500 hover:text-red-400 transition font-semibold text-[11px]" title="Limpiar lista entera">
-                                    <i class="fa-solid fa-trash-can mr-1"></i> Limpiar
-                                </button>
+                                <span class="flex items-center gap-2"><span class="font-black uppercase tracking-widest text-gray-200">Orden del culto</span><span id="culto-list-count" class="rounded-full border border-blue-400/20 bg-blue-400/10 px-2 py-1 text-[10px] font-bold text-blue-200">0 elementos</span></span>
+                                <div class="flex items-center gap-2">
+                                    <button id="btn-clear-culto-list" class="text-gray-500 hover:text-red-400 transition font-semibold text-[11px]" title="Limpiar lista entera">
+                                        <i class="fa-solid fa-trash-can mr-1"></i> Limpiar
+                                    </button>
+                                </div>
                             </div>
 
-                            <div class="space-y-1.5 shrink-0 bg-gray-900 p-2.5 rounded-xl border border-gray-800">
+                            <div id="culto-list-search-wrap" class="hidden shrink-0">
+                                <input id="culto-list-search" type="search" aria-label="Buscar en el orden del culto" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500" placeholder="Buscar pasaje, canto, nota o texto…">
+                            </div>
+
+                            <div class="culto-add-note space-y-1.5 shrink-0 bg-gray-900 p-2.5 rounded-xl border border-gray-800">
                                 <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Agregar Canto o Nota</span>
                                 <div class="flex gap-1.5">
                                     <input type="text" id="custom-culto-text" placeholder="Ej: Estrofa 1..." class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500">
@@ -567,7 +584,7 @@
                                         <i class="fa-solid fa-desktop"></i> Captura de Pantalla
                                     </span>
                                 </div>
-                                <p class="text-xs text-gray-300 leading-relaxed">Comparte una pantalla o ventana desde el selector del navegador. La captura se envía directamente a la proyección; no utiliza la vista previa del panel.</p>
+                                <p class="text-xs text-gray-300 leading-relaxed">Cuando aparezca el selector, elige «Pantalla completa» o «Toda la pantalla» para que la proyección incluya los cambios entre apps. Si eliges Safari o una ventana, solo se compartirá esa fuente. Se solicitarán hasta 60 fps; el valor final depende del iPad y de la fuente elegida.</p>
                                 <div class="flex gap-2 pt-1">
                                     <button id="btn-start-screen-capture" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-3 px-4 rounded-xl text-sm font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-blue-900/30">
                                         <i class="fa-solid fa-display"></i>
@@ -626,14 +643,16 @@
                           <div id="karaoke-work-grid" class="karaoke-work-grid">
                             <section id="karaoke-search-area" class="karaoke-area rounded-xl border border-gray-700/80 bg-gray-950/35 p-3 space-y-3"><h3 class="text-sm font-bold text-blue-200"><i class="fa-solid fa-magnifying-glass mr-2"></i>Buscar letras en línea</h3>
                               <div class="grid grid-cols-1 gap-2"><input id="karaoke-track" class="bg-gray-950 border border-gray-700 rounded-xl p-3 text-sm" placeholder="Nombre de la canción"><input id="karaoke-artist" class="bg-gray-950 border border-gray-700 rounded-xl p-3 text-sm" placeholder="Artista"><button id="karaoke-search" class="bg-fuchsia-700 hover:bg-fuchsia-600 rounded-xl px-4 py-3 text-sm font-bold"><i class="fa-solid fa-magnifying-glass mr-2"></i>Buscar letras</button><button id="karaoke-google-search" type="button" class="bg-sky-900/70 hover:bg-sky-800 border border-sky-700/70 rounded-xl px-4 py-3 text-sm font-bold"><i class="fa-brands fa-google mr-2"></i>Buscar letra en Google</button></div>
-                              <p class="text-[10px] text-gray-500">LRCLIB busca letras automáticamente. Si no aparece la canción, usa Google para localizar otras fuentes, como Musixmatch, y copia la letra al editor.</p><div id="karaoke-results" class="space-y-2"></div><div class="mt-3 rounded-xl border border-gray-700/80 bg-gray-900/60 p-3"><div class="flex items-center justify-between gap-2 mb-2"><h4 class="text-xs font-bold text-fuchsia-200"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Últimas 10 letras usadas</h4><button id="karaoke-history-clear" type="button" class="text-[10px] text-gray-400 hover:text-white">Borrar historial</button></div><div id="karaoke-history" class="space-y-2"><p class="text-[10px] text-gray-500">Aquí aparecerán las letras que uses.</p></div></div>
+                              <p class="text-[10px] text-gray-500">LRCLIB busca letras automáticamente. Si no aparece la canción, usa Google para localizar otras fuentes, como Musixmatch, y copia la letra al editor.</p><div id="karaoke-results" class="space-y-2"></div>
+                              <div class="mt-3 rounded-xl border border-blue-400/20 bg-gray-900/60 p-3"><div class="mb-2"><h4 class="text-xs font-bold text-blue-200"><i class="fa-solid fa-box-archive mr-1"></i>Mi banco de canciones</h4><p id="karaoke-bank-count" class="text-[10px] text-gray-500 mt-1">0 canciones guardadas en este dispositivo</p></div><input id="karaoke-bank-search" type="search" class="w-full mb-2 bg-gray-950 border border-gray-700 rounded-lg p-2 text-xs" placeholder="Buscar en mis canciones"><div id="karaoke-bank" class="space-y-2"><p class="text-[10px] text-gray-500">Guarda aquí las letras que usas con frecuencia.</p></div></div>
+                              <div class="mt-3 rounded-xl border border-gray-700/80 bg-gray-900/60 p-3"><div class="flex items-center justify-between gap-2 mb-2"><h4 class="text-xs font-bold text-fuchsia-200"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Últimas 10 letras usadas</h4><button id="karaoke-history-clear" type="button" class="text-[10px] text-gray-400 hover:text-white">Borrar historial</button></div><div id="karaoke-history" class="space-y-2"><p class="text-[10px] text-gray-500">Aquí aparecerán las letras que uses.</p></div></div>
                             </section>
                             <section id="karaoke-manual-area" class="karaoke-area rounded-xl border border-gray-700/80 bg-gray-950/35 p-3 space-y-2"><h3 class="text-sm font-bold text-blue-200"><i class="fa-solid fa-file-lines mr-2"></i>Letras de la canción</h3><label class="text-xs font-bold text-gray-300">Escribir o pegar letras (separa las estrofas con una línea en blanco)</label>
                               <div id="karaoke-quick-controls" class="sticky top-0 z-10 flex flex-wrap items-center gap-2 rounded-lg border border-gray-700/80 bg-gray-900/95 p-2 backdrop-blur"><button id="karaoke-prev" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-xs font-bold" disabled><i class="fa-solid fa-chevron-left mr-1"></i>Anterior</button><button id="karaoke-project" class="bg-fuchsia-700 hover:bg-fuchsia-600 rounded-lg px-3 py-2 text-xs font-bold">Proyectar estrofa</button><button id="karaoke-next" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-xs font-bold" disabled>Siguiente<i class="fa-solid fa-chevron-right ml-1"></i></button><button id="karaoke-split-2" type="button" class="bg-blue-900/70 border border-blue-700/70 rounded-lg px-3 py-2 text-xs font-bold" title="Dividir cada estrofa en bloques de dos líneas">Dividir cada 2 líneas</button><label class="flex items-center gap-2 text-xs text-gray-300">División<select id="karaoke-split-mode" class="max-w-[180px] bg-gray-950 border border-gray-700 rounded-lg px-2 py-2 text-xs"><option value="manual">Estrofas originales</option><option value="lines1">Cada línea</option><option value="lines2">Cada 2 líneas</option><option value="lines3">Cada 3 líneas</option><option value="lines4">Cada 4 líneas</option><option value="words20">Hasta 20 palabras</option><option value="words40">Hasta 40 palabras</option><option value="words60">Hasta 60 palabras</option><option value="words80">Hasta 80 palabras</option></select></label></div>
                               <textarea id="karaoke-manual" rows="14" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-sm leading-relaxed" placeholder="Primera línea de la estrofa
-Segunda línea
+                              Segunda línea
 
-Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="karaoke-load-manual" class="bg-gray-700 hover:bg-gray-600 rounded-xl px-4 py-2.5 text-sm font-bold">Usar estas letras</button><button id="karaoke-clear" class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-sm">Limpiar</button></div><div class="mt-3 rounded-xl border border-gray-700/80 bg-gray-900/60 p-3"><div class="flex items-center justify-between gap-2 mb-2"><h4 class="text-xs font-bold text-fuchsia-200"><i class="fa-solid fa-hand-pointer mr-1"></i>Proyección rápida</h4><span class="text-[10px] text-gray-500">Toca un bloque para proyectarlo</span></div><div id="karaoke-clickable-stanzas" class="grid grid-cols-1 sm:grid-cols-2 gap-2"><p class="text-xs text-gray-500">Carga una letra para seleccionar sus bloques aquí.</p></div></div></section>
+Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="karaoke-load-manual" class="bg-gray-700 hover:bg-gray-600 rounded-xl px-4 py-2.5 text-sm font-bold">Usar estas letras</button><button id="karaoke-bank-save" type="button" class="bg-blue-800 hover:bg-blue-700 rounded-xl px-4 py-2.5 text-sm font-bold"><i class="fa-solid fa-bookmark mr-1"></i>Guardar en mi banco</button><button id="karaoke-clear" class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-sm">Limpiar</button></div><div class="mt-3 rounded-xl border border-gray-700/80 bg-gray-900/60 p-3"><div class="flex items-center justify-between gap-2 mb-2"><h4 class="text-xs font-bold text-fuchsia-200"><i class="fa-solid fa-hand-pointer mr-1"></i>Proyección rápida</h4><span class="text-[10px] text-gray-500">Toca un bloque para proyectarlo</span></div><div id="karaoke-clickable-stanzas" class="grid grid-cols-1 sm:grid-cols-2 gap-2"><p class="text-xs text-gray-500">Carga una letra para seleccionar sus bloques aquí.</p></div></div></section>
                             <section id="karaoke-design-area" class="karaoke-area rounded-xl border border-gray-700/80 bg-gray-950/60 p-3 space-y-4"><div class="flex items-center justify-between gap-3"><h3 class="text-sm font-bold text-gray-200">Diseño de proyección</h3><label class="text-xs flex items-center gap-2"><input id="karaoke-transparent" type="checkbox" checked class="accent-fuchsia-500"> Fondo transparente</label></div>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-3"><label class="text-xs text-gray-400">Tamaño (vw)<input id="karaoke-size" type="number" min="1.5" max="12" step="0.5" value="4.5" class="mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"></label><label class="text-xs text-gray-400">Color texto<input id="karaoke-color" type="color" value="#ffffff" class="mt-1 w-full h-10 bg-gray-900 border border-gray-700 rounded-lg p-1"></label><label class="text-xs text-gray-400">Fuente<select id="karaoke-font" class="mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"><option>Inter</option><option>Montserrat</option><option>Cinzel</option><option>Playfair Display</option><option>EB Garamond</option><option>Lora</option><option>Merriweather</option><option>Libre Baskerville</option><option>Crimson Text</option><option>Cardo</option><option>Spectral</option><option>PT Serif</option><option>Roboto Slab</option><option>Open Sans</option><option>Source Sans 3</option><option>Fira Sans</option><option>Nunito Sans</option><option>Raleway</option><option>Poppins</option><option>Quicksand</option><option>Josefin Sans</option><option>Ubuntu</option><option>Oswald</option><option>Amatic SC</option><option>Archivo Black</option><option>Arial</option><option>Georgia</option></select></label><label class="text-xs text-gray-400">Alineación<select id="karaoke-align" class="mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"><option value="center">Centro</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></label></div>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-3"><label class="text-xs text-gray-400">Fondo<select id="karaoke-bg-type" class="mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"><option value="color">Color sólido</option><option value="gradient">Degradado</option><option value="image">Imagen de internet</option></select></label><label class="text-xs text-gray-400">Color del fondo<input id="karaoke-bg-color" type="color" value="#000000" class="mt-1 w-full h-10 bg-gray-900 border border-gray-700 rounded-lg p-1"></label><label class="text-xs text-gray-400">Degradado<select id="karaoke-bg-gradient" class="mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"><option value="linear-gradient(135deg,#020617 0%,#1e1b4b 100%)">Azul noche</option><option value="linear-gradient(135deg,#000000 0%,#434343 100%)">Negro y gris</option><option value="linear-gradient(135deg,#052e16 0%,#166534 100%)">Verde</option><option value="linear-gradient(135deg,#450a0a 0%,#991b1b 100%)">Rojo</option><option value="linear-gradient(135deg,#312e81 0%,#7e22ce 100%)">Violeta</option></select></label><label class="text-xs text-gray-400">Opacidad del fondo <span id="karaoke-bg-opacity-label">100%</span><input id="karaoke-bg-opacity" type="range" min="0" max="100" step="5" value="100" class="mt-2 w-full accent-fuchsia-500"></label></div>
@@ -644,7 +663,9 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                           <div class="flex items-center justify-between gap-3 border-t border-gray-800 pt-3"><span id="karaoke-stanza-count" class="text-xs text-gray-400">0 estrofas</span><span class="text-[10px] text-gray-500">Los cambios de división no modifican las letras originales.</span></div>
                         </div>
                         <div id="tab-estilos" class="hidden space-y-4">
-                            
+                            <details class="design-group" open>
+                                <summary><i class="fa-solid fa-text-height"></i><span>Versículo</span><small>Tipografía, formato, alineación y tamaño</small></summary>
+                                <div class="design-group-content space-y-4">
                             <!-- Tipografía -->
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Fuente del versículo</label>
@@ -711,7 +732,26 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                                 </div>
                                 <input type="range" id="style-size" min="2" max="8" step="0.1" value="4.5" class="w-full accent-blue-500">
                             </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Color del versículo</label>
+                                <div class="flex gap-2">
+                                    <input type="color" id="style-textcolor" value="#ffffff" class="bg-transparent border-0 rounded cursor-pointer w-10 h-9">
+                                    <div class="grid grid-cols-6 gap-1 flex-1">
+                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-textcolor-preset" style="background-color: #ffffff" data-textcolor="#ffffff" aria-label="Texto blanco" title="Blanco"></button>
+                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-textcolor-preset" style="background-color: #fef08a" data-textcolor="#fef08a" aria-label="Texto amarillo claro" title="Amarillo"></button>
+                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-textcolor-preset" style="background-color: #fed7aa" data-textcolor="#fed7aa" aria-label="Texto naranja claro" title="Naranja"></button>
+                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-textcolor-preset" style="background-color: #bfdbfe" data-textcolor="#bfdbfe" aria-label="Texto azul claro" title="Azul"></button>
+                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-textcolor-preset" style="background-color: #bbf7d0" data-textcolor="#bbf7d0" aria-label="Texto verde claro" title="Verde"></button>
+                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-textcolor-preset" style="background-color: #fbcfe8" data-textcolor="#fbcfe8" aria-label="Texto rosa claro" title="Rosa"></button>
+                                    </div>
+                                </div>
+                            </div>
+                                </div>
+                            </details>
 
+                            <details class="design-group">
+                                <summary><i class="fa-solid fa-book-open"></i><span>Libro y cita bíblica</span><small>Fuente, tamaño, color, posición</small></summary>
+                                <div class="design-group-content">
                             <!-- Personalización independiente de la cita bíblica -->
                             <div class="space-y-3 rounded-xl border border-amber-500/30 bg-amber-950/10 p-3">
                                 <div class="text-[10px] font-black uppercase tracking-wider text-amber-300 flex items-center gap-2"><i class="fa-solid fa-book-open"></i> Personalizar libro y cita bíblica</div>
@@ -746,7 +786,12 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                                     </select>
                                 </div>
                             </div>
+                                </div>
+                            </details>
 
+                            <details class="design-group">
+                                <summary><i class="fa-solid fa-panorama"></i><span>Fondo</span><small>Color, degradado, imagen o video</small></summary>
+                                <div class="design-group-content space-y-4">
                             <!-- Tipo de Fondo -->
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Estilo del Fondo</label>
@@ -855,9 +900,15 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                                     <span id="background-video-status" class="min-w-0 text-[10px] text-gray-400" role="status" aria-live="polite">No hay video de fondo guardado</span>
                                     <button id="background-video-remove" type="button" class="hidden shrink-0 rounded-lg border border-gray-700 px-2 py-1 text-[10px] font-bold text-gray-300 hover:bg-gray-800">Quitar</button>
                                 </div>
-                                <p class="text-[10px] text-gray-500">MP4 H.264 silencioso, recomendado 5–20 s y 720p. Se guarda solo en este dispositivo y se pausa durante videos o captura.</p>
+                                <p class="text-[10px] text-gray-500">MP4 H.264 silencioso, recomendado 5–20 s y 720p. Se guarda en este dispositivo; sigue durante espera y texto oculto, y se pausa solo ante otros medios o apagado.</p>
                             </div>
 
+                                </div>
+                            </details>
+
+                            <details class="design-group">
+                                <summary><i class="fa-solid fa-wand-magic-sparkles"></i><span>Animación y transición</span><small>Escenas, efectos y duración</small></summary>
+                                <div class="design-group-content">
                             <div class="space-y-3 rounded-xl border border-gray-700/70 bg-gray-950/30 p-3">
                                 <div class="space-y-1.5">
                                     <label for="projection-text-animation" class="text-[10px] font-bold text-gray-300 uppercase tracking-wider block">Animación de versículos y karaoke</label>
@@ -865,18 +916,35 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                                         <option value="fade">Fundido</option>
                                         <option value="slide-up">Deslizar vertical</option>
                                         <option value="slide-left">Deslizar lateral</option>
+                                        <option value="slide-down">Deslizar desde arriba</option>
+                                        <option value="slide-right">Deslizar desde la derecha</option>
                                         <option value="zoom">Zoom suave</option>
+                                        <option value="blur">Desenfoque</option>
+                                        <option value="reveal">Barrido vertical</option>
                                         <option value="none">Sin animación</option>
                                     </select>
+                                    <div class="space-y-1">
+                                        <div class="flex justify-between items-center"><label for="projection-text-duration" class="text-[10px] text-gray-400">Duración de animación</label><span id="val-projection-text-duration" class="text-[10px] font-bold text-blue-300">350 ms</span></div>
+                                        <input id="projection-text-duration" type="range" min="100" max="5000" step="50" value="350" class="w-full accent-blue-500">
+                                    </div>
+                                        <label class="flex items-center gap-2 text-[10px] text-gray-400"><input id="projection-respect-reduced-motion" type="checkbox" class="accent-blue-500"> Respetar movimiento reducido del dispositivo</label>
+                                        <p class="text-[10px] text-gray-500">Las duraciones elegidas se aplican por defecto. Activa esta opción solo si quieres que el ajuste de accesibilidad del dispositivo las acorte.</p>
+                                    <p class="text-[10px] leading-relaxed text-gray-500">Safari puede acortar los efectos si el ajuste de accesibilidad está activo. Desmarca esta opción para aplicar la duración elegida.</p>
                                 </div>
                                 <div class="space-y-1.5 border-t border-gray-800 pt-3">
-                                    <label for="projection-media-transition" class="text-[10px] font-bold text-gray-300 uppercase tracking-wider block">Transición entre texto y video</label>
+                                    <label for="projection-media-transition" class="text-[10px] font-bold text-gray-300 uppercase tracking-wider block">Transición entre escenas</label>
                                     <select id="projection-media-transition" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white">
                                         <option value="fade">Fundido a negro</option>
                                         <option value="wipe">Cortinilla lateral</option>
                                         <option value="zoom">Zoom suave</option>
+                                        <option value="logo">Zoom con logo de la iglesia</option>
                                         <option value="none">Sin transición</option>
                                     </select>
+                                    <p class="text-[10px] leading-relaxed text-gray-500">Se aplica al cambiar entre versículo, karaoke, pantalla de espera y video. No se repite al cambiar de versículo o estrofa.</p>
+                                    <div class="space-y-1">
+                                        <div class="flex justify-between items-center"><label for="projection-transition-duration" class="text-[10px] text-gray-400">Duración de transición</label><span id="val-projection-transition-duration" class="text-[10px] font-bold text-blue-300">700 ms</span></div>
+                                        <input id="projection-transition-duration" type="range" min="300" max="6000" step="50" value="700" class="w-full accent-blue-500">
+                                    </div>
                                     <label class="w-full bg-gray-900 hover:bg-gray-800 border border-dashed border-gray-700 p-3 rounded-xl flex flex-col items-center justify-center cursor-pointer transition">
                                         <i class="fa-solid fa-clapperboard text-blue-300 text-lg mb-1"></i>
                                         <span class="text-xs font-bold text-gray-100">Cargar transición MP4 opcional</span>
@@ -886,10 +954,15 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                                         <span id="transition-video-status" class="min-w-0 text-[10px] text-gray-400" role="status" aria-live="polite">Se usará el efecto integrado</span>
                                         <button id="transition-video-remove" type="button" class="hidden shrink-0 rounded-lg border border-gray-700 px-2 py-1 text-[10px] font-bold text-gray-300 hover:bg-gray-800">Quitar</button>
                                     </div>
-                                    <p class="text-[10px] text-gray-500">Clip opaco y silencioso, recomendado 1–3 s y 720p. Se reproduce una vez al entrar o salir de YouTube/video local.</p>
+                                    <p class="text-[10px] text-gray-500">Clip opaco y silencioso, recomendado 1–3 s y 720p. Su reproducción se ajusta a la duración elegida.</p>
                                 </div>
                             </div>
+                                </div>
+                            </details>
 
+                            <details class="design-group">
+                                <summary><i class="fa-solid fa-sliders"></i><span>Filtro, texto y logo</span><small>Acabado visual de la proyección</small></summary>
+                                <div class="design-group-content space-y-4">
                             <!-- Filtro Oscuro de Imagen -->
                             <div id="overlay-opacity-container" class="space-y-1.5 hidden">
                                 <div class="flex justify-between items-center">
@@ -897,22 +970,6 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                                     <span id="val-overlay-opacity" class="text-xs font-bold text-blue-400">40%</span>
                                 </div>
                                 <input type="range" id="style-overlay-opacity" min="0" max="90" step="5" value="40" class="w-full accent-blue-500">
-                            </div>
-
-                            <!-- Color de Texto -->
-                            <div class="space-y-1.5">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Color del versículo</label>
-                                <div class="flex gap-2">
-                                    <input type="color" id="style-textcolor" value="#ffffff" class="bg-transparent border-0 rounded cursor-pointer w-10 h-9">
-                                    <div class="grid grid-cols-6 gap-1 flex-1">
-                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-textcolor-preset" style="background-color: #ffffff" data-textcolor="#ffffff"></button>
-                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-textcolor-preset" style="background-color: #fef08a" data-textcolor="#fef08a"></button>
-                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-textcolor-preset" style="background-color: #fed7aa" data-textcolor="#fed7aa"></button>
-                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-textcolor-preset" style="background-color: #bfdbfe" data-textcolor="#bfdbfe"></button>
-                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-textcolor-preset" style="background-color: #bbf7d0" data-textcolor="#bbf7d0"></button>
-                                        <button class="w-full h-9 rounded-lg border border-white/10 btn-textcolor-preset" style="background-color: #fbcfe8" data-textcolor="#fbcfe8"></button>
-                                    </div>
-                                </div>
                             </div>
 
                             <!-- Logo Institucional -->
@@ -960,6 +1017,8 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                                 </div>
                             </div>
 
+                                </div>
+                            </details>
                         </div>
                     </div>
                 </div>
@@ -970,6 +1029,9 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
         <nav id="workspace-navigation" class="workspace-nav shrink-0" aria-label="Secciones principales">
             <button type="button" class="workspace-nav-item is-active" data-workspace="bible" aria-current="page">
                 <i class="fa-solid fa-book-bible"></i><span>Biblia</span><small>Libros y versículos</small>
+            </button>
+            <button type="button" class="workspace-nav-item" data-workspace="culto">
+                <i class="fa-solid fa-list-check"></i><span>Culto</span><small>Orden y pasajes</small>
             </button>
             <button type="button" class="workspace-nav-item" data-workspace="local">
                 <i class="fa-solid fa-file-video"></i><span>Video local</span><small>Archivos del iPad</small>
@@ -990,7 +1052,8 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
     <!-- Modal Pantalla Completa Local -->
     <div id="local-fullscreen-container" class="fixed inset-0 z-50 hidden flex flex-col justify-between p-12 transition-all duration-300 bg-slate-950">
         <div id="local-fs-backdrop" class="absolute inset-0 z-0 bg-slate-950 bg-cover bg-center"></div>
-        <video id="local-fs-background-video" class="absolute inset-0 z-[1] w-full h-full object-cover hidden pointer-events-none" muted playsinline loop preload="metadata" aria-hidden="true"></video>
+        <video id="local-fs-background-video" class="absolute inset-0 z-[1] w-full h-full object-cover pointer-events-none projection-background-loop-layer" muted playsinline loop autoplay preload="auto" aria-hidden="true"></video>
+        <video id="local-fs-background-video-next" class="absolute inset-0 z-[1] w-full h-full object-cover pointer-events-none projection-background-loop-layer" muted playsinline loop autoplay preload="auto" aria-hidden="true"></video>
         
         <video id="local-fs-video" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" playsinline></video>
         <img id="local-fs-video-mirror" alt="Vista espejo del video proyectado" class="absolute inset-0 w-full h-full object-contain bg-black z-10 hidden" />
@@ -1073,6 +1136,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
         }
         const PROJECTION_MEDIA_RECORD_PREFIX = 'projection-media:';
         const projectionMediaObjectUrls = new Map();
+        let latestOperatorProjectionPayload = null;
         async function getProjectionMediaUrl(assetId) {
             if (!assetId) return '';
             if (projectionMediaObjectUrls.has(assetId)) return projectionMediaObjectUrls.get(assetId);
@@ -1185,7 +1249,11 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             backgroundVideoId: '',
             transitionVideoId: '',
             textAnimation: 'fade',
+            textAnimationDurationMs: 350,
+            respectReducedMotion: false,
+            respectReducedMotionConfigured: false,
             mediaTransition: 'fade',
+            mediaTransitionDurationMs: 700,
             textcolor: '#ffffff',
             citationFont: 'Inter',
             citationSize: '1.6',
@@ -1263,6 +1331,148 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
         let screenTransferSessionId = '';
         let screenTransferConnectTimeoutId = 0;
         let screenTransferDisconnectTimeoutId = 0;
+        let screenFrameFallbackSessionId = '';
+        let screenFrameFallbackTimerId = 0;
+        let screenFrameFallbackAckTimeoutId = 0;
+        let screenFrameFallbackSourceVideo = null;
+        let screenFrameFallbackSequence = 0;
+        let screenFrameFallbackPendingSequence = 0;
+        let screenFrameFallbackEncoding = false;
+        let screenFrameFallbackVisible = false;
+
+        function stopScreenFrameFallback(sendStop = true) {
+            if (screenFrameFallbackTimerId) clearTimeout(screenFrameFallbackTimerId);
+            if (screenFrameFallbackAckTimeoutId) clearTimeout(screenFrameFallbackAckTimeoutId);
+            screenFrameFallbackTimerId = 0;
+            screenFrameFallbackAckTimeoutId = 0;
+            const closingSessionId = screenFrameFallbackSessionId;
+            if (sendStop && closingSessionId && broadcastChannel && localProjectorId) {
+                try { broadcastChannel.postMessage({ type: '__screen_capture_frame_stop', projectorId: localProjectorId, sessionId: closingSessionId, timestamp: Date.now() }); } catch (_) {}
+            }
+            if (screenFrameFallbackSourceVideo) {
+                try { screenFrameFallbackSourceVideo.pause(); screenFrameFallbackSourceVideo.srcObject = null; screenFrameFallbackSourceVideo.remove(); } catch (_) {}
+            }
+            screenFrameFallbackSourceVideo = null;
+            screenFrameFallbackSessionId = '';
+            screenFrameFallbackPendingSequence = 0;
+            screenFrameFallbackEncoding = false;
+            screenFrameFallbackVisible = false;
+        }
+
+        async function startScreenFrameFallback(stream, sessionId) {
+            stopScreenFrameFallback();
+            if (!stream || !sessionId || !document.body) return;
+            screenFrameFallbackSessionId = sessionId;
+            screenFrameFallbackSequence = 0;
+            const sourceTrack = stream.getVideoTracks()[0];
+            const captureSettings = sourceTrack && typeof sourceTrack.getSettings === 'function' ? sourceTrack.getSettings() : {};
+            const targetFrameRate = Math.min(60, Math.max(1, Number(captureSettings.frameRate) || 60));
+            const frameIntervalMs = Math.max(16, Math.round(1000 / targetFrameRate));
+            const source = document.createElement('video');
+            source.muted = true;
+            source.autoplay = true;
+            source.playsInline = true;
+            source.setAttribute('aria-hidden', 'true');
+            source.style.cssText = 'position:fixed;left:0;top:0;width:64px;height:36px;opacity:.001;pointer-events:none;z-index:9999';
+            source.srcObject = stream;
+            screenFrameFallbackSourceVideo = source;
+            document.body.appendChild(source);
+            let playTimeoutId = 0;
+            try {
+                const playResult = source.play();
+                if (playResult && typeof playResult.then === 'function') {
+                    await Promise.race([playResult, new Promise(resolve => { playTimeoutId = setTimeout(resolve, 1200); })]);
+                }
+            } catch (error) {
+                console.warn('Safari no inició el video auxiliar de captura; se conservará el video WebRTC.', error);
+            } finally {
+                if (playTimeoutId) clearTimeout(playTimeoutId);
+            }
+
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d', { alpha: false });
+            if (!context) return;
+            const tick = () => {
+                if (screenFrameFallbackSessionId !== sessionId || window.screenStream !== stream || !screenCaptureSending) return;
+                // ReplayKit/WebKit silencia la pista cuando Safari pasa a segundo plano.
+                // No sigas codificando y enviando el último cuadro congelado; el proyector
+                // conserva su último cuadro y este ciclo se reanuda cuando la pista vuelva.
+                if (sourceTrack && (sourceTrack.muted || sourceTrack.readyState !== 'live')) {
+                    screenFrameFallbackTimerId = setTimeout(tick, 250);
+                    return;
+                }
+                if (mediaMode !== 'screen') {
+                    screenFrameFallbackTimerId = setTimeout(tick, 250);
+                    return;
+                }
+                if (!broadcastChannel || !localProjectorId || !isLocalProjectorKnown()) {
+                    screenFrameFallbackTimerId = setTimeout(tick, 250);
+                    return;
+                }
+                if (screenFrameFallbackPendingSequence) {
+                    if (screenFrameFallbackAckTimeoutId && Date.now() > Number(source.dataset.pendingSince || 0) + 3000) {
+                        screenFrameFallbackPendingSequence = 0;
+                        clearTimeout(screenFrameFallbackAckTimeoutId);
+                        screenFrameFallbackAckTimeoutId = 0;
+                    } else {
+                        screenFrameFallbackTimerId = setTimeout(tick, frameIntervalMs);
+                        return;
+                    }
+                }
+                if (screenFrameFallbackEncoding) {
+                    screenFrameFallbackTimerId = setTimeout(tick, frameIntervalMs);
+                    return;
+                }
+                if (source.readyState < HTMLMediaElement.HAVE_CURRENT_DATA || !source.videoWidth || !source.videoHeight) {
+                    screenFrameFallbackTimerId = setTimeout(tick, frameIntervalMs);
+                    return;
+                }
+                canvas.width = source.videoWidth;
+                canvas.height = source.videoHeight;
+                try {
+                    context.drawImage(source, 0, 0, canvas.width, canvas.height);
+                    screenFrameFallbackEncoding = true;
+                    canvas.toBlob(blob => {
+                        screenFrameFallbackEncoding = false;
+                        if (screenFrameFallbackSessionId !== sessionId || window.screenStream !== stream || !screenCaptureSending || mediaMode !== 'screen') return;
+                        if (!blob) {
+                            screenFrameFallbackTimerId = setTimeout(tick, frameIntervalMs);
+                            return;
+                        }
+                        const sequence = ++screenFrameFallbackSequence;
+                        try {
+                            broadcastChannel.postMessage({
+                                type: '__screen_capture_frame',
+                                projectorId: localProjectorId,
+                                sessionId,
+                                sequence,
+                                width: canvas.width,
+                                height: canvas.height,
+                                frame: blob,
+                                frameRate: Number(captureSettings.frameRate) || targetFrameRate,
+                                timestamp: Date.now()
+                            });
+                            screenFrameFallbackPendingSequence = sequence;
+                            source.dataset.pendingSince = String(Date.now());
+                            screenFrameFallbackAckTimeoutId = setTimeout(() => {
+                                if (screenFrameFallbackPendingSequence === sequence) screenFrameFallbackPendingSequence = 0;
+                                screenFrameFallbackAckTimeoutId = 0;
+                            }, 3000);
+                        } catch (error) {
+                            console.warn('No se pudo enviar un fotograma de alta resolución al proyector:', error);
+                        }
+                        screenFrameFallbackTimerId = setTimeout(tick, frameIntervalMs);
+                    }, 'image/jpeg', 0.9);
+                } catch (error) {
+                    console.warn('No se pudo generar un fotograma de respaldo para el proyector:', error);
+                    screenFrameFallbackEncoding = false;
+                    screenFrameFallbackTimerId = setTimeout(tick, frameIntervalMs);
+                }
+            };
+            // Dar tiempo a WebRTC para entregar y decodificar la señal completa.
+            // El respaldo de imagen solo aparece si el proyector sigue sin un cuadro.
+            screenFrameFallbackTimerId = setTimeout(tick, 2500);
+        }
 
         function clearScreenTransferTimers() {
             if (screenTransferConnectTimeoutId) clearTimeout(screenTransferConnectTimeoutId);
@@ -1307,7 +1517,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 if (screenCapturePurpose === 'youtube-monitor') {
                     failYouTubeMonitorTransfer(sessionId, 'No se pudo completar la señalización local con el proyector. La proyección anterior sigue activa.', 'No se pudo señalizar la captura; se conservó la proyección anterior.');
                 } else if (screenTransferSessionId === sessionId) {
-                    failScreenTransfer(sessionId, 'No se pudo señalizar la captura. Se restauró el contenido anterior.', 'No se pudo señalizar la captura; se restauró el contenido anterior.');
+                    setScreenCaptureStatus('La señalización WebRTC falló; el proyector sigue intentando recibir la captura por el canal local de respaldo.');
                 }
             }
         }
@@ -1508,13 +1718,18 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
         }
 
         function showLocalVideoPreviewFrame(frame, timestamp) {
-            if (mediaMode !== 'video' || typeof frame !== 'string') return;
+            if (!['video','screen'].includes(mediaMode) || typeof frame !== 'string') return;
             const frameTimestamp = Number(timestamp) || Date.now();
             if (frameTimestamp <= localVideoPreviewTimestamp) return;
             localVideoPreviewTimestamp = frameTimestamp;
             ['preview-video-mirror', 'local-fs-video-mirror'].forEach(id => {
                 const mirror = document.getElementById(id);
-                if (mirror) { if (mirror.src !== frame) mirror.src = frame; mirror.classList.remove('hidden'); }
+                const directVideo = document.getElementById(id === 'preview-video-mirror' ? 'preview-video' : 'local-fs-video');
+                if (mediaMode === 'screen' && directVideo && directVideo.srcObject === window.screenStream && directVideo.videoWidth > 0) {
+                    mirror?.classList.add('hidden');
+                    return;
+                }
+                if (mirror) { if (mirror.src !== frame) mirror.src = frame; mirror.dataset.projectionMode = mediaMode; mirror.classList.remove('hidden'); }
             });
         }
 
@@ -1593,6 +1808,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
 
         function closeScreenTransferPeer() {
             clearScreenTransferTimers();
+            stopScreenFrameFallback();
             const closingSessionId = screenTransferSessionId;
             if (closingSessionId && broadcastChannel && localProjectorId) {
                 try { broadcastChannel.postMessage({ type: '__screen_capture_stop', sessionId: closingSessionId, projectorId: localProjectorId, timestamp: Date.now() }); } catch (_) {}
@@ -1621,6 +1837,10 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             closeScreenTransferPeer();
             const sessionId = 'screen-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 9);
             screenTransferSessionId = sessionId;
+            // El proyector recibe WebRTC como transporte principal. Si Safari entrega
+            // la pista pero no llega a decodificarla, el mismo proyector recibe cuadros
+            // JPEG locales a baja frecuencia hasta confirmar que el video ya se ve.
+            await startScreenFrameFallback(stream, sessionId);
             try {
                 const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
                 screenTransferPeer = pc;
@@ -1633,10 +1853,14 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 try {
                     const params = videoSender.getParameters();
                     params.encodings = params.encodings && params.encodings.length ? params.encodings : [{}];
-                    params.encodings[0].maxBitrate = screenCapturePurpose === 'youtube-monitor' ? 9000000 : 12000000;
-                    // En captura de pantalla prioriza mantener resolución; Safari
-                    // puede reducir la tasa de cuadros cuando falta ancho de banda.
-                    params.degradationPreference = 'maintain-resolution';
+                    const captureSettings = typeof track.getSettings === 'function' ? track.getSettings() : {};
+                    params.encodings[0].maxBitrate = screenCapturePurpose === 'youtube-monitor' ? 28000000 : 24000000;
+                    if (Number.isFinite(Number(captureSettings.frameRate)) && Number(captureSettings.frameRate) > 0) {
+                        params.encodings[0].maxFramerate = Math.min(60, Number(captureSettings.frameRate));
+                    } else params.encodings[0].maxFramerate = 60;
+                    // La captura de pantalla prioriza fluidez; solicitar 60 fps no
+                    // inventa cuadros si el iPad o la fuente entregan menos.
+                    params.degradationPreference = 'maintain-framerate';
                     await videoSender.setParameters(params);
                 } catch (e) { console.info('Se usarán los parámetros WebRTC predeterminados para la captura.', e); }
                 pc.onicecandidate = event => {
@@ -1672,24 +1896,32 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                     }
                     if (pc.connectionState === 'connected' && mediaMode === 'screen') {
                         const hasAudio = stream.getAudioTracks().some(track => track.readyState === 'live');
-                        setScreenCaptureStatus(screenCapturePurpose === 'youtube-monitor'
-                            ? (hasAudio ? 'Monitor YouTube en vivo con audio; se conserva el reproductor y su posición.' : 'Monitor YouTube en vivo; el navegador no envió pista de audio.')
-                            : (hasAudio ? 'Vídeo y pista de audio conectados al proyector' : 'Vídeo en tiempo real conectado; audio del sistema no capturado'));
+                        const actualFrameRate = typeof track.getSettings === 'function' ? Number(track.getSettings().frameRate) : 0;
+                        const frameRateLabel = actualFrameRate > 0 ? ` · ${Math.round(actualFrameRate)} fps` : '';
+                        setScreenCaptureStatus(screenFrameFallbackVisible
+                            ? 'El proyector está recibiendo fotogramas directos de alta resolución mientras WebRTC continúa conectado.'
+                            : screenCapturePurpose === 'youtube-monitor'
+                                ? (hasAudio ? `Monitor YouTube en vivo${frameRateLabel} con audio; se conserva el reproductor y su posición.` : `Monitor YouTube en vivo${frameRateLabel}; el navegador no envió pista de audio.`)
+                                : (hasAudio ? `Vídeo${frameRateLabel} y pista de audio conectados al proyector` : `Vídeo en tiempo real${frameRateLabel} conectado; audio del sistema no capturado`));
                     }
                     if (['failed', 'closed'].includes(pc.connectionState)) {
                         const isYouTubeMonitor = screenCapturePurpose === 'youtube-monitor';
-                        failScreenTransfer(sessionId,
-                            isYouTubeMonitor ? 'No se pudo establecer la conexión. La proyección anterior se restauró; vuelve a intentar cuando haya conexión.' : 'La conexión de captura falló. Se restauró el contenido anterior.',
-                            isYouTubeMonitor ? 'No se conectó el monitor YouTube; se restauró el contenido anterior.' : 'La captura perdió conexión; se restauró el contenido anterior.');
+                        if (isYouTubeMonitor) {
+                            failYouTubeMonitorTransfer(sessionId, 'No se pudo establecer la conexión. La proyección anterior se restauró; vuelve a intentar cuando haya conexión.', 'No se conectó el monitor YouTube; se restauró el contenido anterior.');
+                        } else if (!screenFrameFallbackVisible) {
+                            setScreenCaptureStatus('WebRTC no entregó video; el proyector está usando el respaldo de fotogramas local.');
+                        }
                     } else if (pc.connectionState === 'disconnected') {
-                        setScreenCaptureStatus(screenCapturePurpose === 'youtube-monitor' ? 'La conexión del monitor se interrumpió. Intentando recuperarla…' : 'La conexión de captura se interrumpió. Intentando recuperarla…');
+                        if (!screenFrameFallbackVisible) setScreenCaptureStatus(screenCapturePurpose === 'youtube-monitor' ? 'La conexión del monitor se interrumpió. Intentando recuperarla…' : 'La conexión de captura se interrumpió. Intentando recuperarla…');
                         if (!screenTransferDisconnectTimeoutId) {
                             screenTransferDisconnectTimeoutId = setTimeout(() => {
                                 if (screenTransferSessionId === sessionId && pc.connectionState !== 'connected') {
                                     const isYouTubeMonitor = screenCapturePurpose === 'youtube-monitor';
-                                    failScreenTransfer(sessionId,
-                                        isYouTubeMonitor ? 'La conexión no se recuperó. La proyección anterior se restauró; vuelve a capturar el monitor.' : 'La conexión no se recuperó. Se restauró el contenido anterior.',
-                                        isYouTubeMonitor ? 'Se perdió la conexión con Monitor YouTube; se restauró la proyección anterior.' : 'Se perdió la conexión de captura; se restauró el contenido anterior.');
+                                    if (isYouTubeMonitor) {
+                                        failYouTubeMonitorTransfer(sessionId, 'La conexión no se recuperó. La proyección anterior se restauró; vuelve a capturar el monitor.', 'Se perdió la conexión con Monitor YouTube; se restauró la proyección anterior.');
+                                    } else {
+                                        setScreenCaptureStatus('La conexión WebRTC no se recuperó; el respaldo local mantiene la captura visible en el proyector.');
+                                    }
                                 }
                             }, 8000);
                         }
@@ -1698,9 +1930,12 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 screenTransferConnectTimeoutId = setTimeout(() => {
                     if (screenTransferSessionId === sessionId && pc.connectionState !== 'connected') {
                         const isYouTubeMonitor = screenCapturePurpose === 'youtube-monitor';
-                        failScreenTransfer(sessionId,
-                            isYouTubeMonitor ? 'El proyector no confirmó la conexión a tiempo. Se restauró el contenido anterior; comprueba que la ventana de proyección siga abierta.' : 'La conexión de captura tardó demasiado. Se restauró el contenido anterior.',
-                            isYouTubeMonitor ? 'El monitor no llegó al proyector; se restauró el contenido anterior.' : 'La captura tardó demasiado; se restauró el contenido anterior.');
+                        screenTransferConnectTimeoutId = 0;
+                        if (isYouTubeMonitor) {
+                            failYouTubeMonitorTransfer(sessionId, 'El proyector no confirmó la conexión a tiempo. Se restauró el contenido anterior; comprueba que la ventana de proyección siga abierta.', 'El monitor no llegó al proyector; se restauró el contenido anterior.');
+                        } else {
+                            setScreenCaptureStatus('WebRTC tardó en responder; la captura continúa hacia el proyector por el respaldo local.');
+                        }
                     }
                 }, 30000);
                 let answerApplied = false;
@@ -1717,7 +1952,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                             if (screenCapturePurpose === 'youtube-monitor') {
                                 failYouTubeMonitorTransfer(sessionId, 'No se pudo completar la conexión WebRTC. La proyección anterior se restauró; vuelve a intentarlo.', 'No se pudo conectar Monitor YouTube; se restauró la proyección anterior.');
                             } else {
-                                failScreenTransfer(sessionId, 'No se pudo completar WebRTC. Se restauró el contenido anterior.', 'No se pudo conectar la captura; se restauró el contenido anterior.');
+                                setScreenCaptureStatus(screenFrameFallbackVisible ? 'La captura sigue visible mediante el respaldo local del proyector.' : 'No se pudo completar WebRTC; el proyector continúa usando el respaldo local.');
                             }
                         }
                     });
@@ -1737,9 +1972,10 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                     setScreenCaptureStatus('No se pudo conectar el monitor. La proyección anterior se mantuvo; vuelve a intentar cuando haya conexión.');
                     showToast('No se conectó el monitor YouTube; se conservó el contenido anterior.', 'error');
                 } else {
-                    closeScreenTransferPeer();
-                    setScreenCaptureStatus('No se pudo conectar el vídeo. Comprueba la conexión con el proyector.');
-                    showToast('No se pudo conectar la captura al proyector.', 'error');
+                    clearScreenTransferTimers();
+                    try { if (screenTransferPeer) screenTransferPeer.close(); } catch (_) {}
+                    screenTransferPeer = null;
+                    setScreenCaptureStatus(screenFrameFallbackVisible ? 'La captura sigue visible mediante el respaldo local del proyector.' : 'WebRTC no pudo iniciar; el proyector recibirá la captura por el respaldo local.');
                 }
             }
         }
@@ -1909,12 +2145,60 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                     if (data.projectorId === localProjectorId) showLocalVideoPreviewFrame(data.frame, data.timestamp);
                     return;
                 }
+                if (data.type === '__screen_capture_frame_ack') {
+                    if (data.projectorId !== localProjectorId || data.sessionId !== screenFrameFallbackSessionId) return;
+                    if (Number(data.sequence) === screenFrameFallbackPendingSequence) {
+                        screenFrameFallbackPendingSequence = 0;
+                        const firstFrameVisible = !screenFrameFallbackVisible;
+                        screenFrameFallbackVisible = true;
+                        if (screenFrameFallbackAckTimeoutId) clearTimeout(screenFrameFallbackAckTimeoutId);
+                        screenFrameFallbackAckTimeoutId = 0;
+                        if (firstFrameVisible) setScreenCaptureStatus(`El proyector recibe la captura a ${data.width} × ${data.height}; WebRTC sigue intentando la transmisión fluida.`);
+                    }
+                    return;
+                }
+                if (data.type === '__screen_capture_playback_status') {
+                    if (data.projectorId !== localProjectorId) return;
+                    if (data.sessionId && screenTransferSessionId && data.sessionId !== screenTransferSessionId) return;
+                    if (data.state === 'playing') {
+                        if (screenFrameFallbackSessionId) stopScreenFrameFallback();
+                        const frameRateLabel = Number(data.frameRate) > 0 ? ` · ${Math.round(Number(data.frameRate))} fps` : '';
+                        setScreenCaptureStatus(`Captura visible en el proyector: ${data.width} × ${data.height}${frameRateLabel}.`);
+                    } else if (data.state === 'fallback-playing') {
+                        const firstFrameVisible = !screenFrameFallbackVisible;
+                        screenFrameFallbackVisible = true;
+                        const frameRateLabel = Number(data.frameRate) > 0 ? ` · objetivo ${Math.round(Number(data.frameRate))} fps` : '';
+                        if (firstFrameVisible) setScreenCaptureStatus(`El proyector recibe la captura a ${data.width} × ${data.height}${frameRateLabel}; WebRTC sigue intentando la transmisión fluida.`);
+                    } else if (data.state === 'blocked') {
+                        if (screenFrameFallbackVisible) return;
+                        setScreenCaptureStatus('Safari no inició WebRTC automáticamente; el proyector está cambiando a fotogramas de la fuente original.');
+                    } else if (data.state === 'track-received') {
+                        if (screenFrameFallbackVisible) return;
+                        setScreenCaptureStatus('La pista llegó al proyector; esperando que Safari decodifique el primer fotograma.');
+                    } else if (data.state === 'no-frames') {
+                        if (screenFrameFallbackVisible) return;
+                        setScreenCaptureStatus(`Safari aún no decodifica fotogramas (${data.width} × ${data.height}, estado ${data.readyState}); se usará el flujo directo de alta resolución.`);
+                    } else if (data.state === 'waiting') {
+                        if (screenFrameFallbackVisible) return;
+                        setScreenCaptureStatus('Captura conectada; esperando el primer fotograma del proyector…');
+                    }
+                    return;
+                }
                 if (data.type === '__projection_asset_status') {
                     if (data.controllerId !== projectorControllerId) return;
                     const kind = data.kind === 'background' ? 'background' : 'transition';
                     const expectedId = kind === 'background' ? projectionStyles.backgroundVideoId : projectionStyles.transitionVideoId;
                     if (data.assetId && expectedId !== data.assetId) return;
                     setProjectionAssetStatus(kind, String(data.message || 'Estado multimedia actualizado'), !!expectedId);
+                    return;
+                }
+                if (data.type === '__projection_background_time') {
+                    if (data.controllerId !== projectorControllerId || data.assetId !== projectionStyles.backgroundVideoId) return;
+                    ['preview-background-video', 'local-fs-background-video'].forEach(id => {
+                        const video = document.getElementById(id);
+                        const loop = video && video._projectionBackgroundLoop;
+                        if (loop && typeof loop.sync === 'function') loop.sync(data.currentTime);
+                    });
                     return;
                 }
                 if (data.type === '__local_video_status') {
@@ -2286,6 +2570,10 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                     isClearText = saved.isClearText || false;
                     if(saved.cultoList) cultoList = saved.cultoList;
                     if(saved.projectionStyles) projectionStyles = {...projectionStyles, ...saved.projectionStyles};
+                    if (projectionStyles.respectReducedMotionConfigured !== true) {
+                        projectionStyles.respectReducedMotion = false;
+                        projectionStyles.respectReducedMotionConfigured = false;
+                    } else projectionStyles.respectReducedMotion = !!projectionStyles.respectReducedMotion;
 
                     document.getElementById('style-font').value = projectionStyles.font;
                     document.getElementById('style-size').value = projectionStyles.size;
@@ -2294,6 +2582,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                     document.getElementById('val-overlay-opacity').innerText = projectionStyles.bgOpacity + "%";
                     document.getElementById('style-bgcolor').value = projectionStyles.bgcolor;
                     document.getElementById('style-textcolor').value = projectionStyles.textcolor;
+                    document.getElementById('projection-respect-reduced-motion').checked = projectionStyles.respectReducedMotion;
                     projectionStyles.citationFont = projectionStyles.citationFont || projectionStyles.font || 'Inter';
                     projectionStyles.citationSize = projectionStyles.citationSize || '1.6';
                     projectionStyles.citationColor = projectionStyles.citationColor || projectionStyles.textcolor || '#ffffff';
@@ -2547,12 +2836,22 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             isStandby = !!saved.isStandby;
             if (Array.isArray(saved.cultoList)) cultoList = saved.cultoList;
             if (saved.projectionStyles) projectionStyles = { ...projectionStyles, ...saved.projectionStyles };
-            if (!['none','fade','slide-up','slide-left','zoom'].includes(projectionStyles.textAnimation)) projectionStyles.textAnimation = 'fade';
-            if (!['none','fade','wipe','zoom'].includes(projectionStyles.mediaTransition)) projectionStyles.mediaTransition = 'fade';
+            if (!['none','fade','slide-up','slide-left','slide-down','slide-right','zoom','blur','reveal'].includes(projectionStyles.textAnimation)) projectionStyles.textAnimation = 'fade';
+            if (!['none','fade','wipe','zoom','logo'].includes(projectionStyles.mediaTransition)) projectionStyles.mediaTransition = 'fade';
+            const textAnimationDuration = Number(projectionStyles.textAnimationDurationMs);
+            projectionStyles.textAnimationDurationMs = Number.isFinite(textAnimationDuration) ? Math.min(5000, Math.max(100, Math.round(textAnimationDuration / 50) * 50)) : 350;
+            const mediaTransitionDuration = Number(projectionStyles.mediaTransitionDurationMs);
+            projectionStyles.mediaTransitionDurationMs = Number.isFinite(mediaTransitionDuration) ? Math.min(6000, Math.max(300, Math.round(mediaTransitionDuration / 50) * 50)) : 700;
+            if (projectionStyles.respectReducedMotionConfigured !== true) {
+                // En versiones anteriores la casilla estaba activada por defecto y
+                // podía anular silenciosamente una duración personalizada de 5 s.
+                projectionStyles.respectReducedMotion = false;
+                projectionStyles.respectReducedMotionConfigured = false;
+            } else projectionStyles.respectReducedMotion = !!projectionStyles.respectReducedMotion;
             projectionStyles.backgroundVideoId = String(projectionStyles.backgroundVideoId || '');
             projectionStyles.transitionVideoId = String(projectionStyles.transitionVideoId || '');
             projectionStyles.bgVideoFallbackType = ['color','gradient','image'].includes(projectionStyles.bgVideoFallbackType) ? projectionStyles.bgVideoFallbackType : 'color';
-            if (['bible','local','youtube','capture','karaoke','design'].includes(saved.workspace)) savedWorkspace = saved.workspace;
+            if (['bible','culto','local','youtube','capture','karaoke','design'].includes(saved.workspace)) savedWorkspace = saved.workspace;
 
             const karaoke = saved.karaoke || {};
             document.getElementById('karaoke-track').value = karaoke.track || '';
@@ -2585,6 +2884,11 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             document.getElementById('style-textcolor').value = projectionStyles.textcolor;
             document.getElementById('projection-text-animation').value = projectionStyles.textAnimation;
             document.getElementById('projection-media-transition').value = projectionStyles.mediaTransition;
+            document.getElementById('projection-text-duration').value = projectionStyles.textAnimationDurationMs;
+            document.getElementById('projection-respect-reduced-motion').checked = projectionStyles.respectReducedMotion;
+            document.getElementById('val-projection-text-duration').textContent = projectionStyles.textAnimationDurationMs + ' ms';
+            document.getElementById('projection-transition-duration').value = projectionStyles.mediaTransitionDurationMs;
+            document.getElementById('val-projection-transition-duration').textContent = projectionStyles.mediaTransitionDurationMs + ' ms';
             projectionStyles.citationSize = String(Math.min(10, Math.max(0.8, Number(projectionStyles.citationSize) || 1.6)));
             projectionStyles.citationFont = projectionStyles.citationFont || projectionStyles.font || 'Inter';
             projectionStyles.citationColor = projectionStyles.citationColor || projectionStyles.textcolor || '#ffffff';
@@ -2912,7 +3216,11 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             chapters.forEach(chap => {
                 const btn = document.createElement('button');
                 const isSelected = chap === selectedChapter;
-                btn.className = `aspect-square rounded-xl text-xs font-extrabold transition flex items-center justify-center border ${
+                btn.type = 'button';
+                btn.setAttribute('aria-label', `${selectedBook}, capítulo ${chap}`);
+                btn.setAttribute('aria-pressed', String(isSelected));
+                btn.title = `Capítulo ${chap}`;
+                btn.className = `min-w-0 w-full h-full rounded-xl text-[11px] font-extrabold transition flex items-center justify-center border ${
                     isSelected ? 'bg-emerald-600 text-white border-emerald-500 shadow-md shadow-emerald-950/40' : 'bg-gray-900 text-gray-300 border-gray-800 hover:bg-gray-800 hover:text-white'
                 }`;
                 btn.innerText = chap;
@@ -2925,6 +3233,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 };
                 container.appendChild(btn);
             });
+            container.querySelector('button[aria-pressed="true"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
         }
 
         function renderVerses() {
@@ -3034,36 +3343,68 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
 
         function renderCultoList() {
             const container = document.getElementById('culto-list-items');
+            const search = String(document.getElementById('culto-list-search')?.value || '').trim().toLocaleLowerCase();
+            const count = document.getElementById('culto-list-count');
             container.innerHTML = '';
             if (cultoList.length === 0) {
+                if (count) count.textContent = '0 elementos';
                 container.innerHTML = `<p class="text-center text-gray-500 text-xs py-8">La lista del culto está vacía.</p>`;
                 return;
             }
 
-            cultoList.forEach((item, index) => {
+            const matches = cultoList.map((item, index) => ({ item, index })).filter(({ item }) =>
+                !search || `${item.citation || ''} ${item.text || ''}`.toLocaleLowerCase().includes(search)
+            );
+            if (count) count.textContent = `${matches.length} ${matches.length === 1 ? 'elemento' : 'elementos'}`;
+            if (matches.length === 0) {
+                container.innerHTML = `<p class="culto-list-empty text-center text-gray-500 text-sm py-8">No hay pasajes que coincidan con la búsqueda.</p>`;
+                return;
+            }
+
+            matches.forEach(({ item, index }) => {
                 const card = document.createElement('div');
-                card.className = "bg-gray-900 border border-gray-800 p-2.5 rounded-xl flex items-center justify-between gap-2 group hover:border-blue-500/50 transition";
-                card.innerHTML = `
-                    <div class="flex-1 min-w-0 cursor-pointer">
-                        <span class="text-[10px] font-bold text-blue-400 block truncate">${item.citation}</span>
-                        <p class="text-xs text-gray-300 truncate">${item.text}</p>
-                    </div>
-                    <div class="flex items-center gap-1">
-                        <button class="btn-play text-emerald-400 hover:text-emerald-300 p-1.5 rounded-lg bg-emerald-950/40 border border-emerald-900/50 text-xs font-bold" title="Proyectar ahora">
-                            <i class="fa-solid fa-play"></i>
-                        </button>
-                        <button class="btn-del-item text-gray-500 hover:text-red-400 p-1.5 rounded-lg text-xs" title="Quitar">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                `;
-                card.querySelector('.flex-1').onclick = () => projectVerse(item.text, item.citation, null);
-                card.querySelector('.btn-play').onclick = () => projectVerse(item.text, item.citation, null);
-                card.querySelector('.btn-del-item').onclick = () => {
+                card.className = "culto-list-card bg-gray-900 border border-gray-800 p-2.5 rounded-xl flex items-center justify-between gap-2 group hover:border-blue-500/50 transition";
+                const openButton = document.createElement('button');
+                openButton.type = 'button';
+                openButton.className = 'culto-list-open flex-1 min-w-0 text-left cursor-pointer';
+                openButton.setAttribute('aria-label', `Proyectar ${item.citation || 'pasaje'}: ${item.text || ''}`);
+                const header = document.createElement('span');
+                header.className = 'flex items-center gap-2 mb-1';
+                const number = document.createElement('span');
+                number.className = 'culto-list-number shrink-0 inline-flex items-center justify-center rounded-md bg-blue-500/10 border border-blue-400/15 px-1.5 py-0.5 text-[10px] font-black text-blue-200';
+                number.textContent = String(index + 1).padStart(2, '0');
+                const citation = document.createElement('span');
+                citation.className = 'culto-list-citation text-[10px] font-bold text-blue-400 block truncate';
+                citation.textContent = item.citation || 'Sin referencia';
+                header.append(number, citation);
+                const verse = document.createElement('p');
+                verse.className = 'culto-list-text text-xs text-gray-300';
+                verse.textContent = item.text || '';
+                openButton.append(header, verse);
+                openButton.onclick = () => projectVerse(item.text, item.citation, null);
+
+                const actions = document.createElement('div');
+                actions.className = 'flex items-center gap-1 shrink-0';
+                const playButton = document.createElement('button');
+                playButton.type = 'button';
+                playButton.className = 'btn-play text-emerald-300 hover:text-white p-2 rounded-lg bg-emerald-950/40 border border-emerald-900/50 text-xs font-bold';
+                playButton.title = 'Proyectar ahora';
+                playButton.setAttribute('aria-label', `Proyectar ${item.citation || 'pasaje'}`);
+                playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
+                playButton.onclick = () => projectVerse(item.text, item.citation, null);
+                const deleteButton = document.createElement('button');
+                deleteButton.type = 'button';
+                deleteButton.className = 'btn-del-item text-gray-500 hover:text-red-300 p-2 rounded-lg text-xs';
+                deleteButton.title = 'Quitar del orden del culto';
+                deleteButton.setAttribute('aria-label', `Quitar ${item.citation || 'pasaje'}`);
+                deleteButton.innerHTML = '<i class="fa-solid fa-trash"></i>';
+                deleteButton.onclick = () => {
                     cultoList.splice(index, 1);
                     renderCultoList();
                     saveOperatorState();
                 };
+                actions.append(playButton, deleteButton);
+                card.append(openButton, actions);
                 container.appendChild(card);
             });
         }
@@ -3088,6 +3429,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 controllerId: projectorControllerId,
                 timestamp: Date.now()
             };
+            latestOperatorProjectionPayload = payload;
 
             try { if (broadcastChannel) broadcastChannel.postMessage(payload); } catch (e) {}
             try {
@@ -3098,11 +3440,14 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 localStorage.setItem('biblical_projector_data', JSON.stringify(storagePayload));
             } catch (e) {}
             // Canal directo adicional: útil mientras la referencia de la ventana siga disponible.
-            try { if (externalWindow && !externalWindow.closed) externalWindow.postMessage(payload, '*'); } catch (e) {}
+            // La ventana del proyector es la única propietaria del video de captura.
+            // No mandar también el mismo estado por window.postMessage, porque puede
+            // competir con BroadcastChannel y dejar opaco el video ya recibido.
+            try { if (externalWindow && !externalWindow.closed && payload.mediaMode !== 'screen') externalWindow.postMessage(payload, '*'); } catch (e) {}
             refreshYouTubeControls();
 
             updateProjectorDOM(document, payload, false);
-            if (externalWindow && !externalWindow.closed && payload.mediaMode !== 'video') {
+            if (externalWindow && !externalWindow.closed && payload.mediaMode !== 'video' && payload.mediaMode !== 'screen') {
                 // El blob: de la consola no existe en la otra ventana. Durante video,
                 // proyector.html conserva su URL local recibida y aplica el estado por canal.
                 try { updateProjectorDOM(externalWindow.document, payload); } catch (e) {}
@@ -3133,80 +3478,90 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             }
         }
 
-        async function updateOperatorBackgroundVideo(videoEl, assetId, shouldShow) {
-            if (!videoEl) return;
-            const id = shouldShow ? String(assetId || '') : '';
-            videoEl.muted = true;
-            videoEl.defaultMuted = true;
-            videoEl.playsInline = true;
-            videoEl.loop = true;
-            videoEl.setAttribute('muted', '');
-            videoEl.setAttribute('playsinline', '');
-            if (!id) {
-                videoEl.dataset.shouldPlay = '';
-                videoEl.pause();
-                videoEl.classList.add('hidden');
-                return;
+        function updateOperatorBackgroundVideo(videoEl, nextVideoEl, assetId, shouldShow) {
+            if (!videoEl || !nextVideoEl || !window.ProjectionBackgroundLoop) return;
+            let loop = videoEl._projectionBackgroundLoop;
+            if (!loop) {
+                loop = window.ProjectionBackgroundLoop.create(videoEl, nextVideoEl, {
+                    getUrl: getProjectionMediaUrl,
+                    onReady: () => setProjectionAssetStatus('background', 'Fondo de video listo · bucle con fundido', false),
+                    onError: (message, error) => {
+                        setProjectionAssetStatus('background', message, true);
+                        if (error) console.warn('No se pudo reproducir el video de fondo:', error);
+                    }
+                });
+                videoEl._projectionBackgroundLoop = loop;
             }
-            videoEl.dataset.shouldPlay = id;
-            videoEl.classList.remove('hidden');
-            if (videoEl.dataset.assetId !== id || !videoEl.getAttribute('src')) {
-                if (videoEl.dataset.loadingAsset === id) return;
-                videoEl.pause();
-                videoEl.dataset.loadingAsset = id;
-                videoEl.removeAttribute('src');
-                videoEl.load();
-                try {
-                    const url = await getProjectionMediaUrl(id);
-                    if (videoEl.dataset.loadingAsset === id) videoEl.dataset.loadingAsset = '';
-                    if (videoEl.dataset.shouldPlay !== id) return;
-                    videoEl.dataset.assetId = id;
-                    videoEl.src = url;
-                    videoEl.load();
-                    videoEl.play().catch(error => {
-                        if (videoEl.dataset.assetId !== id || videoEl.dataset.shouldPlay !== id) return;
-                        videoEl.classList.add('hidden');
-                        setProjectionAssetStatus('background', 'Safari bloqueó el inicio automático; toca la página y vuelve a activar el fondo', true);
-                        console.warn('No se pudo iniciar el video de fondo:', error);
-                    });
-                } catch (error) {
-                    if (videoEl.dataset.loadingAsset === id) videoEl.dataset.loadingAsset = '';
-                    if (videoEl.dataset.shouldPlay !== id) return;
-                    videoEl.classList.add('hidden');
-                    setProjectionAssetStatus('background', 'El video no está disponible en este dispositivo; se muestra el fondo de respaldo', false);
-                    console.warn('No se pudo cargar el video de fondo:', error);
-                }
-                return;
-            }
-            if (videoEl.paused) videoEl.play().catch(error => {
-                if (videoEl.dataset.shouldPlay !== id) return;
-                videoEl.classList.add('hidden');
-                setProjectionAssetStatus('background', 'Safari bloqueó el inicio automático; se muestra el fondo de respaldo', true);
-                console.warn('No se pudo reanudar el video de fondo:', error);
-            });
+            loop.set(assetId, shouldShow);
         }
+        function resumeOperatorBackgroundVideos() {
+            if (document.hidden || !latestOperatorProjectionPayload) return;
+            const data = latestOperatorProjectionPayload;
+            const visible = data.styles?.bgType === 'video' && data.mediaMode === 'none' && !data.isBlackout;
+            updateOperatorBackgroundVideo(document.getElementById('preview-background-video'), document.getElementById('preview-background-video-next'), data.styles?.backgroundVideoId, visible);
+            const localFs = document.getElementById('local-fullscreen-container');
+            const localFsVisible = !!localFs && !localFs.classList.contains('hidden');
+            updateOperatorBackgroundVideo(document.getElementById('local-fs-background-video'), document.getElementById('local-fs-background-video-next'), data.styles?.backgroundVideoId, visible && localFsVisible);
+        }
+        document.addEventListener('visibilitychange', resumeOperatorBackgroundVideos);
+        window.addEventListener('pageshow', resumeOperatorBackgroundVideos);
 
-        function animateProjectionContent(element, contentKey, animation, reducedMotion) {
+        function animateProjectionContent(element, contentKey, animation, reducedMotion, durationMs = 350, animationTarget = null) {
             if (!element) return;
             const key = String(contentKey || '');
             const previousKey = element.dataset.projectionContentKey;
             element.dataset.projectionContentKey = key;
             if (previousKey === undefined || previousKey === key) return;
-            const target = element.parentElement || element;
-            const classes = ['projection-enter-fade','projection-enter-slide-up','projection-enter-slide-left','projection-enter-zoom'];
+            const target = animationTarget || element.parentElement || element;
+            const classes = ['projection-enter-fade','projection-enter-slide-up','projection-enter-slide-left','projection-enter-slide-down','projection-enter-slide-right','projection-enter-zoom','projection-enter-blur','projection-enter-reveal'];
             target.classList.remove(...classes);
             if (!animation || animation === 'none' || reducedMotion || !classes.includes(`projection-enter-${animation}`)) return;
+            const duration = Math.min(5000, Math.max(100, Number(durationMs) || 350));
+            target.style.setProperty('animation-duration', duration + 'ms', 'important');
             void target.offsetWidth;
             target.classList.add(`projection-enter-${animation}`);
         }
 
+        function applyKaraokeBackgroundStyle(element, style = {}) {
+            if (!element) return;
+            const transparent = style.transparent === true;
+            const mode = String(style.bgType || 'color');
+            const image = String(style.bgImage || '');
+            const gradient = String(style.bgGradient || 'linear-gradient(135deg,#020617,#1e1b4b)');
+            const color = String(style.bgColor || '#000000');
+            const opacityValue = style.bgOpacity === undefined ? 100 : Number(style.bgOpacity);
+            const opacity = Math.max(0, Math.min(100, Number.isFinite(opacityValue) ? opacityValue : 100)) / 100;
+            const previous = element._projectionKaraokeBackgroundStyle;
+            if (!previous || previous.opacity !== opacity) element.style.opacity = String(opacity);
+            if (!previous || previous.transparent !== transparent || previous.mode !== mode || previous.image !== image || previous.gradient !== gradient || previous.color !== color) {
+                if (transparent) {
+                    element.style.background = 'transparent';
+                    element.style.backgroundImage = 'none';
+                } else if (mode === 'image' && image) {
+                    element.style.background = 'none';
+                    element.style.backgroundImage = `url("${image.replace(/"/g, '%22')}")`;
+                    element.style.backgroundSize = 'cover';
+                    element.style.backgroundPosition = 'center';
+                } else if (mode === 'gradient') {
+                    element.style.background = gradient;
+                    element.style.backgroundImage = 'none';
+                } else {
+                    element.style.background = color;
+                    element.style.backgroundImage = 'none';
+                }
+            }
+            element._projectionKaraokeBackgroundStyle = { transparent, mode, image, gradient, color, opacity };
+        }
+
         function updateProjectorDOM(docObj, data, isLocalFs = false) {
             const prefix = isLocalFs ? 'local-fs-' : (docObj === document ? 'preview-' : 'proj-');
+            if (docObj.documentElement) docObj.documentElement.dataset.projectionMotion = data.styles?.respectReducedMotion === false ? 'full' : 'reduced';
 
             const textEl = docObj.getElementById(prefix + 'text');
             const citationEl = docObj.getElementById(prefix + 'citation');
             const backdropEl = docObj.getElementById(prefix + 'backdrop');
             const backgroundVideoEl = docObj.getElementById(prefix + 'background-video');
+            const backgroundVideoNextEl = docObj.getElementById(prefix + 'background-video-next');
             const overlayEl = docObj.getElementById(prefix + 'overlay');
             const videoEl = docObj.getElementById(prefix + 'video');
             const youtubeEl = docObj.getElementById(prefix + 'youtube');
@@ -3215,6 +3570,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             const karaokeBoxEl = docObj.getElementById(prefix + 'karaoke');
             const karaokeBgEl = docObj.getElementById(prefix + 'karaoke-bg');
             const karaokeTextEl = docObj.getElementById(prefix + 'karaoke-stanza');
+            const screenCapturePreviewNote = docObj.getElementById('preview-screen-capture-note');
             const karaoke = data.karaoke || {};
             const karaokeStyle = karaoke.style || {};
             const karaokeVisible = !!karaoke.active && !!String(karaoke.stanza || '').trim() && !data.isClearText && !data.isStandby && !data.isBlackout && data.mediaMode !== 'screen';
@@ -3223,7 +3579,8 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
 
             if (data.isBlackout) {
                 if (backdropEl) backdropEl.style.background = '#000000';
-                if (backgroundVideoEl) { backgroundVideoEl.pause(); backgroundVideoEl.classList.add('hidden'); }
+                if (docObj === document || isLocalFs) updateOperatorBackgroundVideo(backgroundVideoEl, backgroundVideoNextEl, data.styles?.backgroundVideoId, false);
+                else [backgroundVideoEl, backgroundVideoNextEl].forEach(layer => { if (layer) { layer.pause(); layer.classList.remove('projection-background-loop-visible', 'projection-background-loop-active'); } });
                 if (textEl) textEl.innerText = '';
                 if (citationEl) citationEl.innerText = '';
                 if (logoStandbyEl) logoStandbyEl.classList.add('hidden');
@@ -3231,7 +3588,13 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 if (karaokeBoxEl) karaokeBoxEl.classList.add('hidden');
                 if (videoEl) videoEl.classList.add('hidden');
                 if (youtubeEl) youtubeEl.classList.add('hidden');
+                if (screenCapturePreviewNote) { screenCapturePreviewNote.classList.add('hidden'); screenCapturePreviewNote.style.display = 'none'; }
                 return;
+            }
+
+            if (screenCapturePreviewNote && data.mediaMode !== 'screen') {
+                screenCapturePreviewNote.classList.add('hidden');
+                screenCapturePreviewNote.style.display = 'none';
             }
 
             if (youtubeEl) {
@@ -3249,28 +3612,34 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             }
 
             if (videoEl) {
-                if ((videoEl.id === 'preview-video' || videoEl.id === 'local-fs-video') && data.mediaMode === 'video') {
+                if ((videoEl.id === 'preview-video' || videoEl.id === 'local-fs-video') && data.mediaMode === 'screen') {
+                    const mirror = docObj.getElementById(videoEl.id === 'preview-video' ? 'preview-video-mirror' : 'local-fs-video-mirror');
+                    // Prioridad de captura: no gastar ciclos de decodificación en la
+                    // miniatura. El MediaStream se envía al proyector por WebRTC y el
+                    // respaldo de fotogramas se genera fuera de esta vista previa.
+                    try { videoEl.pause(); videoEl.removeAttribute('src'); videoEl.srcObject = null; } catch (_) {}
+                    videoEl.classList.add('hidden');
+                    if (mirror) { mirror.removeAttribute('src'); mirror.dataset.projectionMode = 'screen'; mirror.classList.add('hidden'); }
+                    if (screenCapturePreviewNote && !isLocalFs) { screenCapturePreviewNote.classList.remove('hidden'); screenCapturePreviewNote.style.display = 'flex'; }
+                } else if ((videoEl.id === 'preview-video' || videoEl.id === 'local-fs-video') && data.mediaMode === 'video') {
                     // No asignar src ni llamar play(): la vista previa es una imagen espejo
                     // enviada por el proyector. No hay segundo reproductor ni segundo audio.
                     try { videoEl.pause(); videoEl.removeAttribute('src'); videoEl.srcObject = null; } catch (_) {}
                     videoEl.classList.add('hidden');
                     const mirror = docObj.getElementById(videoEl.id === 'preview-video' ? 'preview-video-mirror' : 'local-fs-video-mirror');
-                    if (mirror) mirror.classList.remove('hidden');
+                    if (mirror) { mirror.dataset.projectionMode = 'video'; mirror.classList.remove('hidden'); }
                 } else if (videoEl.id === 'preview-video' || videoEl.id === 'local-fs-video') {
-                    // La captura de pantalla NUNCA se muestra en una vista previa local.
-                    // Solo la ventana de proyección recibe la fuente de captura.
                     try { videoEl.pause(); videoEl.removeAttribute('src'); videoEl.srcObject = null; } catch (_) {}
                     videoEl.classList.add('hidden');
                     const mirror = docObj.getElementById(videoEl.id === 'preview-video' ? 'preview-video-mirror' : 'local-fs-video-mirror');
-                    if (mirror) { mirror.removeAttribute('src'); mirror.classList.add('hidden'); }
-                } else if (videoEl.id === 'proj-video' && data.mediaMode === 'screen' && window.screenStream) {
-                    // Asignar el MediaStream directamente al video de la ventana del proyector.
-                    // No usar el reproductor ni la vista previa del panel de control.
-                    videoEl.muted = true;
-                    videoEl.playsInline = true;
-                    if (videoEl.srcObject !== window.screenStream) videoEl.srcObject = window.screenStream;
-                    videoEl.classList.remove('hidden');
-                    videoEl.play().catch(() => {});
+                    if (mirror) { mirror.removeAttribute('src'); mirror.dataset.projectionMode = data.mediaMode || 'none'; mirror.classList.add('hidden'); }
+                } else if (videoEl.id === 'proj-video' && data.mediaMode === 'screen') {
+                    // El controlador no escribe en la capa de captura del proyector.
+                    // Esa ventana es la única propietaria del MediaStream remoto y su
+                    // estado visual; los cambios de estilo de la consola no deben
+                    // volver transparente el video mientras WebRTC lo decodifica.
+                    videoEl.pause(); videoEl.classList.add('hidden');
+                    if (videoEl.srcObject) videoEl.srcObject = null;
                 } else if (data.mediaMode === 'video' && data.videoUrl) {
                     videoEl.srcObject = null;
                     const sourceChanged = videoEl.getAttribute('src') !== data.videoUrl;
@@ -3299,6 +3668,15 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 }
             }
 
+            const directCaptureVideo = docObj.getElementById('proj-screen-video');
+            if (directCaptureVideo && data.mediaMode !== 'screen' && directCaptureVideo.dataset.directScreenCapture === 'true') {
+                directCaptureVideo.pause();
+                directCaptureVideo.srcObject = null;
+                directCaptureVideo.dataset.directScreenCapture = 'false';
+                directCaptureVideo.dataset.directScreenStreamKey = '';
+                directCaptureVideo.classList.add('hidden');
+            }
+
             if (textEl) {
                 textEl.innerText = karaokeVisible ? '' : (data.text || '');
                 textEl.style.fontFamily = `"${data.styles.font}", sans-serif`;
@@ -3310,8 +3688,8 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 if (data.styles.hasShadow) textEl.classList.add('text-projection-shadow');
                 else textEl.classList.remove('text-projection-shadow');
                 const verseKey = JSON.stringify([data.citation || '', data.text || '', !!karaokeVisible]);
-                const reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-                animateProjectionContent(textEl, verseKey, data.styles.textAnimation || 'fade', reducedMotion);
+                const reducedMotion = data.styles?.respectReducedMotion !== false && !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+                animateProjectionContent(textEl, verseKey, data.styles.textAnimation || 'fade', reducedMotion, data.styles.textAnimationDurationMs);
             }
 
             if (citationEl) {
@@ -3352,8 +3730,11 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                     backdropEl.style.background = data.styles.bgcolor || '#0f172a';
                     backdropEl.style.backgroundImage = 'none';
                 } else if (fallbackType === 'gradient') {
-                    backdropEl.style.background = data.styles.gradient || '#0f172a';
-                    backdropEl.style.backgroundImage = 'none';
+                    const gradient = String(data.styles.gradient || '').trim();
+                    backdropEl.style.backgroundColor = '#0f172a';
+                    backdropEl.style.backgroundImage = /^(linear|radial|conic)-gradient\(/i.test(gradient) ? gradient : 'linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%)';
+                    backdropEl.style.backgroundSize = 'cover';
+                    backdropEl.style.backgroundPosition = 'center';
                 } else if (fallbackType === 'image') {
                     backdropEl.style.background = 'none';
                     backdropEl.style.backgroundImage = data.styles.bgImage ? `url("${String(data.styles.bgImage).replace(/"/g, '%22')}")` : 'none';
@@ -3362,9 +3743,11 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 }
             }
 
-            const backgroundVideoVisible = data.styles.bgType === 'video' && data.mediaMode === 'none' && !data.isStandby && !data.isBlackout && !data.isClearText;
+            const localFsContainer = isLocalFs ? docObj.getElementById('local-fullscreen-container') : null;
+            const localFsVisible = !isLocalFs || (!!localFsContainer && !localFsContainer.classList.contains('hidden'));
+            const backgroundVideoVisible = data.styles.bgType === 'video' && data.mediaMode === 'none' && !data.isBlackout && localFsVisible;
             const isExternalProjectorDocument = docObj !== document && !isLocalFs;
-            if (!isExternalProjectorDocument) updateOperatorBackgroundVideo(backgroundVideoEl, data.styles.backgroundVideoId, backgroundVideoVisible);
+            if (!isExternalProjectorDocument) updateOperatorBackgroundVideo(backgroundVideoEl, docObj.getElementById(prefix + 'background-video-next'), data.styles.backgroundVideoId, backgroundVideoVisible);
 
             if (overlayEl) {
                 const backgroundOverlayOpacity = ['image','video'].includes(data.styles.bgType)
@@ -3406,7 +3789,9 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 if (karaokeVisible && karaokeTextEl) {
                     karaokeBoxEl.classList.remove('hidden');
                     karaokeTextEl.textContent = String(karaoke.stanza || '');
-                    animateProjectionContent(karaokeTextEl, karaoke.stanza || '', data.styles.textAnimation || 'fade', !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches));
+                    const respectReducedMotion = data.styles?.respectReducedMotion === true;
+                    const reducedMotion = respectReducedMotion && !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+                    animateProjectionContent(karaokeTextEl, karaoke.stanza || '', data.styles.textAnimation || 'fade', reducedMotion, data.styles.textAnimationDurationMs, karaokeTextEl);
                     karaokeTextEl.style.fontFamily = `"${karaokeStyle.font || 'Inter'}", sans-serif`;
                     karaokeTextEl.style.fontSize = docObj === document && !isLocalFs
                         ? Math.max(9, (docObj.getElementById('projector-preview-container')?.clientWidth || 480) * (Number(karaokeStyle.size) || 4.5) / 100) + 'px'
@@ -3416,25 +3801,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                     karaokeTextEl.style.fontWeight = '700';
                     karaokeTextEl.style.textShadow = karaokeStyle.shadow === false ? 'none' : '0 2px 12px rgba(0,0,0,.95), 0 4px 24px rgba(0,0,0,.75)';
                     karaokeTextEl.style.whiteSpace = 'pre-line';
-                    if (karaokeBgEl) {
-                        const opacity = karaokeStyle.bgOpacity === undefined ? 100 : Number(karaokeStyle.bgOpacity);
-                        karaokeBgEl.style.opacity = String(Math.max(0, Math.min(100, Number.isFinite(opacity) ? opacity : 100)) / 100);
-                        if (karaokeStyle.transparent) {
-                            karaokeBgEl.style.background = 'transparent';
-                            karaokeBgEl.style.backgroundImage = 'none';
-                        } else if (karaokeStyle.bgType === 'image' && karaokeStyle.bgImage) {
-                            karaokeBgEl.style.background = 'none';
-                            karaokeBgEl.style.backgroundImage = `url("${String(karaokeStyle.bgImage).replace(/"/g, '%22')}")`;
-                            karaokeBgEl.style.backgroundSize = 'cover';
-                            karaokeBgEl.style.backgroundPosition = 'center';
-                        } else if (karaokeStyle.bgType === 'gradient') {
-                            karaokeBgEl.style.background = karaokeStyle.bgGradient || 'linear-gradient(135deg,#020617,#1e1b4b)';
-                            karaokeBgEl.style.backgroundImage = 'none';
-                        } else {
-                            karaokeBgEl.style.background = karaokeStyle.bgColor || '#000000';
-                            karaokeBgEl.style.backgroundImage = 'none';
-                        }
-                    }
+                    if (karaokeBgEl) applyKaraokeBackgroundStyle(karaokeBgEl, karaokeStyle);
                 } else {
                     karaokeBoxEl.classList.add('hidden');
                 }
@@ -3680,11 +4047,17 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             updateYouTubeMonitorCaptureUI();
             try {
                 // La llamada sigue dentro del gesto del operador para que el navegador
-                // pueda mostrar su selector nativo de ventana/pestaña.
+                // muestre el selector del sistema. Se prefiere pantalla completa y 60 fps,
+                // sin excluir otras fuentes que el usuario quiera seleccionar.
+                const supportedCaptureConstraints = typeof navigator.mediaDevices.getSupportedConstraints === 'function'
+                    ? navigator.mediaDevices.getSupportedConstraints()
+                    : {};
+                const captureVideoConstraints = { frameRate: { ideal: 60, max: 60 } };
+                if (supportedCaptureConstraints.displaySurface) {
+                    captureVideoConstraints.displaySurface = { ideal: 'monitor' };
+                }
                 window.screenStream = await navigator.mediaDevices.getDisplayMedia({
-                    // Omitir restricciones de video evita incompatibilidades del
-                    // selector de captura de Safari; WebRTC ajusta luego el bitrate.
-                    video: true,
+                    video: captureVideoConstraints,
                     audio: requestAudio
                 });
                 screenCapturePending = false;
@@ -3694,18 +4067,43 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 if (purpose !== 'youtube-monitor') mediaMode = 'screen';
                 document.getElementById('btn-start-screen-capture').classList.add('hidden');
                 document.getElementById('btn-stop-screen-capture').classList.remove('hidden');
-                track.onended = stopScreenCapture;
+                const capturedStream = window.screenStream;
+                track.addEventListener('ended', () => {
+                    if (window.screenStream === capturedStream) stopScreenCapture();
+                }, { once: true });
+                track.addEventListener('mute', () => {
+                    if (window.screenStream !== capturedStream) return;
+                    setScreenCaptureStatus(isAppleTouchDevice()
+                        ? 'iPadOS pausó los fotogramas al salir de Safari. Vuelve a Safari; la transmisión se reanudará cuando la fuente entregue nuevos cuadros.'
+                        : 'La fuente dejó de entregar fotogramas temporalmente. El proyector conserva el último cuadro y continuará cuando la fuente se reanude.');
+                    updateYouTubeMonitorCaptureUI();
+                });
+                track.addEventListener('unmute', () => {
+                    if (window.screenStream !== capturedStream) return;
+                    if (screenFrameFallbackSourceVideo && screenFrameFallbackSourceVideo.paused) {
+                        const playResult = screenFrameFallbackSourceVideo.play();
+                        if (playResult && typeof playResult.catch === 'function') playResult.catch(() => {});
+                    }
+                    setScreenCaptureStatus('La fuente reanudó los fotogramas. La proyección continúa.');
+                    updateYouTubeMonitorCaptureUI();
+                });
                 const hasAudio = window.screenStream.getAudioTracks().length > 0;
                 if (purpose === 'youtube-monitor' && requestAudio && !hasAudio) youtubeCaptureVideoOnlyFallback = true;
                 const surface = track && typeof track.getSettings === 'function' ? track.getSettings().displaySurface : '';
                 screenCaptureSurface = surface || '';
+                const captureSettings = track && typeof track.getSettings === 'function' ? track.getSettings() : {};
+                const actualResolution = captureSettings.width && captureSettings.height ? `${captureSettings.width} × ${captureSettings.height}` : 'resolución no informada';
+                const actualFrameRate = Number(captureSettings.frameRate) > 0 ? `${Math.round(Number(captureSettings.frameRate))} fps` : 'fps no informados';
+                const selectedSurfaceLabel = ({ browser: 'pestaña del navegador', window: 'ventana', monitor: 'pantalla completa' })[surface] || '';
                 screenCaptureSending = purpose !== 'youtube-monitor';
                 const captureMessage = purpose === 'youtube-monitor'
-                    ? (hasAudio ? 'Fuente capturada con audio. La proyección no ha cambiado; revisa la fuente y pulsa Enviar cuando quieras salir en vivo.' : 'Fuente capturada. La proyección no ha cambiado; revisa la fuente y pulsa Enviar cuando quieras salir en vivo.')
-                    : (hasAudio ? 'Captura iniciada; se detectó una pista de audio.' : 'Video capturado. Audio de pantalla no capturado.');
+                    ? `${selectedSurfaceLabel ? `Fuente: ${selectedSurfaceLabel}. ` : ''}${actualResolution} · ${actualFrameRate}. La proyección no ha cambiado; revisa la fuente y pulsa Enviar cuando quieras salir en vivo.`
+                    : `Captura iniciada: ${selectedSurfaceLabel || 'fuente seleccionada'} · ${actualResolution} · ${actualFrameRate}${hasAudio ? ' · audio disponible' : ''}.`;
                 setScreenCaptureStatus(purpose === 'youtube-monitor' && surface === 'monitor'
                     ? `${captureMessage} El selector eligió una pantalla completa; comprueba que sea la pantalla dedicada al monitor.`
-                    : captureMessage);
+                    : (purpose !== 'youtube-monitor' && surface && surface !== 'monitor'
+                        ? `${captureMessage} Para incluir otras apps, detén y vuelve a elegir «Pantalla completa» en el selector.`
+                        : captureMessage));
                 updateYouTubeMonitorCaptureUI();
                 if (purpose !== 'youtube-monitor') {
                     syncToProjector();
@@ -3716,10 +4114,14 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 return true;
             } catch (err) {
                 console.warn('No se pudo iniciar la captura de pantalla', err);
-                const canceled = err && err.name === 'NotAllowedError';
+                const canceled = err && (err.name === 'NotAllowedError' || err.name === 'AbortError');
                 const retryWithoutAudio = purpose === 'youtube-monitor' && requestAudio && !canceled;
                 if (retryWithoutAudio) youtubeCaptureVideoOnlyFallback = true;
-                if (window.screenStream) { window.screenStream.getTracks().forEach(track => track.stop()); window.screenStream = null; }
+                if (window.screenStream) {
+                    const failedStream = window.screenStream;
+                    window.screenStream = null;
+                    failedStream.getTracks().forEach(track => track.stop());
+                }
                 screenCapturePending = false;
                 screenCapturePurpose = 'screen';
                 screenCapturePreviousMode = 'none';
@@ -3727,7 +4129,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 screenCaptureSurface = '';
                 setScreenCaptureStatus(retryWithoutAudio
                     ? 'Safari rechazó la captura de audio. Pulsa de nuevo para intentar compartir el video sin audio.'
-                    : (canceled ? 'Captura cancelada. Elige Monitor YouTube o comparte una pantalla donde siga visible.' : 'No se pudo iniciar. Este navegador o iPadOS puede no admitir la captura seleccionada.'));
+                    : (canceled ? 'Captura cancelada. Vuelve a iniciar y elige «Pantalla completa» para incluir otras apps.' : 'No se pudo iniciar. Este navegador o iPadOS puede no admitir la captura seleccionada.'));
                 updateYouTubeMonitorCaptureUI();
                 showToast(retryWithoutAudio ? 'Safari rechazó el audio; puedes reintentar con video solamente.' : (canceled ? 'Captura cancelada o denegada.' : 'No se pudo iniciar la captura de pantalla.'), 'error');
                 return false;
@@ -3736,11 +4138,11 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
 
         function stopScreenCapture() {
             if (!window.screenStream && !screenCapturePending) return;
+            stopScreenFrameFallback();
             closeScreenTransferPeer();
-            if (window.screenStream) {
-                window.screenStream.getTracks().forEach(track => track.stop());
-                window.screenStream = null;
-            }
+            const stoppedStream = window.screenStream;
+            window.screenStream = null;
+            if (stoppedStream) stoppedStream.getTracks().forEach(track => track.stop());
             screenCapturePending = false;
             mediaMode = screenCapturePreviousMode || 'none';
             screenCapturePreviousMode = 'none';
@@ -3909,6 +4311,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             };
             document.getElementById('btn-close-local-fs').onclick = () => {
                 document.getElementById('local-fullscreen-container').classList.add('hidden');
+                syncToProjector();
             };
 
             // Lectura de Archivo JSON Bíblico
@@ -4014,11 +4417,11 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                     item.classList.toggle('is-active', active);
                     if (active) item.setAttribute('aria-current', 'page'); else item.removeAttribute('aria-current');
                 });
-                const internalTab = workspace === 'bible' ? 'btn-tab-culto' : (workspace === 'design' ? 'btn-tab-estilos' : 'btn-tab-video');
+                const internalTab = workspace === 'bible' || workspace === 'culto' ? 'btn-tab-culto' : (workspace === 'design' ? 'btn-tab-estilos' : 'btn-tab-video');
                 const tabButton = document.getElementById(internalTab);
                 if (tabButton) tabButton.click();
                 // En los espacios multimedia, conserva visible la vista previa y muestra solo los controles del modo elegido.
-                if (workspace === 'local' || workspace === 'youtube' || workspace === 'design' || workspace === 'capture' || workspace === 'karaoke') {
+                if (workspace === 'local' || workspace === 'youtube' || workspace === 'design' || workspace === 'capture' || workspace === 'karaoke' || workspace === 'culto') {
                     const panel = document.getElementById('workspace-control');
                     if (panel) panel.scrollTop = 0;
                 }
@@ -4046,6 +4449,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             });
 
             // Lista de Culto
+            document.getElementById('culto-list-search').addEventListener('input', renderCultoList);
             document.getElementById('btn-add-custom-culto').onclick = () => {
                 const input = document.getElementById('custom-culto-text');
                 const val = input.value.trim();
@@ -4197,7 +4601,57 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 else saveOperatorState();
             }
             const KARAOKE_HISTORY_KEY = 'proyector_karaoke_history_v1';
+            const KARAOKE_BANK_KEY = 'proyector_song_bank_v1';
             function karaokeGetHistory() { try { const data = JSON.parse(localStorage.getItem(KARAOKE_HISTORY_KEY) || '[]'); return Array.isArray(data) ? data : []; } catch (_) { return []; } }
+            function karaokeGetBank() { try { const data = JSON.parse(localStorage.getItem(KARAOKE_BANK_KEY) || '[]'); return Array.isArray(data) ? data.filter(item => item && typeof item.lyrics === 'string') : []; } catch (_) { return []; } }
+            function karaokeRenderBank() {
+                const box = document.getElementById('karaoke-bank'); if (!box) return;
+                const bank = karaokeGetBank();
+                const count = document.getElementById('karaoke-bank-count');
+                if (count) count.textContent = `${bank.length} ${bank.length === 1 ? 'canción guardada' : 'canciones guardadas'} en este dispositivo`;
+                const query = (document.getElementById('karaoke-bank-search')?.value || '').trim().toLocaleLowerCase();
+                const items = bank.filter(item => !query || [item.track, item.artist, item.title, item.lyrics].join(' ').toLocaleLowerCase().includes(query));
+                box.innerHTML = '';
+                if (!items.length) {
+                    const empty = document.createElement('p'); empty.className = 'text-[10px] text-gray-500';
+                    empty.textContent = bank.length ? 'No hay coincidencias en tu banco.' : 'Guarda aquí las letras que usas con frecuencia.';
+                    box.appendChild(empty); return;
+                }
+                items.forEach(item => {
+                    const row = document.createElement('div'); row.className = 'flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-950/70 p-2';
+                    const load = document.createElement('button'); load.type = 'button'; load.className = 'min-w-0 flex-1 text-left';
+                    const title = document.createElement('span'); title.className = 'block truncate text-xs font-bold text-gray-100'; title.textContent = item.title || item.track || 'Canción sin título';
+                    const sub = document.createElement('span'); sub.className = 'block truncate text-[10px] text-gray-500'; sub.textContent = [item.artist, item.date ? new Date(item.date).toLocaleDateString() : ''].filter(Boolean).join(' · ') || 'Guardada';
+                    load.append(title, sub);
+                    load.onclick = () => {
+                        document.getElementById('karaoke-track').value = item.track || item.title || '';
+                        document.getElementById('karaoke-artist').value = item.artist || '';
+                        document.getElementById('karaoke-manual').value = item.lyrics;
+                        karaokeLoad(item.lyrics, item.title || item.track || '');
+                        karaokeStatus.textContent = 'Canción cargada desde mi banco';
+                    };
+                    const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'shrink-0 rounded-lg border border-gray-700 px-2.5 py-2 text-[10px] text-gray-400 hover:border-red-500 hover:text-red-300'; remove.title = 'Quitar del banco'; remove.setAttribute('aria-label', 'Quitar ' + (item.title || item.track || 'canción'));
+                    remove.innerHTML = '<i class="fa-solid fa-trash"></i>';
+                    remove.onclick = () => { try { localStorage.setItem(KARAOKE_BANK_KEY, JSON.stringify(karaokeGetBank().filter(song => song.id !== item.id))); karaokeRenderBank(); karaokeStatus.textContent = 'Canción quitada de mi banco'; } catch (_) { karaokeStatus.textContent = 'No se pudo actualizar el banco de canciones.'; } };
+                    row.append(load, remove); box.appendChild(row);
+                });
+            }
+            function karaokeSaveToBank() {
+                const lyrics = document.getElementById('karaoke-manual').value.trim();
+                if (!lyrics) { karaokeStatus.textContent = 'Escribe o carga las letras antes de guardarlas.'; return; }
+                const track = document.getElementById('karaoke-track').value.trim() || karaokeTitle || 'Letra manual';
+                const artist = document.getElementById('karaoke-artist').value.trim();
+                const title = [track, artist].filter(Boolean).join(' — ');
+                const normalize = value => String(value || '').trim().toLocaleLowerCase().replace(/\s+/g, ' ');
+                const id = [normalize(track), normalize(artist)].join('|');
+                const bank = karaokeGetBank().filter(item => item.id !== id);
+                bank.unshift({ id, title, track, artist, lyrics, date: Date.now() });
+                try {
+                    localStorage.setItem(KARAOKE_BANK_KEY, JSON.stringify(bank.slice(0, 100)));
+                    karaokeRenderBank();
+                    karaokeStatus.textContent = bank.length > 100 ? 'Canción guardada; el banco conserva hasta 100 canciones.' : 'Canción guardada en mi banco en este dispositivo.';
+                } catch (_) { karaokeStatus.textContent = 'No se pudo guardar: el almacenamiento de este navegador está lleno.'; }
+            }
             function karaokeRenderHistory() {
                 const box = document.getElementById('karaoke-history'); if (!box) return;
                 const history = karaokeGetHistory(); box.innerHTML = '';
@@ -4281,6 +4735,8 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 karaokeStatus.textContent = 'Se abrió Google en otra pestaña. Si encuentras la letra, cópiala y pégala en el editor.';
             };
             document.getElementById('karaoke-load-manual').onclick=()=>karaokeLoad(document.getElementById('karaoke-manual').value,document.getElementById('karaoke-track').value.trim());
+            document.getElementById('karaoke-bank-save').onclick=karaokeSaveToBank;
+            document.getElementById('karaoke-bank-search').addEventListener('input',karaokeRenderBank);
             document.getElementById('karaoke-history-clear').onclick=()=>{try{localStorage.removeItem(KARAOKE_HISTORY_KEY);}catch(_){}karaokeRenderHistory();karaokeStatus.textContent='Historial de letras borrado';};
             document.getElementById('karaoke-clear').onclick=()=>{karaokeOriginalStanzas=[];karaokeStanzas=[];karaokeIndex=0;karaokeActive=false;karaokeTitle='';document.getElementById('karaoke-manual').value='';document.getElementById('karaoke-results').innerHTML='';karaokeRefreshNav();syncToProjector();karaokeStatus.textContent='Letras limpiadas';};
             document.getElementById('karaoke-prev').onclick=()=>{if(karaokeIndex>0){karaokeIndex--;karaokeRefreshNav();syncToProjector();}};
@@ -4295,6 +4751,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             ['karaoke-track','karaoke-artist','karaoke-manual'].forEach(id => document.getElementById(id).addEventListener('input', saveOperatorState));
             karaokeApplyStyle();
             karaokeRefreshNav();
+            karaokeRenderBank();
             karaokeRenderHistory();
             document.getElementById('btn-start-screen-capture').onclick = startScreenCapture;
             document.getElementById('btn-stop-screen-capture').onclick = stopScreenCapture;
@@ -4465,8 +4922,23 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 projectionStyles.textAnimation = e.target.value;
                 syncToProjector();
             };
+            document.getElementById('projection-text-duration').oninput = (e) => {
+                projectionStyles.textAnimationDurationMs = Number(e.target.value);
+                document.getElementById('val-projection-text-duration').textContent = e.target.value + ' ms';
+                syncToProjector();
+            };
+            document.getElementById('projection-respect-reduced-motion').onchange = (e) => {
+                projectionStyles.respectReducedMotion = !!e.target.checked;
+                projectionStyles.respectReducedMotionConfigured = true;
+                syncToProjector();
+            };
             document.getElementById('projection-media-transition').onchange = (e) => {
                 projectionStyles.mediaTransition = e.target.value;
+                syncToProjector();
+            };
+            document.getElementById('projection-transition-duration').oninput = (e) => {
+                projectionStyles.mediaTransitionDurationMs = Number(e.target.value);
+                document.getElementById('val-projection-transition-duration').textContent = e.target.value + ' ms';
                 syncToProjector();
             };
             document.getElementById('background-video-file-input').onchange = async (e) => {
@@ -4653,6 +5125,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                     }
                 } else if (e.key === 'Escape') {
                     document.getElementById('local-fullscreen-container').classList.add('hidden');
+                    syncToProjector();
                 }
             };
         }

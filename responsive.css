@@ -17,6 +17,79 @@ body.operator-page {
     overscroll-behavior: none;
 }
 
+#culto-list-search-wrap { display: none; }
+.bible-chapter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(42px, 1fr));
+    grid-auto-rows: 42px;
+    gap: 8px;
+    align-content: start;
+}
+.bible-chapter-grid button { min-height: 42px; }
+
+body[data-workspace="culto"] #workspace-control {
+    width: 100% !important;
+    height: 100% !important;
+    flex: 1 1 auto !important;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden !important;
+}
+body[data-workspace="culto"] #workspace-control > .control-panel {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    flex: 1 1 auto;
+}
+body[data-workspace="culto"] #workspace-control > .control-panel > div:last-child {
+    min-height: 0;
+    overflow: hidden;
+}
+body[data-workspace="culto"] #tab-culto {
+    display: flex !important;
+    flex: 1 1 auto;
+    height: 100%;
+    min-height: 0;
+}
+body[data-workspace="culto"] #culto-list-search-wrap { display: block !important; }
+body[data-workspace="culto"] #culto-list-items {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    gap: 12px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 2px 2px max(16px, env(safe-area-inset-bottom)) 2px;
+}
+body[data-workspace="culto"] #culto-list-items > :not([hidden]) ~ :not([hidden]) { margin-top: 0 !important; }
+body[data-workspace="culto"] .culto-list-card {
+    align-items: flex-start;
+    min-height: 104px;
+    padding: 14px;
+    background: linear-gradient(145deg, rgba(23,35,56,.9), rgba(15,23,42,.92)) !important;
+}
+body[data-workspace="culto"] .culto-list-open { padding: 1px 0; border-radius: 8px; }
+body[data-workspace="culto"] .culto-list-open:focus-visible { outline: 2px solid #6ea8ff; outline-offset: 4px; }
+body[data-workspace="culto"] .culto-list-citation { white-space: normal; overflow: visible; text-overflow: clip; font-size: 12px; }
+body[data-workspace="culto"] .culto-list-text {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+@media (min-width: 760px) {
+    body[data-workspace="culto"] #culto-list-items { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1280px) {
+    body[data-workspace="culto"] #culto-list-items { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
 #operator-interface,
 #operator-interface main,
 #workspace-control {
@@ -176,25 +249,103 @@ body.operator-page {
     to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
+@keyframes projection-enter-slide-down {
+    from { opacity: 0; transform: translate3d(0, -1.2rem, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes projection-enter-slide-right {
+    from { opacity: 0; transform: translate3d(-1.6rem, 0, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
 @keyframes projection-enter-zoom {
     from { opacity: 0; transform: scale(.94); }
     to { opacity: 1; transform: scale(1); }
 }
 
+@keyframes projection-enter-blur {
+    from { opacity: 0; filter: blur(10px); transform: scale(1.015); }
+    to { opacity: 1; filter: blur(0); transform: scale(1); }
+}
+
+@keyframes projection-enter-reveal {
+    from { opacity: 0; clip-path: inset(0 0 100% 0); }
+    to { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
 .projection-enter-fade,
 .projection-enter-slide-up,
 .projection-enter-slide-left,
-.projection-enter-zoom {
+.projection-enter-slide-down,
+.projection-enter-slide-right,
+.projection-enter-zoom,
+.projection-enter-blur,
+.projection-enter-reveal {
     animation-duration: 350ms;
-    animation-timing-function: cubic-bezier(.2,.75,.25,1);
+    animation-timing-function: linear;
     animation-fill-mode: both;
-    will-change: opacity, transform;
+    will-change: opacity, transform, filter, clip-path;
 }
 
 .projection-enter-fade { animation-name: projection-enter-fade; }
 .projection-enter-slide-up { animation-name: projection-enter-slide-up; }
 .projection-enter-slide-left { animation-name: projection-enter-slide-left; }
+.projection-enter-slide-down { animation-name: projection-enter-slide-down; }
+.projection-enter-slide-right { animation-name: projection-enter-slide-right; }
 .projection-enter-zoom { animation-name: projection-enter-zoom; }
+.projection-enter-blur { animation-name: projection-enter-blur; }
+.projection-enter-reveal { animation-name: projection-enter-reveal; }
+
+.design-group {
+    overflow: hidden;
+    border: 1px solid rgba(100, 116, 139, .3);
+    border-radius: 14px;
+    background: rgba(15, 23, 42, .52);
+}
+
+.design-group > summary {
+    display: flex;
+    min-height: 48px;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 14px;
+    color: #e2e8f0;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 800;
+    list-style: none;
+}
+
+.design-group > summary::-webkit-details-marker { display: none; }
+.design-group > summary::after { content: '+'; margin-left: auto; color: #93c5fd; font-size: 18px; line-height: 1; }
+.design-group[open] > summary::after { content: '−'; }
+.design-group > summary > i { width: 18px; color: #93c5fd; text-align: center; }
+.design-group > summary > small { margin-left: auto; color: #94a3b8; font-size: 10px; font-weight: 500; }
+.design-group[open] > summary { border-bottom: 1px solid rgba(100, 116, 139, .2); }
+.design-group-content { padding: 14px; }
+
+@media (max-width: 640px) {
+    .design-group > summary { flex-wrap: wrap; }
+    .design-group > summary > small { width: calc(100% - 28px); margin: -5px 0 0 27px; }
+}
+
+.projection-background-loop-layer {
+    opacity: 0;
+    visibility: hidden;
+    transition-property: opacity;
+    transition-duration: 950ms;
+    transition-timing-function: linear;
+    will-change: opacity;
+}
+
+.projection-background-loop-layer.projection-background-loop-visible {
+    visibility: visible;
+}
+
+.projection-background-loop-layer.projection-background-loop-active {
+    opacity: 1;
+}
 
 @keyframes projection-transition-fade {
     0%, 22% { opacity: 1; }
@@ -223,9 +374,9 @@ body.operator-page {
 
 .projection-transition-curtain.is-active { display: block; }
 .projection-transition-curtain.is-held { opacity: 1; transform: none; animation: none; }
-.projection-transition-curtain.effect-fade { animation: projection-transition-fade 680ms ease-in-out both; }
-.projection-transition-curtain.effect-wipe { animation: projection-transition-wipe 680ms cubic-bezier(.65,0,.35,1) both; }
-.projection-transition-curtain.effect-zoom { animation: projection-transition-zoom 680ms ease-in-out both; }
+.projection-transition-curtain.effect-fade { animation: projection-transition-fade 700ms ease-in-out both; }
+.projection-transition-curtain.effect-wipe { animation: projection-transition-wipe 700ms cubic-bezier(.65,0,.35,1) both; }
+.projection-transition-curtain.effect-zoom { animation: projection-transition-zoom 700ms ease-in-out both; }
 
 .projection-transition-video {
     position: absolute;
@@ -241,14 +392,64 @@ body.operator-page {
 
 .projection-transition-video.is-active { display: block; }
 
+.projection-logo-transition {
+    position: absolute;
+    inset: 0;
+    z-index: 70;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    pointer-events: none;
+    background: transparent;
+    clip-path: circle(0 at 50% 50%);
+    opacity: 0;
+}
+
+.projection-logo-transition.is-active { display: flex; }
+.projection-logo-transition.is-playing { animation: projection-logo-curtain 700ms ease-in-out both; }
+.projection-logo-transition img {
+    width: min(48vw, 48vh);
+    max-width: 65vw;
+    max-height: 58vh;
+    object-fit: contain;
+    opacity: 0;
+    transform: scale(.12);
+    -webkit-filter: drop-shadow(0 0 9px rgba(255,255,255,.98)) drop-shadow(0 0 24px rgba(110,168,255,.95)) drop-shadow(0 0 52px rgba(59,130,246,.78)) drop-shadow(0 0 88px rgba(37,99,235,.48));
+    filter: drop-shadow(0 0 9px rgba(255,255,255,.98)) drop-shadow(0 0 24px rgba(110,168,255,.95)) drop-shadow(0 0 52px rgba(59,130,246,.78)) drop-shadow(0 0 88px rgba(37,99,235,.48));
+    will-change: transform, opacity, filter;
+}
+.projection-logo-transition.is-playing img { animation: projection-logo-mark 700ms ease-in-out both; }
+
+@keyframes projection-logo-curtain {
+    0% { clip-path: circle(0 at 50% 50%); opacity: 0; }
+    12% { clip-path: circle(10% at 50% 50%); opacity: 1; }
+    58%, 82% { clip-path: circle(150% at 50% 50%); opacity: 1; }
+    100% { clip-path: circle(150% at 50% 50%); opacity: 0; }
+}
+
+@keyframes projection-logo-mark {
+    0%, 10% { opacity: 0; transform: scale(.12); }
+    28% { opacity: 1; transform: scale(.58); }
+    58% { opacity: 1; transform: scale(3.4); }
+    82% { opacity: 1; transform: scale(3.8); }
+    100% { opacity: 0; transform: scale(4.1); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .projection-enter-fade,
-    .projection-enter-slide-up,
-    .projection-enter-slide-left,
-    .projection-enter-zoom,
-    .projection-transition-curtain.effect-fade,
-    .projection-transition-curtain.effect-wipe,
-    .projection-transition-curtain.effect-zoom {
+    html:not([data-projection-motion="full"]) .projection-enter-fade,
+    html:not([data-projection-motion="full"]) .projection-enter-slide-up,
+    html:not([data-projection-motion="full"]) .projection-enter-slide-left,
+    html:not([data-projection-motion="full"]) .projection-enter-slide-down,
+    html:not([data-projection-motion="full"]) .projection-enter-slide-right,
+    html:not([data-projection-motion="full"]) .projection-enter-zoom,
+    html:not([data-projection-motion="full"]) .projection-enter-blur,
+    html:not([data-projection-motion="full"]) .projection-enter-reveal,
+    html:not([data-projection-motion="full"]) .projection-transition-curtain.effect-fade,
+    html:not([data-projection-motion="full"]) .projection-transition-curtain.effect-wipe,
+    html:not([data-projection-motion="full"]) .projection-transition-curtain.effect-zoom,
+    html:not([data-projection-motion="full"]) .projection-logo-transition.is-playing,
+    html:not([data-projection-motion="full"]) .projection-logo-transition.is-playing img {
         animation-duration: .01ms !important;
         transition-duration: .01ms !important;
     }
