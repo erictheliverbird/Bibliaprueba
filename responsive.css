@@ -64,7 +64,7 @@ body[data-workspace="culto"] #culto-list-items {
 body[data-workspace="culto"] #culto-list-items > :not([hidden]) ~ :not([hidden]) { margin-top: 0 !important; }
 body[data-workspace="culto"] .culto-list-card {
     align-items: flex-start;
-    min-height: 104px;
+    min-height: 88px;
     padding: 14px;
     background: linear-gradient(145deg, rgba(23,35,56,.9), rgba(15,23,42,.92)) !important;
 }
@@ -72,14 +72,12 @@ body[data-workspace="culto"] .culto-list-open { padding: 1px 0; border-radius: 8
 body[data-workspace="culto"] .culto-list-open:focus-visible { outline: 2px solid #6ea8ff; outline-offset: 4px; }
 body[data-workspace="culto"] .culto-list-citation { white-space: normal; overflow: visible; text-overflow: clip; font-size: 12px; }
 body[data-workspace="culto"] .culto-list-text {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4;
+    display: block;
     white-space: normal;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 14px;
-    line-height: 1.5;
+    overflow: visible;
+    text-overflow: clip;
+    font-size: clamp(14px, 1.35vw, 18px);
+    line-height: 1.45;
 }
 
 @media (min-width: 760px) {
@@ -345,6 +343,27 @@ body[data-workspace="culto"] .culto-list-text {
 
 .projection-background-loop-layer.projection-background-loop-active {
     opacity: 1;
+}
+
+/* Mantén la capa saliente totalmente opaca bajo la entrante durante el fundido. */
+.projection-background-loop-layer.projection-background-loop-hold {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.culto-list-card,
+.culto-list-open {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+.culto-list-open { overflow-wrap: anywhere; }
+.culto-list-citation { max-width: 100%; overflow-wrap: anywhere; }
+.culto-list-text {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
 }
 
 @keyframes projection-transition-fade {
