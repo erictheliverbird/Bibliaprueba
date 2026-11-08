@@ -421,6 +421,105 @@ body[data-workspace="culto"] .culto-list-text {
 }
 .projection-logo-transition.is-playing img { animation: projection-logo-mark 700ms ease-in-out both; }
 
+.projection-cinematic-aura,
+.projection-cinematic-ring,
+.projection-cinematic-streak { display: none; }
+
+.projection-logo-transition.is-cinematic {
+    --projection-transition-accent-rgb: 244, 207, 92;
+    clip-path: none;
+    background:
+        radial-gradient(circle at center, rgba(var(--projection-transition-accent-rgb), .09) 0, rgba(4, 8, 15, .42) 34%, rgba(1, 3, 8, .9) 100%);
+}
+
+.projection-logo-transition.is-cinematic.is-playing {
+    animation: projection-cinematic-stage var(--projection-transition-duration, 700ms) ease-in-out both;
+}
+
+.projection-logo-transition.is-cinematic .projection-cinematic-aura,
+.projection-logo-transition.is-cinematic .projection-cinematic-ring,
+.projection-logo-transition.is-cinematic .projection-cinematic-streak {
+    position: absolute;
+    display: block;
+    pointer-events: none;
+}
+
+.projection-cinematic-aura {
+    left: 50%;
+    top: 50%;
+    width: 22vmin;
+    height: 22vmin;
+    border-radius: 50%;
+    opacity: 0;
+    background: radial-gradient(circle, rgba(255,255,255,.72) 0, rgba(var(--projection-transition-accent-rgb), .5) 13%, rgba(var(--projection-transition-accent-rgb), .18) 38%, transparent 72%);
+    filter: blur(5px);
+    transform: translate(-50%, -50%) scale(.12);
+}
+
+.projection-logo-transition.is-cinematic.is-playing .projection-cinematic-aura {
+    animation: projection-cinematic-aura var(--projection-transition-duration, 700ms) ease-out both;
+}
+
+.projection-cinematic-ring {
+    left: 50%;
+    top: 50%;
+    width: 25vmin;
+    height: 25vmin;
+    border: 1px solid rgba(var(--projection-transition-accent-rgb), .84);
+    border-radius: 50%;
+    opacity: 0;
+    box-shadow: 0 0 12px rgba(var(--projection-transition-accent-rgb), .85), inset 0 0 18px rgba(var(--projection-transition-accent-rgb), .28), 0 0 52px rgba(var(--projection-transition-accent-rgb), .36);
+    transform: translate(-50%, -50%) scale(.08);
+}
+
+.projection-cinematic-ring::before,
+.projection-cinematic-ring::after {
+    position: absolute;
+    inset: 8%;
+    border: 1px solid rgba(255,255,255,.5);
+    border-radius: 50%;
+    content: '';
+}
+
+.projection-cinematic-ring::after {
+    inset: 18%;
+    border-color: rgba(var(--projection-transition-accent-rgb), .48);
+    transform: rotateX(64deg) rotate(-18deg);
+}
+
+.projection-logo-transition.is-cinematic.is-playing .projection-cinematic-ring {
+    animation: projection-cinematic-ring var(--projection-transition-duration, 700ms) cubic-bezier(.16,.72,.24,1) both;
+}
+
+.projection-cinematic-streak {
+    left: -35%;
+    top: 48%;
+    width: 170%;
+    height: 10vh;
+    opacity: 0;
+    background: linear-gradient(180deg, transparent 0, rgba(var(--projection-transition-accent-rgb), .1) 36%, rgba(255,255,255,.88) 50%, rgba(var(--projection-transition-accent-rgb), .26) 58%, transparent 100%);
+    filter: blur(4px);
+    transform: translateX(-80%) rotate(-14deg);
+}
+
+.projection-logo-transition.is-cinematic.is-playing .projection-cinematic-streak {
+    animation: projection-cinematic-streak var(--projection-transition-duration, 700ms) cubic-bezier(.2,.68,.18,1) both;
+}
+
+.projection-logo-transition.is-cinematic img {
+    width: min(44vw, 44vh);
+    max-width: 62vw;
+    max-height: 54vh;
+    opacity: 0;
+    transform: scale(.22) translateY(2vh);
+    -webkit-filter: drop-shadow(0 0 8px rgba(255,255,255,.98)) drop-shadow(0 0 23px rgba(var(--projection-transition-accent-rgb), .95)) drop-shadow(0 0 58px rgba(var(--projection-transition-accent-rgb), .78)) drop-shadow(0 0 105px rgba(var(--projection-transition-accent-rgb), .42));
+    filter: drop-shadow(0 0 8px rgba(255,255,255,.98)) drop-shadow(0 0 23px rgba(var(--projection-transition-accent-rgb), .95)) drop-shadow(0 0 58px rgba(var(--projection-transition-accent-rgb), .78)) drop-shadow(0 0 105px rgba(var(--projection-transition-accent-rgb), .42));
+}
+
+.projection-logo-transition.is-cinematic.is-playing img {
+    animation: projection-cinematic-logo var(--projection-transition-duration, 700ms) cubic-bezier(.2,.72,.22,1) both;
+}
+
 @keyframes projection-logo-curtain {
     0% { clip-path: circle(0 at 50% 50%); opacity: 0; }
     12% { clip-path: circle(10% at 50% 50%); opacity: 1; }
@@ -434,6 +533,40 @@ body[data-workspace="culto"] .culto-list-text {
     58% { opacity: 1; transform: scale(3.4); }
     82% { opacity: 1; transform: scale(3.8); }
     100% { opacity: 0; transform: scale(4.1); }
+}
+
+@keyframes projection-cinematic-stage {
+    0%, 100% { opacity: 0; }
+    10%, 72% { opacity: 1; }
+}
+
+@keyframes projection-cinematic-aura {
+    0%, 10% { opacity: 0; transform: translate(-50%, -50%) scale(.12); }
+    25% { opacity: .95; transform: translate(-50%, -50%) scale(1.15); }
+    63% { opacity: .62; transform: translate(-50%, -50%) scale(5.2); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(9.5); }
+}
+
+@keyframes projection-cinematic-ring {
+    0%, 8% { opacity: 0; transform: translate(-50%, -50%) scale(.08) rotate(-18deg); }
+    22% { opacity: .95; transform: translate(-50%, -50%) scale(.72) rotate(0); }
+    62% { opacity: .72; transform: translate(-50%, -50%) scale(3.6) rotate(28deg); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(6.8) rotate(48deg); }
+}
+
+@keyframes projection-cinematic-streak {
+    0%, 17% { opacity: 0; transform: translateX(-80%) rotate(-14deg); }
+    29% { opacity: .9; }
+    55% { opacity: .38; transform: translateX(82%) rotate(-14deg); }
+    100% { opacity: 0; transform: translateX(130%) rotate(-14deg); }
+}
+
+@keyframes projection-cinematic-logo {
+    0%, 12% { opacity: 0; transform: scale(.22) translateY(2vh); }
+    28% { opacity: 1; transform: scale(.92) translateY(0); }
+    51%, 66% { opacity: 1; transform: scale(1) translateY(0); }
+    84% { opacity: .72; transform: scale(1.18) translateY(-1vh); }
+    100% { opacity: 0; transform: scale(1.52) translateY(-2vh); }
 }
 
 @media (prefers-reduced-motion: reduce) {
