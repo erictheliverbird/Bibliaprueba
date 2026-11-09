@@ -1290,6 +1290,7 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
         let youtubeWindowPlayerReady = false;
         let youtubeWindowHeartbeatTimestamp = 0;
         let broadcastChannel = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('biblical-projector-channel') : null;
+        let projectorKeyboardChannel = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('biblical-projector-keyboard') : null;
         let localProjectorId = '';
         const projectorControllerId = (() => {
             const key = 'biblical_projector_controller_id';
@@ -2267,6 +2268,15 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 // cuando Safari separa la pestaña del proyector en otra ventana.
             });
             try { broadcastChannel.postMessage({ type: '__controller_hello', controllerId: projectorControllerId, timestamp: Date.now() }); } catch (_) {}
+        }
+        if (projectorKeyboardChannel) {
+            projectorKeyboardChannel.addEventListener('message', event => {
+                const data = event.data;
+                if (!data || data.type !== '__projector_keyboard_shortcut') return;
+                if (data.controllerId !== projectorControllerId) return;
+                if (localProjectorId && data.projectorId !== localProjectorId) return;
+                runOperatorKeyboardShortcut(String(data.key || ''));
+            });
         }
         window.addEventListener('message', event => {
             if (event.origin !== location.origin || !event.data || event.data.type !== '__youtube_window_heartbeat') return;
@@ -3333,6 +3343,50 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
             renderBooks(); renderChapters();
             projectVerse(nextVerses[nextVerseIndex], `${selectedBook} ${selectedChapter}:${nextVerseIndex + 1}`, nextVerseIndex);
             return true;
+        }
+
+        function runOperatorKeyboardShortcut(key) {
+            if (key.startsWith('Arrow')) {
+                const delta = (key === 'ArrowLeft' || key === 'ArrowUp') ? -1 : 1;
+                if (document.body.dataset.workspace === 'karaoke') {
+                    const button = document.getElementById(delta < 0 ? 'karaoke-prev' : 'karaoke-next');
+                    if (!button || button.disabled) return false;
+                    button.click();
+                    return true;
+                }
+                return moveBibleVerse(delta);
+            }
+            if (key === 'l') {
+                document.getElementById('btn-standby').click();
+                return true;
+            }
+            if (key === 'b') {
+                document.getElementById('btn-blackout').click();
+                return true;
+            }
+            if (key === 'c') {
+                document.getElementById('btn-cleartext').click();
+                return true;
+            }
+            if (key === ' ') {
+                if (mediaMode === 'youtube') {
+                    sendYouTubeCommand(isVideoPlaying ? 'pauseVideo' : 'playVideo');
+                    isVideoPlaying = !isVideoPlaying;
+                    saveOperatorState();
+                    return true;
+                }
+                if (mediaMode === 'video') {
+                    document.getElementById('btn-video-play-pause').click();
+                    return true;
+                }
+                return false;
+            }
+            if (key === 'Escape') {
+                document.getElementById('local-fullscreen-container').classList.add('hidden');
+                syncToProjector();
+                return true;
+            }
+            return false;
         }
 
         function addToCultoList(text, citation) {
@@ -5100,39 +5154,13 @@ Siguiente estrofa..."></textarea><div class="flex flex-wrap gap-2"><button id="k
                 }
             });
 
-            // Atajos compatibles con el Magic Keyboard: las flechas no interfieren con campos de edición.
+            // Captura antes de los controles de video para conservar los atajos con un video local enfocado.
             document.addEventListener('keydown', (e) => {
                 if (e.metaKey || e.ctrlKey || e.altKey) return;
                 const keyTarget = e.target instanceof Element ? e.target : null;
                 if (keyTarget?.closest('input, textarea, select, [contenteditable="true"]')) return;
-                const key = e.key.toLowerCase();
-                if (e.key.startsWith('Arrow')) {
-                    const delta = (e.key === 'ArrowLeft' || e.key === 'ArrowUp') ? -1 : 1;
-                    if (document.body.dataset.workspace === 'karaoke') {
-                        const button = document.getElementById(delta < 0 ? 'karaoke-prev' : 'karaoke-next');
-                        if (button && !button.disabled) { e.preventDefault(); button.click(); }
-                    } else if (moveBibleVerse(delta)) e.preventDefault();
-                } else if (key === 'l') {
-                    e.preventDefault();
-                    document.getElementById('btn-standby').click();
-                } else if (key === 'b') {
-                    e.preventDefault();
-                    document.getElementById('btn-blackout').click();
-                } else if (key === 'c') {
-                    e.preventDefault();
-                    document.getElementById('btn-cleartext').click();
-                } else if (e.key === ' ') {
-                    if (mediaMode === 'youtube') {
-                        e.preventDefault(); sendYouTubeCommand(isVideoPlaying ? 'pauseVideo' : 'playVideo');
-                        isVideoPlaying = !isVideoPlaying; saveOperatorState();
-                    } else if (mediaMode === 'video') {
-                        e.preventDefault(); document.getElementById('btn-video-play-pause').click();
-                    }
-                } else if (e.key === 'Escape') {
-                    e.preventDefault();
-                    document.getElementById('local-fullscreen-container').classList.add('hidden');
-                    syncToProjector();
-                }
+                const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+                if (runOperatorKeyboardShortcut(key)) e.preventDefault();
             }, true);
         }
 

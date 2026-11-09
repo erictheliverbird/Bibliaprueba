@@ -58,6 +58,7 @@
                                     const projectorInstanceId = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
                                     const projectorControllerId = new URLSearchParams(window.location.search).get('controller') || '';
                                     let channel = null;
+                                    let projectorKeyboardChannel = null;
                                     const PROJECTOR_DB_NAME = 'proyector-biblico-local';
                                     const PROJECTION_MEDIA_RECORD_PREFIX = 'projection-media:';
                                     let projectorMediaDbPromise = null;
@@ -699,6 +700,28 @@
                                             });
                                         }
                                     } catch (error) { console.warn('BroadcastChannel no disponible', error); }
+
+                                    try {
+                                        if ('BroadcastChannel' in window) projectorKeyboardChannel = new BroadcastChannel('biblical-projector-keyboard');
+                                    } catch (error) { console.warn('Canal de atajos no disponible', error); }
+                                    document.addEventListener('keydown', event => {
+                                        if (event.metaKey || event.ctrlKey || event.altKey) return;
+                                        const keyTarget = event.target instanceof Element ? event.target : null;
+                                        if (keyTarget && keyTarget.closest('input, textarea, select, [contenteditable="true"]')) return;
+                                        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+                                        if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'l', 'b', 'c', ' '].includes(key)) return;
+                                        if (!projectorKeyboardChannel || !projectorControllerId) return;
+                                        event.preventDefault();
+                                        try {
+                                            projectorKeyboardChannel.postMessage({
+                                                type: '__projector_keyboard_shortcut',
+                                                controllerId: projectorControllerId,
+                                                projectorId: projectorInstanceId,
+                                                key,
+                                                timestamp: Date.now()
+                                            });
+                                        } catch (_) {}
+                                    }, true);
 
                                     function sendProjectorHeartbeat() {
                                         try {
